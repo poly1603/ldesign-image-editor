@@ -14,6 +14,8 @@ env:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -55,8 +57,18 @@ jobs:
           echo "🚀 Deployed to: $DEPLOYMENT_URL"
         working-directory: ./playground
 
+      - name: Update Repository Homepage
+        if: steps.deploy.outputs.url != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh repo edit --homepage "${{ steps.deploy.outputs.url }}"
+          echo "✅ Repository homepage updated to: ${{ steps.deploy.outputs.url }}"
+
       - name: Output Deployment URL
         run: |
           echo "## 🎉 部署成功!" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Playground 访问地址:** ${{ steps.deploy.outputs.url }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "已自动更新仓库的 Homepage URL" >> $GITHUB_STEP_SUMMARY
