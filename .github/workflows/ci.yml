@@ -1,0 +1,47 @@
+# CI - 检查代码质量和构建
+name: CI
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build @ldesign/image-editor (core)
+        run: pnpm --filter @ldesign/image-editor build
+
+      - name: Build @ldesign/image-editor-vue
+        run: pnpm --filter @ldesign/image-editor-vue build
+
+      - name: Build playground
+        run: pnpm --filter @ldesign/image-editor-playground build
+
+      - name: Run tests (core)
+        run: pnpm --filter @ldesign/image-editor test
+        continue-on-error: true
+
+      - name: Run tests (vue)
+        run: pnpm --filter @ldesign/image-editor-vue test
+        continue-on-error: true
