@@ -137,19 +137,19 @@ function it(n) {
     height: n.naturalHeight || n.height
   };
 }
-function at(n, t, e, i) {
-  const a = Math.min(e / n, i / t);
+function st(n, t, e, i) {
+  const s = Math.min(e / n, i / t);
   return {
-    width: Math.round(n * a),
-    height: Math.round(t * a)
+    width: Math.round(n * s),
+    height: Math.round(t * s)
   };
 }
-function st(n, t, e = 0, i = 0, a, s) {
-  a !== void 0 && s !== void 0 ? n.drawImage(t, e, i, a, s) : n.drawImage(t, e, i);
+function at(n, t, e = 0, i = 0, s, a) {
+  s !== void 0 && a !== void 0 ? n.drawImage(t, e, i, s, a) : n.drawImage(t, e, i);
 }
-function _t(n, t = 0, e = 0, i, a) {
-  const s = i ?? n.canvas.width, o = a ?? n.canvas.height;
-  return n.getImageData(t, e, s, o);
+function _t(n, t = 0, e = 0, i, s) {
+  const a = i ?? n.canvas.width, o = s ?? n.canvas.height;
+  return n.getImageData(t, e, a, o);
 }
 function $t(n, t, e = 0, i = 0) {
   n.putImageData(t, e, i);
@@ -169,34 +169,34 @@ function nt(n, t = "png", e = 0.92) {
   return n.toDataURL(i, e);
 }
 function rt(n, t = "png", e = 0.92) {
-  return new Promise((i, a) => {
-    const s = `image/${t}`;
+  return new Promise((i, s) => {
+    const a = `image/${t}`;
     n.toBlob(
       (o) => {
-        o ? i(o) : a(new Error("Failed to convert canvas to blob"));
+        o ? i(o) : s(new Error("Failed to convert canvas to blob"));
       },
-      s,
+      a,
       e
     );
   });
 }
-function G(n, t, e) {
+function V(n, t, e) {
   const i = document.createElement("canvas");
   i.width = t, i.height = e;
-  const a = i.getContext("2d");
-  return a && a.drawImage(n, 0, 0, t, e), i;
+  const s = i.getContext("2d");
+  return s && s.drawImage(n, 0, 0, t, e), i;
 }
 function F(n, t, e) {
   const i = t.getBoundingClientRect();
   if ("touches" in n) {
-    const a = n.touches[0] || n.changedTouches[0];
+    const s = n.touches[0] || n.changedTouches[0];
     return {
       type: e,
-      x: a.clientX - i.left,
-      y: a.clientY - i.top,
-      pressure: a.force || 0.5,
+      x: s.clientX - i.left,
+      y: s.clientY - i.top,
+      pressure: s.force || 0.5,
       isPrimary: !0,
-      pointerId: a.identifier
+      pointerId: s.identifier
     };
   }
   return {
@@ -219,10 +219,10 @@ function Ot(n, t) {
   };
 }
 function Be(n, t, e) {
-  const i = n[0], a = n[1], s = At(i, a), o = t.getBoundingClientRect(), r = Ot(i, a);
+  const i = n[0], s = n[1], a = At(i, s), o = t.getBoundingClientRect(), r = Ot(i, s);
   return {
     type: "pinch",
-    scale: s / e,
+    scale: a / e,
     center: {
       x: r.x - o.left,
       y: r.y - o.top
@@ -239,8 +239,8 @@ function _e(n, t) {
 function $e(n, t) {
   let e = 0;
   return (...i) => {
-    const a = Date.now();
-    a - e >= t && (e = a, n(...i));
+    const s = Date.now();
+    s - e >= t && (e = s, n(...i));
   };
 }
 function Ae(n, t) {
@@ -274,17 +274,17 @@ function Ht() {
     n
   );
 }
-function qe() {
+function Ne() {
   return typeof navigator > "u" ? !1 : /iphone|ipad|ipod/i.test(navigator.userAgent.toLowerCase());
 }
-function Ne() {
+function qe() {
   return typeof navigator > "u" ? !1 : /android/i.test(navigator.userAgent.toLowerCase());
 }
-function qt() {
+function Nt() {
   return Ht() || Ft() ? "mobile" : "pc";
 }
 function ft(n) {
-  return n === "auto" ? qt() : n;
+  return n === "auto" ? Nt() : n;
 }
 function We() {
   return typeof window > "u" ? 1 : window.devicePixelRatio || 1;
@@ -318,20 +318,20 @@ function Ue() {
     height: window.innerHeight
   };
 }
-async function Nt(n, t) {
+async function qt(n, t) {
   const e = {
     ...Mt,
     ...t
   };
   let i = n;
   if (e.width && e.height && (e.width !== n.width || e.height !== n.height))
-    i = G(n, e.width, e.height);
+    i = V(n, e.width, e.height);
   else if (e.width && !e.height) {
-    const a = e.width / n.width, s = Math.round(n.height * a);
-    i = G(n, e.width, s);
+    const s = e.width / n.width, a = Math.round(n.height * s);
+    i = V(n, e.width, a);
   } else if (e.height && !e.width) {
-    const a = e.height / n.height, s = Math.round(n.width * a);
-    i = G(n, s, e.height);
+    const s = e.height / n.height, a = Math.round(n.width * s);
+    i = V(n, a, e.height);
   }
   switch (e.type) {
     case "base64":
@@ -339,8 +339,8 @@ async function Nt(n, t) {
     case "blob":
       return rt(i, e.format, e.quality);
     case "file": {
-      const a = await rt(i, e.format, e.quality), s = e.format === "jpeg" ? "jpg" : e.format, o = `${e.fileName || "image"}.${s}`;
-      return new File([a], o, { type: `image/${e.format}` });
+      const s = await rt(i, e.format, e.quality), a = e.format === "jpeg" ? "jpg" : e.format, o = `${e.fileName || "image"}.${a}`;
+      return new File([s], o, { type: `image/${e.format}` });
     }
     default:
       return nt(i, e.format, e.quality);
@@ -348,27 +348,27 @@ async function Nt(n, t) {
 }
 const Wt = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  exportImage: Nt
+  exportImage: qt
 }, Symbol.toStringTag, { value: "Module" }));
 function Yt(n = {}) {
   const {
     width: t = 800,
     height: e = 600,
     text: i = "点击上传或拖放图片",
-    subText: a = "支持 PNG、JPG、GIF 等格式",
-    theme: s = "dark"
+    subText: s = "支持 PNG、JPG、GIF 等格式",
+    theme: a = "dark"
   } = n, o = document.createElement("canvas");
   o.width = t, o.height = e;
   const r = o.getContext("2d");
   if (!r) return "";
-  const l = s === "dark", h = l ? "rgba(255,255,255,0.15)" : "rgba(0,0,0,0.12)", d = l ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.35)", p = l ? "rgba(255,255,255,0.7)" : "rgba(0,0,0,0.65)", f = l ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.4)";
+  const l = a === "dark", h = l ? "rgba(255,255,255,0.15)" : "rgba(0,0,0,0.12)", d = l ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.35)", p = l ? "rgba(255,255,255,0.7)" : "rgba(0,0,0,0.65)", f = l ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.4)";
   r.clearRect(0, 0, t, e);
   const x = Math.max(20, Math.min(t, e) * 0.05), v = 8, u = x, g = x, C = t - x * 2, S = e - x * 2;
   r.strokeStyle = h, r.lineWidth = 1, r.setLineDash([4, 3]), r.beginPath(), r.moveTo(u + v, g), r.lineTo(u + C - v, g), r.quadraticCurveTo(u + C, g, u + C, g + v), r.lineTo(u + C, g + S - v), r.quadraticCurveTo(u + C, g + S, u + C - v, g + S), r.lineTo(u + v, g + S), r.quadraticCurveTo(u, g + S, u, g + S - v), r.lineTo(u, g + v), r.quadraticCurveTo(u, g, u + v, g), r.closePath(), r.stroke(), r.setLineDash([]);
   const M = t / 2, T = e / 2;
   r.strokeStyle = d, r.lineWidth = 2, r.lineCap = "round", r.lineJoin = "round";
   const I = 48, E = 36, k = M - I / 2, m = T - 45, y = 5;
-  return r.beginPath(), r.moveTo(k + y, m), r.lineTo(k + I - y, m), r.quadraticCurveTo(k + I, m, k + I, m + y), r.lineTo(k + I, m + E - y), r.quadraticCurveTo(k + I, m + E, k + I - y, m + E), r.lineTo(k + y, m + E), r.quadraticCurveTo(k, m + E, k, m + E - y), r.lineTo(k, m + y), r.quadraticCurveTo(k, m, k + y, m), r.stroke(), r.beginPath(), r.moveTo(k + 8, m + E - 8), r.lineTo(k + 18, m + 12), r.lineTo(k + 26, m + E - 12), r.lineTo(k + 34, m + 14), r.lineTo(k + I - 8, m + E - 8), r.stroke(), r.beginPath(), r.arc(k + I - 12, m + 11, 5, 0, Math.PI * 2), r.stroke(), r.fillStyle = p, r.font = '600 14px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', r.textAlign = "center", r.textBaseline = "middle", r.fillText(i, M, T + 12), a && (r.fillStyle = f, r.font = '400 12px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', r.fillText(a, M, T + 34)), o.toDataURL("image/png");
+  return r.beginPath(), r.moveTo(k + y, m), r.lineTo(k + I - y, m), r.quadraticCurveTo(k + I, m, k + I, m + y), r.lineTo(k + I, m + E - y), r.quadraticCurveTo(k + I, m + E, k + I - y, m + E), r.lineTo(k + y, m + E), r.quadraticCurveTo(k, m + E, k, m + E - y), r.lineTo(k, m + y), r.quadraticCurveTo(k, m, k + y, m), r.stroke(), r.beginPath(), r.moveTo(k + 8, m + E - 8), r.lineTo(k + 18, m + 12), r.lineTo(k + 26, m + E - 12), r.lineTo(k + 34, m + 14), r.lineTo(k + I - 8, m + E - 8), r.stroke(), r.beginPath(), r.arc(k + I - 12, m + 11, 5, 0, Math.PI * 2), r.stroke(), r.fillStyle = p, r.font = '600 14px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', r.textAlign = "center", r.textBaseline = "middle", r.fillText(i, M, T + 12), s && (r.fillStyle = f, r.font = '400 12px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', r.fillText(s, M, T + 34)), o.toDataURL("image/png");
 }
 class Xt {
   constructor() {
@@ -381,13 +381,13 @@ class Xt {
    * @param options - Listener options
    */
   on(t, e, i) {
-    const a = t;
-    this.listeners.has(a) || this.listeners.set(a, /* @__PURE__ */ new Set());
-    const s = {
+    const s = t;
+    this.listeners.has(s) || this.listeners.set(s, /* @__PURE__ */ new Set());
+    const a = {
       handler: e,
       once: (i == null ? void 0 : i.once) ?? !1
     };
-    this.listeners.get(a).add(s);
+    this.listeners.get(s).add(a);
   }
   /**
    * Subscribe to an event once (auto-unsubscribe after first trigger)
@@ -403,14 +403,14 @@ class Xt {
    * @param handler - Event handler function to remove
    */
   off(t, e) {
-    const i = t, a = this.listeners.get(i);
-    if (a) {
-      for (const s of a)
-        if (s.handler === e) {
-          a.delete(s);
+    const i = t, s = this.listeners.get(i);
+    if (s) {
+      for (const a of s)
+        if (a.handler === e) {
+          s.delete(a);
           break;
         }
-      a.size === 0 && this.listeners.delete(i);
+      s.size === 0 && this.listeners.delete(i);
     }
   }
   /**
@@ -419,17 +419,17 @@ class Xt {
    * @param data - Event data
    */
   emit(t, e) {
-    const i = t, a = this.listeners.get(i);
-    if (!a)
+    const i = t, s = this.listeners.get(i);
+    if (!s)
       return;
-    const s = Array.from(a);
-    for (const o of s)
+    const a = Array.from(s);
+    for (const o of a)
       try {
-        o.handler(e), o.once && a.delete(o);
+        o.handler(e), o.once && s.delete(o);
       } catch (r) {
         console.error(`Error in event handler for "${i}":`, r);
       }
-    a.size === 0 && this.listeners.delete(i);
+    s.size === 0 && this.listeners.delete(i);
   }
   /**
    * Check if an event has any listeners
@@ -484,9 +484,9 @@ class Ut {
     if (!e)
       return { ...t };
     const i = { ...t };
-    for (const a of Object.keys(e)) {
-      const s = e[a];
-      s !== void 0 && (i[a] = s);
+    for (const s of Object.keys(e)) {
+      const a = e[s];
+      a !== void 0 && (i[s] = a);
     }
     return i;
   }
@@ -558,10 +558,10 @@ class Ut {
     this.listeners.clear();
   }
 }
-function Gt() {
+function Vt() {
   return `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
 }
-class Vt {
+class Gt {
   /**
    * Create a new HistoryManager instance
    * @param limit - Maximum number of history states (default: 50)
@@ -586,7 +586,7 @@ class Vt {
     this.currentIndex < this.states.length - 1 && (this.states = this.states.slice(0, this.currentIndex + 1));
     const e = {
       ...t,
-      id: Gt(),
+      id: Vt(),
       timestamp: Date.now()
     };
     for (this.states.push(e), this.currentIndex = this.states.length - 1; this.states.length > this.limit; )
@@ -662,8 +662,8 @@ class Vt {
     for (const i of this.listeners)
       try {
         i(t, e);
-      } catch (a) {
-        console.error("Error in history change listener:", a);
+      } catch (s) {
+        console.error("Error in history change listener:", s);
       }
   }
   /**
@@ -811,8 +811,8 @@ class jt {
     for (const i of this.listeners)
       try {
         i(t, e);
-      } catch (a) {
-        console.error("Error in plugin change listener:", a);
+      } catch (s) {
+        console.error("Error in plugin change listener:", s);
       }
   }
   /**
@@ -829,7 +829,7 @@ function ot(n) {
   const t = [];
   return n.ctrl && t.push("ctrl"), n.alt && t.push("alt"), n.shift && t.push("shift"), t.push(n.key.toLowerCase()), t.join("+");
 }
-class Ge {
+class Ve {
   constructor(t = document) {
     c(this, "shortcuts", /* @__PURE__ */ new Map());
     c(this, "groups", /* @__PURE__ */ new Map());
@@ -871,12 +871,12 @@ class Ge {
   register(t, e) {
     const i = ot(t);
     this.shortcuts.has(i) && console.warn(`Keyboard shortcut "${i}" is already registered. Overwriting.`);
-    const a = {
+    const s = {
       ...t,
       enabled: t.enabled !== !1,
       preventDefault: t.preventDefault !== !1
     };
-    return this.shortcuts.set(i, a), e && (this.groups.has(e) || this.groups.set(e, { name: e, shortcuts: /* @__PURE__ */ new Map() }), this.groups.get(e).shortcuts.set(i, a)), () => this.unregister(i);
+    return this.shortcuts.set(i, s), e && (this.groups.has(e) || this.groups.set(e, { name: e, shortcuts: /* @__PURE__ */ new Map() }), this.groups.get(e).shortcuts.set(i, s)), () => this.unregister(i);
   }
   /**
    * Register multiple shortcuts at once
@@ -884,8 +884,8 @@ class Ge {
    * @param group - Optional group name
    */
   registerMultiple(t, e) {
-    const i = t.map((a) => this.register(a, e));
-    return () => i.forEach((a) => a());
+    const i = t.map((s) => this.register(s, e));
+    return () => i.forEach((s) => s());
   }
   /**
    * Unregister a shortcut
@@ -902,8 +902,8 @@ class Ge {
    */
   unregisterGroup(t) {
     const e = this.groups.get(t);
-    e && (e.shortcuts.forEach((i, a) => {
-      this.shortcuts.delete(a);
+    e && (e.shortcuts.forEach((i, s) => {
+      this.shortcuts.delete(s);
     }), this.groups.delete(t));
   }
   /**
@@ -942,8 +942,8 @@ class Ge {
       // Support both Ctrl and Cmd (Mac)
       shift: t.shiftKey,
       alt: t.altKey
-    }), a = this.shortcuts.get(i);
-    a && a.enabled !== !1 && (a.preventDefault !== !1 && t.preventDefault(), a.handler(t));
+    }), s = this.shortcuts.get(i);
+    s && s.enabled !== !1 && (s.preventDefault !== !1 && t.preventDefault(), s.handler(t));
   }
   /**
    * Format shortcut for display (e.g., "Ctrl+Z")
@@ -951,7 +951,7 @@ class Ge {
   static formatShortcut(t) {
     const e = [], i = typeof navigator < "u" && /Mac|iPod|iPhone|iPad/.test(navigator.platform);
     if (t.ctrl && e.push(i ? "⌘" : "Ctrl"), t.alt && e.push(i ? "⌥" : "Alt"), t.shift && e.push(i ? "⇧" : "Shift"), t.key) {
-      const a = {
+      const s = {
         " ": "Space",
         ArrowUp: "↑",
         ArrowDown: "↓",
@@ -961,7 +961,7 @@ class Ge {
         Delete: "Del",
         Backspace: "⌫"
       };
-      e.push(a[t.key] || t.key.toUpperCase());
+      e.push(s[t.key] || t.key.toUpperCase());
     }
     return e.join("+");
   }
@@ -972,7 +972,7 @@ class Ge {
     this.detach(), this.shortcuts.clear(), this.groups.clear();
   }
 }
-function Ve(n) {
+function Ge(n) {
   const t = [];
   return n.undo && t.push({
     key: "z",
@@ -1032,9 +1032,9 @@ function Ve(n) {
     ctrl: !0,
     handler: n.zoomReset,
     description: "Reset Zoom"
-  }), n.selectTool && [null, "pen", "rect", "circle", "arrow", "text", "mosaic", "eraser", "crop"].forEach((i, a) => {
-    a < 10 && t.push({
-      key: String(a),
+  }), n.selectTool && [null, "pen", "rect", "circle", "arrow", "text", "mosaic", "eraser", "crop"].forEach((i, s) => {
+    s < 10 && t.push({
+      key: String(s),
       handler: () => n.selectTool(i),
       description: `Select ${i || "Move"} tool`
     });
@@ -1156,9 +1156,9 @@ class Zt {
     const t = this._container.getBoundingClientRect(), e = t.width, i = t.height;
     if (e === 0 || i === 0)
       return;
-    const { width: a, height: s } = it(this._originalImage), o = this.width, r = this.height, { width: l, height: h } = at(
-      a,
+    const { width: s, height: a } = it(this._originalImage), o = this.width, r = this.height, { width: l, height: h } = st(
       s,
+      a,
       e,
       i
     );
@@ -1178,18 +1178,18 @@ class Zt {
   async loadImage(t) {
     const e = await Bt(t);
     this._originalImage = e;
-    const { width: i, height: a } = it(e);
-    let s = i, o = a;
+    const { width: i, height: s } = it(e);
+    let a = i, o = s;
     if (this._responsive) {
-      const r = this._container.getBoundingClientRect(), l = r.width || i, h = r.height || a, d = at(
+      const r = this._container.getBoundingClientRect(), l = r.width || i, h = r.height || s, d = st(
         i,
-        a,
+        s,
         l,
         h
       );
-      s = d.width, o = d.height;
+      a = d.width, o = d.height;
     }
-    return this.resize(s, o, !1), st(this._ctx, e, 0, 0, s, o), this._originalImageData = this.getImageData(), { width: s, height: o };
+    return this.resize(a, o, !1), at(this._ctx, e, 0, 0, a, o), this._originalImageData = this.getImageData(), { width: a, height: o };
   }
   /**
    * Resize the canvas
@@ -1198,7 +1198,7 @@ class Zt {
    * @param preserveContent - Whether to preserve current content
    */
   resize(t, e, i = !1) {
-    Lt(this._canvas, t, e), this.fillBackground(), i && this._originalImage && st(this._ctx, this._originalImage, 0, 0, t, e);
+    Lt(this._canvas, t, e), this.fillBackground(), i && this._originalImage && at(this._ctx, this._originalImage, 0, 0, t, e);
   }
   /**
    * Get image data from canvas
@@ -1208,8 +1208,8 @@ class Zt {
    * @param height - Height (defaults to canvas height)
    * @returns ImageData
    */
-  getImageData(t = 0, e = 0, i, a) {
-    return _t(this._ctx, t, e, i ?? this.width, a ?? this.height);
+  getImageData(t = 0, e = 0, i, s) {
+    return _t(this._ctx, t, e, i ?? this.width, s ?? this.height);
   }
   /**
    * Put image data to canvas
@@ -3011,28 +3011,28 @@ class Qt {
   }
   /** Create a new shape */
   createShape(t, e) {
-    const i = lt(), a = { id: i, type: t, style: e, selected: !1 };
+    const i = lt(), s = { id: i, type: t, style: e, selected: !1 };
     switch (t) {
       case "pen":
-        this.shapes.push({ ...a, type: "pen", points: [] });
+        this.shapes.push({ ...s, type: "pen", points: [] });
         break;
       case "rect":
-        this.shapes.push({ ...a, type: "rect", x: 0, y: 0, width: 0, height: 0 });
+        this.shapes.push({ ...s, type: "rect", x: 0, y: 0, width: 0, height: 0 });
         break;
       case "circle":
-        this.shapes.push({ ...a, type: "circle", cx: 0, cy: 0, rx: 0, ry: 0 });
+        this.shapes.push({ ...s, type: "circle", cx: 0, cy: 0, rx: 0, ry: 0 });
         break;
       case "arrow":
-        this.shapes.push({ ...a, type: "arrow", start: { x: 0, y: 0 }, end: { x: 0, y: 0 } });
+        this.shapes.push({ ...s, type: "arrow", start: { x: 0, y: 0 }, end: { x: 0, y: 0 } });
         break;
       case "text":
-        this.shapes.push({ ...a, type: "text", text: "", x: 0, y: 0, fontSize: 24, color: e.strokeColor });
+        this.shapes.push({ ...s, type: "text", text: "", x: 0, y: 0, fontSize: 24, color: e.strokeColor });
         break;
       case "line":
-        this.shapes.push({ ...a, type: "line", start: { x: 0, y: 0 }, end: { x: 0, y: 0 } });
+        this.shapes.push({ ...s, type: "line", start: { x: 0, y: 0 }, end: { x: 0, y: 0 } });
         break;
       case "triangle":
-        this.shapes.push({ ...a, type: "triangle", points: [{ x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 }] });
+        this.shapes.push({ ...s, type: "triangle", points: [{ x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 }] });
         break;
     }
     return i;
@@ -3043,7 +3043,7 @@ class Qt {
   }
   /** Update shape data */
   updateShape(t, e) {
-    const i = this.shapes.find((a) => a.id === t);
+    const i = this.shapes.find((s) => s.id === t);
     i && (Object.assign(i, e), this.notifyChange());
   }
   /** Delete shape */
@@ -3069,98 +3069,98 @@ class Qt {
   }
   /** Find shape at point */
   findShapeAtPoint(t, e, i = 5) {
-    for (let a = this.shapes.length - 1; a >= 0; a--) {
-      const s = this.shapes[a];
-      if (this.isPointInShape(s, t, e, i))
-        return s;
+    for (let s = this.shapes.length - 1; s >= 0; s--) {
+      const a = this.shapes[s];
+      if (this.isPointInShape(a, t, e, i))
+        return a;
     }
     return null;
   }
   /** Check if point is inside shape */
-  isPointInShape(t, e, i, a) {
+  isPointInShape(t, e, i, s) {
     switch (t.type) {
       case "rect": {
-        const s = t;
-        return e >= s.x - a && e <= s.x + s.width + a && i >= s.y - a && i <= s.y + s.height + a;
+        const a = t;
+        return e >= a.x - s && e <= a.x + a.width + s && i >= a.y - s && i <= a.y + a.height + s;
       }
       case "circle": {
-        const s = t, o = (e - s.cx) / (s.rx + a), r = (i - s.cy) / (s.ry + a);
+        const a = t, o = (e - a.cx) / (a.rx + s), r = (i - a.cy) / (a.ry + s);
         return o * o + r * r <= 1;
       }
       case "arrow":
       case "line": {
-        const s = t;
-        return this.pointToLineDistance(e, i, s.start.x, s.start.y, s.end.x, s.end.y) <= a + s.style.strokeWidth;
+        const a = t;
+        return this.pointToLineDistance(e, i, a.start.x, a.start.y, a.end.x, a.end.y) <= s + a.style.strokeWidth;
       }
       case "triangle": {
-        const s = t;
+        const a = t;
         for (let o = 0; o < 3; o++) {
-          const r = s.points[o], l = s.points[(o + 1) % 3];
-          if (this.pointToLineDistance(e, i, r.x, r.y, l.x, l.y) <= a + s.style.strokeWidth) return !0;
+          const r = a.points[o], l = a.points[(o + 1) % 3];
+          if (this.pointToLineDistance(e, i, r.x, r.y, l.x, l.y) <= s + a.style.strokeWidth) return !0;
         }
         return !1;
       }
       case "pen": {
-        const s = t;
-        for (let o = 1; o < s.points.length; o++)
-          if (this.pointToLineDistance(e, i, s.points[o - 1].x, s.points[o - 1].y, s.points[o].x, s.points[o].y) <= a + s.style.strokeWidth) return !0;
+        const a = t;
+        for (let o = 1; o < a.points.length; o++)
+          if (this.pointToLineDistance(e, i, a.points[o - 1].x, a.points[o - 1].y, a.points[o].x, a.points[o].y) <= s + a.style.strokeWidth) return !0;
         return !1;
       }
       case "text": {
-        const s = t, o = s.text.length * s.fontSize * 0.6, r = s.fontSize * 1.2;
-        return e >= s.x - a && e <= s.x + o + a && i >= s.y - r - a && i <= s.y + a;
+        const a = t, o = a.text.length * a.fontSize * 0.6, r = a.fontSize * 1.2;
+        return e >= a.x - s && e <= a.x + o + s && i >= a.y - r - s && i <= a.y + s;
       }
     }
     return !1;
   }
   /** Calculate distance from point to line segment */
-  pointToLineDistance(t, e, i, a, s, o) {
-    const r = s - i, l = o - a, h = r * r + l * l;
+  pointToLineDistance(t, e, i, s, a, o) {
+    const r = a - i, l = o - s, h = r * r + l * l;
     if (h === 0)
-      return Math.sqrt((t - i) ** 2 + (e - a) ** 2);
-    let d = ((t - i) * r + (e - a) * l) / h;
+      return Math.sqrt((t - i) ** 2 + (e - s) ** 2);
+    let d = ((t - i) * r + (e - s) * l) / h;
     d = Math.max(0, Math.min(1, d));
-    const p = i + d * r, f = a + d * l;
+    const p = i + d * r, f = s + d * l;
     return Math.sqrt((t - p) ** 2 + (e - f) ** 2);
   }
   /** Move shape by delta */
   moveShape(t, e, i) {
-    const a = this.shapes.find((s) => s.id === t);
-    if (a) {
-      switch (a.type) {
+    const s = this.shapes.find((a) => a.id === t);
+    if (s) {
+      switch (s.type) {
         case "rect": {
-          const s = a;
-          s.x += e, s.y += i;
+          const a = s;
+          a.x += e, a.y += i;
           break;
         }
         case "circle": {
-          const s = a;
-          s.cx += e, s.cy += i;
+          const a = s;
+          a.cx += e, a.cy += i;
           break;
         }
         case "arrow": {
-          const s = a;
-          s.start.x += e, s.start.y += i, s.end.x += e, s.end.y += i;
+          const a = s;
+          a.start.x += e, a.start.y += i, a.end.x += e, a.end.y += i;
           break;
         }
         case "pen": {
-          a.points.forEach((o) => {
+          s.points.forEach((o) => {
             o.x += e, o.y += i;
           });
           break;
         }
         case "text": {
-          const s = a;
-          s.x += e, s.y += i;
+          const a = s;
+          a.x += e, a.y += i;
           break;
         }
         case "line": {
-          const s = a;
-          s.start.x += e, s.start.y += i, s.end.x += e, s.end.y += i;
+          const a = s;
+          a.start.x += e, a.start.y += i, a.end.x += e, a.end.y += i;
           break;
         }
         case "triangle": {
-          a.points.forEach((o) => {
+          s.points.forEach((o) => {
             o.x += e, o.y += i;
           });
           break;
@@ -3212,8 +3212,8 @@ class Qt {
   duplicateShape(t, e = { x: 20, y: 20 }) {
     const i = this.shapes.find((o) => o.id === t);
     if (!i) return null;
-    const a = lt(), s = JSON.parse(JSON.stringify(i));
-    return s.id = a, s.selected = !1, this.offsetShape(s, e.x, e.y), this.shapes.push(s), this.notifyChange(), a;
+    const s = lt(), a = JSON.parse(JSON.stringify(i));
+    return a.id = s, a.selected = !1, this.offsetShape(a, e.x, e.y), this.shapes.push(a), this.notifyChange(), s;
   }
   /** Offset shape position */
   offsetShape(t, e, i) {
@@ -3229,16 +3229,16 @@ class Qt {
         t.start.x += e, t.start.y += i, t.end.x += e, t.end.y += i;
         break;
       case "pen":
-        t.points.forEach((a) => {
-          a.x += e, a.y += i;
+        t.points.forEach((s) => {
+          s.x += e, s.y += i;
         });
         break;
       case "text":
         t.x += e, t.y += i;
         break;
       case "triangle":
-        t.points.forEach((a) => {
-          a.x += e, a.y += i;
+        t.points.forEach((s) => {
+          s.x += e, s.y += i;
         });
         break;
     }
@@ -3276,16 +3276,16 @@ class Qt {
       case "arrow": {
         const i = e;
         t.beginPath(), t.moveTo(i.start.x, i.start.y), t.lineTo(i.end.x, i.end.y), t.stroke();
-        const a = Math.max(10, i.style.strokeWidth * 4), s = Math.atan2(i.end.y - i.start.y, i.end.x - i.start.x);
-        t.beginPath(), t.moveTo(i.end.x, i.end.y), t.lineTo(i.end.x - a * Math.cos(s - Math.PI / 6), i.end.y - a * Math.sin(s - Math.PI / 6)), t.moveTo(i.end.x, i.end.y), t.lineTo(i.end.x - a * Math.cos(s + Math.PI / 6), i.end.y - a * Math.sin(s + Math.PI / 6)), t.stroke();
+        const s = Math.max(10, i.style.strokeWidth * 4), a = Math.atan2(i.end.y - i.start.y, i.end.x - i.start.x);
+        t.beginPath(), t.moveTo(i.end.x, i.end.y), t.lineTo(i.end.x - s * Math.cos(a - Math.PI / 6), i.end.y - s * Math.sin(a - Math.PI / 6)), t.moveTo(i.end.x, i.end.y), t.lineTo(i.end.x - s * Math.cos(a + Math.PI / 6), i.end.y - s * Math.sin(a + Math.PI / 6)), t.stroke();
         break;
       }
       case "pen": {
         const i = e;
         if (i.points.length < 2) break;
         t.beginPath(), t.moveTo(i.points[0].x, i.points[0].y);
-        for (let a = 1; a < i.points.length; a++)
-          t.lineTo(i.points[a].x, i.points[a].y);
+        for (let s = 1; s < i.points.length; s++)
+          t.lineTo(i.points[s].x, i.points[s].y);
         t.stroke();
         break;
       }
@@ -3311,12 +3311,12 @@ class Qt {
   renderSelectionBox(t, e) {
     const i = this.getShapeBounds(e);
     if (!i) return;
-    const a = 4;
+    const s = 4;
     t.strokeStyle = "#667eea", t.lineWidth = 1, t.setLineDash([4, 4]), t.strokeRect(
-      i.x - a,
-      i.y - a,
-      i.width + a * 2,
-      i.height + a * 2
+      i.x - s,
+      i.y - s,
+      i.width + s * 2,
+      i.height + s * 2
     ), t.setLineDash([]);
   }
   /** Get shape bounding box */
@@ -3331,62 +3331,62 @@ class Qt {
         return { x: e.cx - e.rx, y: e.cy - e.ry, width: e.rx * 2, height: e.ry * 2 };
       }
       case "arrow": {
-        const e = t, i = Math.min(e.start.x, e.end.x), a = Math.min(e.start.y, e.end.y), s = Math.max(e.start.x, e.end.x), o = Math.max(e.start.y, e.end.y);
-        return { x: i, y: a, width: s - i, height: o - a };
+        const e = t, i = Math.min(e.start.x, e.end.x), s = Math.min(e.start.y, e.end.y), a = Math.max(e.start.x, e.end.x), o = Math.max(e.start.y, e.end.y);
+        return { x: i, y: s, width: a - i, height: o - s };
       }
       case "pen": {
         const e = t;
         if (e.points.length === 0) return null;
-        let i = e.points[0].x, a = e.points[0].x, s = e.points[0].y, o = e.points[0].y;
+        let i = e.points[0].x, s = e.points[0].x, a = e.points[0].y, o = e.points[0].y;
         for (const r of e.points)
-          i = Math.min(i, r.x), a = Math.max(a, r.x), s = Math.min(s, r.y), o = Math.max(o, r.y);
-        return { x: i, y: s, width: a - i, height: o - s };
+          i = Math.min(i, r.x), s = Math.max(s, r.x), a = Math.min(a, r.y), o = Math.max(o, r.y);
+        return { x: i, y: a, width: s - i, height: o - a };
       }
       case "text": {
-        const e = t, i = e.text.length * e.fontSize * 0.6, a = e.fontSize * 1.2;
-        return { x: e.x, y: e.y - a, width: i, height: a };
+        const e = t, i = e.text.length * e.fontSize * 0.6, s = e.fontSize * 1.2;
+        return { x: e.x, y: e.y - s, width: i, height: s };
       }
       case "line": {
-        const e = t, i = Math.min(e.start.x, e.end.x), a = Math.min(e.start.y, e.end.y), s = Math.max(e.start.x, e.end.x), o = Math.max(e.start.y, e.end.y);
-        return { x: i, y: a, width: s - i || 1, height: o - a || 1 };
+        const e = t, i = Math.min(e.start.x, e.end.x), s = Math.min(e.start.y, e.end.y), a = Math.max(e.start.x, e.end.x), o = Math.max(e.start.y, e.end.y);
+        return { x: i, y: s, width: a - i || 1, height: o - s || 1 };
       }
       case "triangle": {
-        const e = t, i = e.points.map((h) => h.x), a = e.points.map((h) => h.y), s = Math.min(...i), o = Math.min(...a), r = Math.max(...i), l = Math.max(...a);
-        return { x: s, y: o, width: r - s, height: l - o };
+        const e = t, i = e.points.map((h) => h.x), s = e.points.map((h) => h.y), a = Math.min(...i), o = Math.min(...s), r = Math.max(...i), l = Math.max(...s);
+        return { x: a, y: o, width: r - a, height: l - o };
       }
     }
     return null;
   }
   /** Resize shape by scale factor */
-  resizeShape(t, e, i, a, s) {
+  resizeShape(t, e, i, s, a) {
     const o = this.shapes.find((r) => r.id === t);
     if (o) {
       switch (o.type) {
         case "rect": {
-          const r = o, l = a + (r.x - a) * e, h = s + (r.y - s) * i;
+          const r = o, l = s + (r.x - s) * e, h = a + (r.y - a) * i;
           r.x = l, r.y = h, r.width *= e, r.height *= i;
           break;
         }
         case "circle": {
           const r = o;
-          r.cx = a + (r.cx - a) * e, r.cy = s + (r.cy - s) * i, r.rx *= e, r.ry *= i;
+          r.cx = s + (r.cx - s) * e, r.cy = a + (r.cy - a) * i, r.rx *= e, r.ry *= i;
           break;
         }
         case "arrow":
         case "line": {
           const r = o;
-          r.start.x = a + (r.start.x - a) * e, r.start.y = s + (r.start.y - s) * i, r.end.x = a + (r.end.x - a) * e, r.end.y = s + (r.end.y - s) * i;
+          r.start.x = s + (r.start.x - s) * e, r.start.y = a + (r.start.y - a) * i, r.end.x = s + (r.end.x - s) * e, r.end.y = a + (r.end.y - a) * i;
           break;
         }
         case "pen": {
           o.points.forEach((l) => {
-            l.x = a + (l.x - a) * e, l.y = s + (l.y - s) * i;
+            l.x = s + (l.x - s) * e, l.y = a + (l.y - a) * i;
           });
           break;
         }
         case "triangle": {
           o.points.forEach((l) => {
-            l.x = a + (l.x - a) * e, l.y = s + (l.y - s) * i;
+            l.x = s + (l.x - s) * e, l.y = a + (l.y - a) * i;
           });
           break;
         }
@@ -3398,16 +3398,16 @@ class Qt {
   getControlPoints(t) {
     const e = this.getShapeBounds(t);
     if (!e) return [];
-    const { x: i, y: a, width: s, height: o } = e;
+    const { x: i, y: s, width: a, height: o } = e;
     return [
-      { x: i, y: a, type: "nw" },
-      { x: i + s / 2, y: a, type: "n" },
-      { x: i + s, y: a, type: "ne" },
-      { x: i + s, y: a + o / 2, type: "e" },
-      { x: i + s, y: a + o, type: "se" },
-      { x: i + s / 2, y: a + o, type: "s" },
-      { x: i, y: a + o, type: "sw" },
-      { x: i, y: a + o / 2, type: "w" }
+      { x: i, y: s, type: "nw" },
+      { x: i + a / 2, y: s, type: "n" },
+      { x: i + a, y: s, type: "ne" },
+      { x: i + a, y: s + o / 2, type: "e" },
+      { x: i + a, y: s + o, type: "se" },
+      { x: i + a / 2, y: s + o, type: "s" },
+      { x: i, y: s + o, type: "sw" },
+      { x: i, y: s + o / 2, type: "w" }
     ];
   }
 }
@@ -3467,6 +3467,8 @@ class ee {
     // Elements
     c(this, "panels", /* @__PURE__ */ new Map());
     c(this, "buttons", /* @__PURE__ */ new Map());
+    c(this, "groups", /* @__PURE__ */ new Map());
+    c(this, "dividers", []);
     c(this, "zoomText", null);
     // Inline text editing
     c(this, "inlineTextInput", null);
@@ -3489,20 +3491,20 @@ class ee {
       !this.inlineTextInput.contains(e) && !((i = this.textStyleBar) != null && i.contains(e)) && this.confirmInlineText();
     });
     this.editor = t, this.options = { ...te, ...i }, this.shapeManager = new Qt(), this.shapeManager.setOnChange(() => this.renderAll()), mt(), this.wrapper = document.createElement("div"), this.wrapper.className = "ie-editor-wrapper", this.applyTheme(this.options.theme || "dark"), this.options.primaryColor && this.applyPrimaryColor(this.options.primaryColor), this.canvasContainer = document.createElement("div"), this.canvasContainer.className = "ie-canvas-container", this.viewport = document.createElement("div"), this.viewport.className = "ie-canvas-viewport";
-    const a = t.canvas;
-    a.parentElement && a.parentElement.removeChild(a), this.viewport.appendChild(a), this.canvasContainer.appendChild(this.viewport), this.zoomBadge = document.createElement("div"), this.zoomBadge.className = "ie-zoom-badge", this.zoomBadge.textContent = "100%", this.canvasContainer.appendChild(this.zoomBadge), this.wrapper.appendChild(this.canvasContainer), this.toolbar = this.createToolbar(), this.wrapper.appendChild(this.toolbar), e.appendChild(this.wrapper), this.setupEvents(), this.setupEditorEvents(), this.options.autoHide && this.setToolbarVisible(!1);
+    const s = t.canvas;
+    s.parentElement && s.parentElement.removeChild(s), this.viewport.appendChild(s), this.canvasContainer.appendChild(this.viewport), this.zoomBadge = document.createElement("div"), this.zoomBadge.className = "ie-zoom-badge", this.zoomBadge.textContent = "100%", this.canvasContainer.appendChild(this.zoomBadge), this.wrapper.appendChild(this.canvasContainer), this.toolbar = this.createToolbar(), this.wrapper.appendChild(this.toolbar), e.appendChild(this.wrapper), this.setupEvents(), this.setupEditorEvents(), this.options.autoHide && this.setToolbarVisible(!1);
   }
   createToolbar() {
     const t = document.createElement("div");
     t.className = "ie-toolbar", t.style.position = "relative";
     const e = this.options.disabledTools || [], i = this.createGroup();
     i.className = "ie-toolbar-group ie-zoom-group";
-    const a = this.createButton("zoomOut", w.zoomOut, () => this.zoomOut());
-    e.includes("zoomOut") && (a.style.display = "none"), i.appendChild(a), this.zoomText = document.createElement("span"), this.zoomText.className = "ie-zoom-text", this.zoomText.textContent = "100%", i.appendChild(this.zoomText);
-    const s = this.createButton("zoomIn", w.zoomIn, () => this.zoomIn());
-    e.includes("zoomIn") && (s.style.display = "none"), i.appendChild(s);
+    const s = this.createButton("zoomOut", w.zoomOut, () => this.zoomOut());
+    e.includes("zoomOut") && (s.style.display = "none"), i.appendChild(s), this.zoomText = document.createElement("span"), this.zoomText.className = "ie-zoom-text", this.zoomText.textContent = "100%", i.appendChild(this.zoomText);
+    const a = this.createButton("zoomIn", w.zoomIn, () => this.zoomIn());
+    e.includes("zoomIn") && (a.style.display = "none"), i.appendChild(a);
     const o = this.createButton("reset", w.reset, () => this.resetView());
-    e.includes("reset") && (o.style.display = "none"), i.appendChild(o), t.appendChild(i), t.appendChild(this.createDivider());
+    e.includes("reset") && (o.style.display = "none"), i.appendChild(o), this.groups.set("zoom", i), t.appendChild(i), this.dividers.push(this.createDivider()), t.appendChild(this.dividers[this.dividers.length - 1]);
     const r = this.createGroup();
     r.className = "ie-toolbar-group ie-tool-group";
     const l = this.createButton("move", w.move, () => this.selectTool(null), !0);
@@ -3524,29 +3526,29 @@ class ee {
     const g = this.createButton("mosaic", w.mosaic, () => this.selectTool("mosaic"));
     e.includes("mosaic") && (g.style.display = "none"), r.appendChild(g);
     const C = this.createButton("eraser", w.eraser, () => this.selectTool("eraser"));
-    e.includes("eraser") && (C.style.display = "none"), r.appendChild(C), t.appendChild(r);
+    e.includes("eraser") && (C.style.display = "none"), r.appendChild(C), this.groups.set("tool", r), t.appendChild(r);
     const S = this.createGroup();
     S.className = "ie-toolbar-group ie-advanced-group";
     const M = this.createButton("crop", w.crop, () => this.toggleCropTool());
     e.includes("crop") && (M.style.display = "none"), S.appendChild(M);
     const T = this.createButton("filter", w.filter, () => this.toggleFilterPanel());
-    e.includes("filter") && (T.style.display = "none"), S.appendChild(T), t.appendChild(S), t.appendChild(this.createDivider()), this.createDrawPanel(t), this.createMosaicPanel(t), this.createTextPanel(t), this.createEraserPanel(t), this.createFilterPanel(t);
+    e.includes("filter") && (T.style.display = "none"), S.appendChild(T), this.groups.set("advanced", S), t.appendChild(S), this.dividers.push(this.createDivider()), t.appendChild(this.dividers[this.dividers.length - 1]), this.createDrawPanel(t), this.createMosaicPanel(t), this.createTextPanel(t), this.createEraserPanel(t), this.createFilterPanel(t);
     const I = this.createGroup();
     I.className = "ie-toolbar-group ie-history-group";
     const E = this.createButton("undo", w.undo, () => this.editor.undo(), !1, !0);
     e.includes("undo") && (E.style.display = "none"), I.appendChild(E);
     const k = this.createButton("redo", w.redo, () => this.editor.redo(), !1, !0);
-    e.includes("redo") && (k.style.display = "none"), I.appendChild(k), t.appendChild(I), t.appendChild(this.createDivider());
+    e.includes("redo") && (k.style.display = "none"), I.appendChild(k), this.groups.set("history", I), t.appendChild(I), this.dividers.push(this.createDivider()), t.appendChild(this.dividers[this.dividers.length - 1]);
     const m = document.createElement("div");
     m.className = "ie-toolbar-group ie-crop-action-group", m.style.display = "none";
     const y = document.createElement("button");
     y.className = "ie-btn ie-crop-toolbar-btn ie-crop-toolbar-cancel", y.innerHTML = `${w.close}<span>取消</span>`, y.onclick = () => this.toggleCropTool(), m.appendChild(y);
     const z = document.createElement("button");
-    z.className = "ie-btn ie-crop-toolbar-btn ie-crop-toolbar-confirm", z.innerHTML = `${w.check}<span>确认裁剪</span>`, z.onclick = () => this.applyCrop(), m.appendChild(z), t.appendChild(m), this.buttons.set("cropActionGroup", y), t.appendChild(this.createDivider());
+    z.className = "ie-btn ie-crop-toolbar-btn ie-crop-toolbar-confirm", z.innerHTML = `${w.check}<span>确认裁剪</span>`, z.onclick = () => this.applyCrop(), m.appendChild(z), this.groups.set("cropAction", m), t.appendChild(m), this.buttons.set("cropActionGroup", y), this.dividers.push(this.createDivider()), t.appendChild(this.dividers[this.dividers.length - 1]);
     const D = this.createButton("export", w.download, () => this.exportImage());
     D.classList.add("ie-btn-export");
     const B = document.createElement("span");
-    return B.textContent = "导出", D.appendChild(B), e.includes("export") && (D.style.display = "none"), t.appendChild(D), t;
+    return B.textContent = "导出", D.appendChild(B), e.includes("export") && (D.style.display = "none"), t.appendChild(D), this.updateDividerVisibility(e), t;
   }
   createGroup() {
     const t = document.createElement("div");
@@ -3556,15 +3558,15 @@ class ee {
     const t = document.createElement("div");
     return t.className = "ie-toolbar-divider", t;
   }
-  createButton(t, e, i, a = !1, s = !1) {
+  createButton(t, e, i, s = !1, a = !1) {
     const o = document.createElement("button");
-    o.className = "ie-btn" + (a ? " active" : ""), o.innerHTML = e, o.onclick = i;
+    o.className = "ie-btn" + (s ? " active" : ""), o.innerHTML = e, o.onclick = i;
     const r = this.getTooltipInfo(t), l = document.createElement("div");
     return l.className = "ie-tooltip", l.innerHTML = `
       <div class="ie-tooltip-title">${r.title}</div>
       ${r.desc ? `<div class="ie-tooltip-desc">${r.desc}</div>` : ""}
       ${r.shortcut ? `<div class="ie-tooltip-shortcut">${r.shortcut}</div>` : ""}
-    `, o.appendChild(l), s && (o.disabled = !0), this.buttons.set(t, o), o;
+    `, o.appendChild(l), a && (o.disabled = !0), this.buttons.set(t, o), o;
   }
   getTooltipInfo(t) {
     return {
@@ -3590,7 +3592,7 @@ class ee {
   }
   /** Create drawing tools panel (shared by pen, rect, circle, arrow) */
   createDrawPanel(t) {
-    var i, a, s;
+    var i, s, a;
     const e = document.createElement("div");
     e.className = "ie-panel", e.style.display = "none", e.innerHTML = `
       <div class="ie-panel-title">绘图设置</div>
@@ -3611,21 +3613,21 @@ class ee {
       </div>
     `, (i = e.querySelector('[data-action="stroke-dec"]')) == null || i.addEventListener("click", () => {
       this.strokeWidth = Math.max(1, this.strokeWidth - 1), this.updateDrawPanelUI();
-    }), (a = e.querySelector('[data-action="stroke-inc"]')) == null || a.addEventListener("click", () => {
+    }), (s = e.querySelector('[data-action="stroke-inc"]')) == null || s.addEventListener("click", () => {
       this.strokeWidth = Math.min(20, this.strokeWidth + 1), this.updateDrawPanelUI();
-    }), (s = e.querySelector('[data-input="stroke-color"]')) == null || s.addEventListener("input", (o) => {
+    }), (a = e.querySelector('[data-input="stroke-color"]')) == null || a.addEventListener("input", (o) => {
       this.strokeColor = o.target.value, this.updateDrawPanelUI();
     }), t.appendChild(e), this.panels.set("draw", e);
   }
   updateDrawPanelUI() {
     const t = this.panels.get("draw");
     if (!t) return;
-    const e = t.querySelector('[data-value="stroke-width"]'), i = t.querySelector('[data-value="stroke-color"]'), a = t.querySelector('[data-input="stroke-color"]');
-    e && (e.textContent = `${this.strokeWidth}px`), i && (i.textContent = this.strokeColor), a && (a.value = this.strokeColor), this.updateBrushCursorSize();
+    const e = t.querySelector('[data-value="stroke-width"]'), i = t.querySelector('[data-value="stroke-color"]'), s = t.querySelector('[data-input="stroke-color"]');
+    e && (e.textContent = `${this.strokeWidth}px`), i && (i.textContent = this.strokeColor), s && (s.value = this.strokeColor), this.updateBrushCursorSize();
   }
   /** Create mosaic settings panel */
   createMosaicPanel(t) {
-    var i, a;
+    var i, s;
     const e = document.createElement("div");
     e.className = "ie-panel ie-panel-mosaic", e.style.display = "none", e.innerHTML = `
       <div class="ie-panel-title">马赛克设置</div>
@@ -3639,17 +3641,17 @@ class ee {
         <input type="range" class="ie-range-slider" min="3" max="30" value="${this.mosaicSize}" data-slider="mosaic-block">
         <span class="ie-panel-value" data-value="mosaic-block">${this.mosaicSize}</span>
       </div>
-    `, (i = e.querySelector('[data-slider="mosaic-brush"]')) == null || i.addEventListener("input", (s) => {
-      this.strokeWidth = parseInt(s.target.value), this.updateMosaicPanelUI();
-    }), (a = e.querySelector('[data-slider="mosaic-block"]')) == null || a.addEventListener("input", (s) => {
-      this.mosaicSize = parseInt(s.target.value), this.updateMosaicPanelUI();
+    `, (i = e.querySelector('[data-slider="mosaic-brush"]')) == null || i.addEventListener("input", (a) => {
+      this.strokeWidth = parseInt(a.target.value), this.updateMosaicPanelUI();
+    }), (s = e.querySelector('[data-slider="mosaic-block"]')) == null || s.addEventListener("input", (a) => {
+      this.mosaicSize = parseInt(a.target.value), this.updateMosaicPanelUI();
     }), t.appendChild(e), this.panels.set("mosaic", e);
   }
   updateMosaicPanelUI() {
     const t = this.panels.get("mosaic");
     if (!t) return;
-    const e = t.querySelector('[data-value="mosaic-brush"]'), i = t.querySelector('[data-value="mosaic-block"]'), a = t.querySelector('[data-slider="mosaic-brush"]'), s = t.querySelector('[data-slider="mosaic-block"]');
-    e && (e.textContent = String(this.strokeWidth * 3)), i && (i.textContent = String(this.mosaicSize)), a && (a.value = String(this.strokeWidth)), s && (s.value = String(this.mosaicSize)), this.updateBrushCursorSize();
+    const e = t.querySelector('[data-value="mosaic-brush"]'), i = t.querySelector('[data-value="mosaic-block"]'), s = t.querySelector('[data-slider="mosaic-brush"]'), a = t.querySelector('[data-slider="mosaic-block"]');
+    e && (e.textContent = String(this.strokeWidth * 3)), i && (i.textContent = String(this.mosaicSize)), s && (s.value = String(this.strokeWidth)), a && (a.value = String(this.mosaicSize)), this.updateBrushCursorSize();
   }
   createTextPanel(t) {
     const e = document.createElement("div");
@@ -3677,11 +3679,11 @@ class ee {
           <button class="ie-mode-btn ${this.eraserMode === "shape" ? "active" : ""}" data-mode="shape">形状</button>
         </div>
       </div>
-    `, (i = e.querySelector('[data-slider="eraser-size"]')) == null || i.addEventListener("input", (a) => {
-      this.eraserSize = parseInt(a.target.value), this.updateEraserPanelUI();
-    }), e.querySelectorAll("[data-mode]").forEach((a) => {
-      a.addEventListener("click", () => {
-        this.eraserMode = a.getAttribute("data-mode"), this.updateEraserPanelUI();
+    `, (i = e.querySelector('[data-slider="eraser-size"]')) == null || i.addEventListener("input", (s) => {
+      this.eraserSize = parseInt(s.target.value), this.updateEraserPanelUI();
+    }), e.querySelectorAll("[data-mode]").forEach((s) => {
+      s.addEventListener("click", () => {
+        this.eraserMode = s.getAttribute("data-mode"), this.updateEraserPanelUI();
       });
     }), t.appendChild(e), this.panels.set("eraser", e);
   }
@@ -3689,13 +3691,13 @@ class ee {
     const t = this.panels.get("eraser");
     if (!t) return;
     const e = t.querySelector('[data-value="eraser-size"]'), i = t.querySelector('[data-slider="eraser-size"]');
-    e && (e.textContent = String(this.eraserSize)), i && (i.value = String(this.eraserSize)), t.querySelectorAll("[data-mode]").forEach((a) => {
-      a.classList.toggle("active", a.getAttribute("data-mode") === this.eraserMode);
+    e && (e.textContent = String(this.eraserSize)), i && (i.value = String(this.eraserSize)), t.querySelectorAll("[data-mode]").forEach((s) => {
+      s.classList.toggle("active", s.getAttribute("data-mode") === this.eraserMode);
     }), this.updateBrushCursorSize();
   }
   /** Create filter panel */
   createFilterPanel(t) {
-    var i, a;
+    var i, s;
     const e = document.createElement("div");
     e.className = "ie-panel ie-panel-filter", e.style.display = "none", e.innerHTML = `
       <div class="ie-panel-title">滤镜调整</div>
@@ -3733,43 +3735,43 @@ class ee {
         <button class="ie-btn-apply" data-action="apply-filter">应用</button>
         <button class="ie-btn-reset" data-action="reset-filter">重置</button>
       </div>
-    `, e.querySelectorAll("[data-preset]").forEach((s) => {
-      s.addEventListener("click", (o) => {
+    `, e.querySelectorAll("[data-preset]").forEach((a) => {
+      a.addEventListener("click", (o) => {
         const r = o.target.getAttribute("data-preset") || "none";
         this.applyFilterPreset(r), e.querySelectorAll("[data-preset]").forEach((l) => l.classList.remove("active")), o.target.classList.add("active");
       });
-    }), e.querySelectorAll("[data-filter]").forEach((s) => {
-      s.addEventListener("input", (o) => {
+    }), e.querySelectorAll("[data-filter]").forEach((a) => {
+      a.addEventListener("input", (o) => {
         const r = o.target.getAttribute("data-filter"), l = o.target.value, h = e.querySelector(`[data-value="${r}"]`);
         h && (h.textContent = l), this.previewFilter(), e.querySelectorAll("[data-preset]").forEach((d) => d.classList.remove("active"));
       });
     }), (i = e.querySelector('[data-action="apply-filter"]')) == null || i.addEventListener("click", () => {
       this.applyFilter();
-    }), (a = e.querySelector('[data-action="reset-filter"]')) == null || a.addEventListener("click", () => {
+    }), (s = e.querySelector('[data-action="reset-filter"]')) == null || s.addEventListener("click", () => {
       this.resetFilterPanel();
     }), t.appendChild(e), this.panels.set("filter", e);
   }
   getFilterValues() {
-    var e, i, a, s;
+    var e, i, s, a;
     const t = this.panels.get("filter");
     return t ? {
       brightness: parseInt(((e = t.querySelector('[data-filter="brightness"]')) == null ? void 0 : e.value) || "0"),
       contrast: parseInt(((i = t.querySelector('[data-filter="contrast"]')) == null ? void 0 : i.value) || "0"),
-      saturation: parseInt(((a = t.querySelector('[data-filter="saturation"]')) == null ? void 0 : a.value) || "0"),
-      blur: parseInt(((s = t.querySelector('[data-filter="blur"]')) == null ? void 0 : s.value) || "0")
+      saturation: parseInt(((s = t.querySelector('[data-filter="saturation"]')) == null ? void 0 : s.value) || "0"),
+      blur: parseInt(((a = t.querySelector('[data-filter="blur"]')) == null ? void 0 : a.value) || "0")
     } : { brightness: 0, contrast: 0, saturation: 0, blur: 0 };
   }
   previewFilter() {
-    const { brightness: t, contrast: e, saturation: i, blur: a } = this.getFilterValues(), s = this.editor.ctx, o = this.editor.canvas;
-    if (!s || !o || !this.originalImageData) return;
-    s.putImageData(this.originalImageData, 0, 0);
+    const { brightness: t, contrast: e, saturation: i, blur: s } = this.getFilterValues(), a = this.editor.ctx, o = this.editor.canvas;
+    if (!a || !o || !this.originalImageData) return;
+    a.putImageData(this.originalImageData, 0, 0);
     const r = [
       `brightness(${100 + t}%)`,
       `contrast(${100 + e}%)`,
       `saturate(${100 + i}%)`,
-      a > 0 ? `blur(${a}px)` : ""
+      s > 0 ? `blur(${s}px)` : ""
     ].filter(Boolean).join(" ");
-    s.filter = r || "none", s.drawImage(o, 0, 0), s.filter = "none";
+    a.filter = r || "none", a.drawImage(o, 0, 0), a.filter = "none";
   }
   applyFilter() {
     var t, e;
@@ -3778,20 +3780,20 @@ class ee {
   resetFilterPanel() {
     var e, i;
     const t = this.panels.get("filter");
-    t && (t.querySelectorAll("[data-filter]").forEach((a) => {
-      a.value = "0";
-      const s = a.getAttribute("data-filter"), o = t.querySelector(`[data-value="${s}"]`);
+    t && (t.querySelectorAll("[data-filter]").forEach((s) => {
+      s.value = "0";
+      const a = s.getAttribute("data-filter"), o = t.querySelector(`[data-value="${a}"]`);
       o && (o.textContent = "0");
-    }), t.querySelectorAll("[data-preset]").forEach((a) => a.classList.remove("active")), (e = t.querySelector('[data-preset="none"]')) == null || e.classList.add("active"), this.originalImageData && ((i = this.editor.ctx) == null || i.putImageData(this.originalImageData, 0, 0)));
+    }), t.querySelectorAll("[data-preset]").forEach((s) => s.classList.remove("active")), (e = t.querySelector('[data-preset="none"]')) == null || e.classList.add("active"), this.originalImageData && ((i = this.editor.ctx) == null || i.putImageData(this.originalImageData, 0, 0)));
   }
   /** Apply filter preset */
   applyFilterPreset(t) {
     const e = this.panels.get("filter");
     if (!e) return;
-    const i = this.editor.ctx, a = this.editor.canvas;
-    if (!i || !a || !this.originalImageData) return;
+    const i = this.editor.ctx, s = this.editor.canvas;
+    if (!i || !s || !this.originalImageData) return;
     i.putImageData(this.originalImageData, 0, 0);
-    const s = {
+    const a = {
       none: { brightness: 0, contrast: 0, saturation: 0, blur: 0 },
       grayscale: { brightness: 0, contrast: 0, saturation: -100, blur: 0 },
       sepia: { brightness: 0, contrast: 0, saturation: -30, blur: 0, css: "sepia(80%)" },
@@ -3800,7 +3802,7 @@ class ee {
       cool: { brightness: 0, contrast: 10, saturation: -10, blur: 0, css: "hue-rotate(180deg) saturate(50%)" },
       vivid: { brightness: 10, contrast: 30, saturation: 50, blur: 0 },
       vintage: { brightness: -10, contrast: 20, saturation: -20, blur: 0, css: "sepia(40%)" }
-    }, o = s[t] || s.none, r = e.querySelector('[data-filter="brightness"]'), l = e.querySelector('[data-filter="contrast"]'), h = e.querySelector('[data-filter="saturation"]'), d = e.querySelector('[data-filter="blur"]');
+    }, o = a[t] || a.none, r = e.querySelector('[data-filter="brightness"]'), l = e.querySelector('[data-filter="contrast"]'), h = e.querySelector('[data-filter="saturation"]'), d = e.querySelector('[data-filter="blur"]');
     if (r) {
       r.value = String(o.brightness);
       const f = e.querySelector('[data-value="brightness"]');
@@ -3828,7 +3830,7 @@ class ee {
       o.blur > 0 ? `blur(${o.blur}px)` : "",
       o.css || ""
     ].filter(Boolean).join(" ");
-    i.filter = p || "none", i.drawImage(a, 0, 0), i.filter = "none";
+    i.filter = p || "none", i.drawImage(s, 0, 0), i.filter = "none";
   }
   updateTextUI() {
     this.updateTextStyleBar(), this.applyTextStyle();
@@ -3870,8 +3872,8 @@ class ee {
       else if (this.isDraggingShape) {
         const i = this.shapeManager.getSelectedShape();
         if (i) {
-          const a = e.x - this.dragStartPoint.x, s = e.y - this.dragStartPoint.y;
-          this.shapeManager.moveShape(i.id, a, s), this.dragStartPoint = e;
+          const s = e.x - this.dragStartPoint.x, a = e.y - this.dragStartPoint.y;
+          this.shapeManager.moveShape(i.id, s, a), this.dragStartPoint = e;
         }
       } else if (this.isPanning)
         this.translateX += t.clientX - this.lastPanPoint.x, this.translateY += t.clientY - this.lastPanPoint.y, this.lastPanPoint = { x: t.clientX, y: t.clientY }, this.updateTransform();
@@ -3891,12 +3893,12 @@ class ee {
       const e = this.clientToCanvasCoords(t.clientX, t.clientY);
       this.showInlineTextInput(t.clientX, t.clientY, e);
     }), document.addEventListener("keydown", (t) => {
-      var e, i, a, s;
+      var e, i, s, a;
       if (t.key === "Delete" || t.key === "Backspace") {
         if (this.isAddingText || ((e = document.activeElement) == null ? void 0 : e.tagName) === "INPUT" || ((i = document.activeElement) == null ? void 0 : i.tagName) === "TEXTAREA")
           return;
         const o = this.shapeManager.getSelectedShape();
-        o && (t.preventDefault(), this.shapeManager.deleteShape(o.id), (s = (a = this.editor).saveToHistory) == null || s.call(a, "delete shape"));
+        o && (t.preventDefault(), this.shapeManager.deleteShape(o.id), (a = (s = this.editor).saveToHistory) == null || a.call(s, "delete shape"));
       }
     }), this.canvasContainer.addEventListener("touchstart", (t) => {
       if (this.hasRealImage && t.touches.length === 2) {
@@ -3913,10 +3915,10 @@ class ee {
     }, { passive: !1 }), this.canvasContainer.addEventListener("touchmove", (t) => {
       if (this.hasRealImage && t.touches.length === 2 && this.touchStartDistance > 0) {
         t.preventDefault();
-        const e = t.touches[0], i = t.touches[1], s = Math.hypot(
+        const e = t.touches[0], i = t.touches[1], a = Math.hypot(
           i.clientX - e.clientX,
           i.clientY - e.clientY
-        ) / this.touchStartDistance, o = Math.max(0.1, Math.min(5, this.touchStartScale * s)), r = {
+        ) / this.touchStartDistance, o = Math.max(0.1, Math.min(5, this.touchStartScale * a)), r = {
           x: (e.clientX + i.clientX) / 2,
           y: (e.clientY + i.clientY) / 2
         };
@@ -3926,8 +3928,8 @@ class ee {
       t.touches.length < 2 && (this.touchStartDistance = 0, this.isTouchPanning = !1);
     }), document.addEventListener("click", (t) => {
       if (this.activePanel) {
-        const e = t.target, i = e.closest(".ie-panel"), a = e.closest(".ie-btn");
-        !i && !a && this.hideAllPanels();
+        const e = t.target, i = e.closest(".ie-panel"), s = e.closest(".ie-btn");
+        !i && !s && this.hideAllPanels();
       }
     }), this.setupDropZone();
   }
@@ -3954,9 +3956,9 @@ class ee {
       const e = this.canvasContainer.getBoundingClientRect();
       (t.clientX <= e.left || t.clientX >= e.right || t.clientY <= e.top || t.clientY >= e.bottom) && ((i = this.dropZone) == null || i.classList.remove("active"));
     }), this.canvasContainer.addEventListener("drop", (t) => {
-      var i, a, s;
+      var i, s, a;
       t.preventDefault(), t.stopPropagation(), (i = this.dropZone) == null || i.classList.remove("active");
-      const e = (s = (a = t.dataTransfer) == null ? void 0 : a.files) == null ? void 0 : s[0];
+      const e = (a = (s = t.dataTransfer) == null ? void 0 : s.files) == null ? void 0 : a[0];
       e != null && e.type.startsWith("image/") && this.loadImageFile(e);
     });
   }
@@ -3966,9 +3968,9 @@ class ee {
   loadImageFile(t) {
     const e = new FileReader();
     e.onload = (i) => {
-      var s;
-      const a = (s = i.target) == null ? void 0 : s.result;
-      a && this.editor.loadImage(a);
+      var a;
+      const s = (a = i.target) == null ? void 0 : a.result;
+      s && this.editor.loadImage(s);
     }, e.readAsDataURL(t);
   }
   isDrawingTool(t) {
@@ -3984,20 +3986,20 @@ class ee {
     if (this.isShapeTool(this.currentTool)) {
       const i = this.currentTool;
       if (this.currentShapeId = this.shapeManager.createShape(i, e), i === "pen") {
-        const a = this.shapeManager.getShape(this.currentShapeId);
-        a && (a.points = [{ x: t.x, y: t.y }]);
+        const s = this.shapeManager.getShape(this.currentShapeId);
+        s && (s.points = [{ x: t.x, y: t.y }]);
       } else if (i === "rect") {
-        const a = this.shapeManager.getShape(this.currentShapeId);
-        a && (a.x = t.x, a.y = t.y, a.width = 0, a.height = 0);
+        const s = this.shapeManager.getShape(this.currentShapeId);
+        s && (s.x = t.x, s.y = t.y, s.width = 0, s.height = 0);
       } else if (i === "circle") {
-        const a = this.shapeManager.getShape(this.currentShapeId);
-        a && (a.cx = t.x, a.cy = t.y, a.rx = 0, a.ry = 0);
+        const s = this.shapeManager.getShape(this.currentShapeId);
+        s && (s.cx = t.x, s.cy = t.y, s.rx = 0, s.ry = 0);
       } else if (i === "arrow" || i === "line") {
-        const a = this.shapeManager.getShape(this.currentShapeId);
-        a && (a.start = { x: t.x, y: t.y }, a.end = { x: t.x, y: t.y });
+        const s = this.shapeManager.getShape(this.currentShapeId);
+        s && (s.start = { x: t.x, y: t.y }, s.end = { x: t.x, y: t.y });
       } else if (i === "triangle") {
-        const a = this.shapeManager.getShape(this.currentShapeId);
-        a && (a.points = [{ x: t.x, y: t.y }, { x: t.x, y: t.y }, { x: t.x, y: t.y }]);
+        const s = this.shapeManager.getShape(this.currentShapeId);
+        s && (s.points = [{ x: t.x, y: t.y }, { x: t.x, y: t.y }, { x: t.x, y: t.y }]);
       }
     } else this.currentTool === "mosaic" ? this.applyMosaicAt(t.x, t.y) : this.currentTool === "eraser" && this.applyEraserAt(t.x, t.y);
   }
@@ -4028,9 +4030,9 @@ class ee {
             break;
           }
           case "triangle": {
-            const i = e, a = (this.drawStartPoint.x + t.x) / 2;
+            const i = e, s = (this.drawStartPoint.x + t.x) / 2;
             i.points = [
-              { x: a, y: this.drawStartPoint.y },
+              { x: s, y: this.drawStartPoint.y },
               // Top vertex
               { x: this.drawStartPoint.x, y: t.y },
               // Bottom left
@@ -4049,8 +4051,8 @@ class ee {
       if (this.isShapeTool(this.currentTool) && this.currentShapeId) {
         const i = this.shapeManager.getShape(this.currentShapeId);
         if (i) {
-          const a = this.shapeManager.getShapeBounds(i);
-          a && a.width < 3 && a.height < 3 && this.shapeManager.deleteShape(this.currentShapeId);
+          const s = this.shapeManager.getShapeBounds(i);
+          s && s.width < 3 && s.height < 3 && this.shapeManager.deleteShape(this.currentShapeId);
         }
       } else (this.currentTool === "mosaic" || this.currentTool === "eraser") && this.saveOriginalImage();
       this.isDrawing = !1, this.currentShapeId = null, (e = (t = this.editor).saveToHistory) == null || e.call(t, this.currentTool + " draw");
@@ -4058,37 +4060,37 @@ class ee {
   }
   /** Convert client coordinates to canvas coordinates */
   clientToCanvasCoords(t, e) {
-    const i = this.canvasContainer.getBoundingClientRect(), a = this.editor.canvas, s = i.width / 2, o = i.height / 2, r = (t - i.left - s - this.translateX) / this.scale + a.width / 2, l = (e - i.top - o - this.translateY) / this.scale + a.height / 2;
+    const i = this.canvasContainer.getBoundingClientRect(), s = this.editor.canvas, a = i.width / 2, o = i.height / 2, r = (t - i.left - a - this.translateX) / this.scale + s.width / 2, l = (e - i.top - o - this.translateY) / this.scale + s.height / 2;
     return { x: r, y: l };
   }
   // ============ Mosaic Tool Methods ============
   /** Apply mosaic at a point */
   applyMosaicAt(t, e) {
-    const i = this.editor.ctx, a = this.editor.canvas;
-    if (!i || !a) return;
-    const s = i.getImageData(0, 0, a.width, a.height), o = this.strokeWidth * 3;
-    this.applyMosaicCircle(s, t, e, o, this.mosaicSize), i.putImageData(s, 0, 0);
+    const i = this.editor.ctx, s = this.editor.canvas;
+    if (!i || !s) return;
+    const a = i.getImageData(0, 0, s.width, s.height), o = this.strokeWidth * 3;
+    this.applyMosaicCircle(a, t, e, o, this.mosaicSize), i.putImageData(a, 0, 0);
   }
   /** Interpolate mosaic stroke */
-  interpolateMosaic(t, e, i, a) {
-    const s = this.editor.ctx, o = this.editor.canvas;
-    if (!s || !o) return;
-    const r = this.strokeWidth * 3, l = Math.sqrt((i - t) ** 2 + (a - e) ** 2), h = r / 2, d = Math.max(1, Math.ceil(l / h)), p = s.getImageData(0, 0, o.width, o.height);
+  interpolateMosaic(t, e, i, s) {
+    const a = this.editor.ctx, o = this.editor.canvas;
+    if (!a || !o) return;
+    const r = this.strokeWidth * 3, l = Math.sqrt((i - t) ** 2 + (s - e) ** 2), h = r / 2, d = Math.max(1, Math.ceil(l / h)), p = a.getImageData(0, 0, o.width, o.height);
     for (let f = 0; f <= d; f++) {
-      const x = f / d, v = t + (i - t) * x, u = e + (a - e) * x;
+      const x = f / d, v = t + (i - t) * x, u = e + (s - e) * x;
       this.applyMosaicCircle(p, v, u, r, this.mosaicSize);
     }
-    s.putImageData(p, 0, 0);
+    a.putImageData(p, 0, 0);
   }
   /** Apply mosaic effect in a circular region */
-  applyMosaicCircle(t, e, i, a, s) {
-    const { width: o, height: r, data: l } = t, h = Math.max(0, Math.floor(e - a)), d = Math.min(o - 1, Math.ceil(e + a)), p = Math.max(0, Math.floor(i - a)), f = Math.min(r - 1, Math.ceil(i + a));
-    for (let x = p; x <= f; x += s)
-      for (let v = h; v <= d; v += s) {
-        const u = v + s / 2, g = x + s / 2;
-        if (Math.sqrt((u - e) ** 2 + (g - i) ** 2) > a) continue;
+  applyMosaicCircle(t, e, i, s, a) {
+    const { width: o, height: r, data: l } = t, h = Math.max(0, Math.floor(e - s)), d = Math.min(o - 1, Math.ceil(e + s)), p = Math.max(0, Math.floor(i - s)), f = Math.min(r - 1, Math.ceil(i + s));
+    for (let x = p; x <= f; x += a)
+      for (let v = h; v <= d; v += a) {
+        const u = v + a / 2, g = x + a / 2;
+        if (Math.sqrt((u - e) ** 2 + (g - i) ** 2) > s) continue;
         let S = 0, M = 0, T = 0, I = 0;
-        const E = Math.min(v + s, d + 1), k = Math.min(x + s, f + 1);
+        const E = Math.min(v + a, d + 1), k = Math.min(x + a, f + 1);
         for (let m = x; m < k; m++)
           for (let y = v; y < E; y++) {
             const z = (m * o + y) * 4;
@@ -4098,7 +4100,7 @@ class ee {
           S = Math.round(S / I), M = Math.round(M / I), T = Math.round(T / I);
           for (let m = x; m < k; m++)
             for (let y = v; y < E; y++)
-              if (Math.sqrt((y - e) ** 2 + (m - i) ** 2) <= a) {
+              if (Math.sqrt((y - e) ** 2 + (m - i) ** 2) <= s) {
                 const D = (m * o + y) * 4;
                 l[D] = S, l[D + 1] = M, l[D + 2] = T;
               }
@@ -4109,8 +4111,8 @@ class ee {
     this.editor.on("tool-change", ({ tool: t }) => {
       this.currentTool = t || null, this.updateToolButtons(), this.updateCursor();
     }), this.editor.on("history-change", ({ canUndo: t, canRedo: e }) => {
-      const i = this.buttons.get("undo"), a = this.buttons.get("redo");
-      i && (i.disabled = !t), a && (a.disabled = !e);
+      const i = this.buttons.get("undo"), s = this.buttons.get("redo");
+      i && (i.disabled = !t), s && (s.disabled = !e);
     }), this.editor.on("image-loaded", () => {
       setTimeout(() => {
         this.pureImageData || this.savePureImage(), this.saveOriginalImage();
@@ -4144,8 +4146,8 @@ class ee {
   /** Update brush cursor position */
   updateBrushCursorPosition(t, e) {
     if (!this.brushCursor) return;
-    const i = this.canvasContainer.getBoundingClientRect(), a = t - i.left, s = e - i.top;
-    this.brushCursor.style.left = `${a}px`, this.brushCursor.style.top = `${s}px`;
+    const i = this.canvasContainer.getBoundingClientRect(), s = t - i.left, a = e - i.top;
+    this.brushCursor.style.left = `${s}px`, this.brushCursor.style.top = `${a}px`;
   }
   selectTool(t) {
     if (t === this.currentTool) {
@@ -4163,8 +4165,8 @@ class ee {
   /** Show inline text input at click position */
   showInlineTextInput(t, e, i) {
     this.isAddingText = !0, this.inlineTextInput = document.createElement("div"), this.inlineTextInput.className = "ie-inline-text-container";
-    const a = this.canvasContainer.getBoundingClientRect(), s = t - a.left, o = e - a.top;
-    this.inlineTextInput.style.left = `${s}px`, this.inlineTextInput.style.top = `${o}px`;
+    const s = this.canvasContainer.getBoundingClientRect(), a = t - s.left, o = e - s.top;
+    this.inlineTextInput.style.left = `${a}px`, this.inlineTextInput.style.top = `${o}px`;
     const r = document.createElement("div");
     r.className = "ie-inline-text-input", r.contentEditable = "true", r.style.fontSize = `${this.textSize * this.scale}px`, r.style.color = this.textColor, r.setAttribute("data-placeholder", "输入文字..."), this.inlineTextInput.appendChild(r), this.canvasContainer.appendChild(this.inlineTextInput), this.createTextStyleBar(), r.focus(), this.inlineTextInput.__canvasPos = i, r.addEventListener("keydown", (l) => {
       l.key === "Escape" ? this.cancelInlineText() : l.key === "Enter" && !l.shiftKey && (l.preventDefault(), this.confirmInlineText());
@@ -4176,7 +4178,7 @@ class ee {
   }
   /** Create floating text style bar */
   createTextStyleBar() {
-    var e, i, a, s, o, r, l;
+    var e, i, s, a, o, r, l;
     this.textStyleBar && this.textStyleBar.remove(), this.textStyleBar = document.createElement("div"), this.textStyleBar.className = "ie-text-style-bar", this.textStyleBar.innerHTML = `
       <select class="ie-style-select" data-input="font" title="字体">
         <option value="sans-serif">默认</option>
@@ -4207,10 +4209,10 @@ class ee {
       h.stopPropagation(), this.textSize = Math.max(12, this.textSize - 2), this.updateTextUI();
     }), (i = this.textStyleBar.querySelector('[data-action="size-inc"]')) == null || i.addEventListener("click", (h) => {
       h.stopPropagation(), this.textSize = Math.min(72, this.textSize + 2), this.updateTextUI();
-    }), (a = this.textStyleBar.querySelector('[data-action="bold"]')) == null || a.addEventListener("click", (h) => {
+    }), (s = this.textStyleBar.querySelector('[data-action="bold"]')) == null || s.addEventListener("click", (h) => {
       var d;
       h.stopPropagation(), this.textBold = !this.textBold, (d = h.target.closest(".ie-style-btn")) == null || d.classList.toggle("active", this.textBold), this.updateTextUI();
-    }), (s = this.textStyleBar.querySelector('[data-action="italic"]')) == null || s.addEventListener("click", (h) => {
+    }), (a = this.textStyleBar.querySelector('[data-action="italic"]')) == null || a.addEventListener("click", (h) => {
       var d;
       h.stopPropagation(), this.textItalic = !this.textItalic, (d = h.target.closest(".ie-style-btn")) == null || d.classList.toggle("active", this.textItalic), this.updateTextUI();
     }), (o = this.textStyleBar.querySelector('[data-action="underline"]')) == null || o.addEventListener("click", (h) => {
@@ -4226,8 +4228,8 @@ class ee {
   updateTextStyleBarPosition() {
     if (!this.textStyleBar || !this.inlineTextInput) return;
     const t = this.inlineTextInput.getBoundingClientRect(), e = this.canvasContainer.getBoundingClientRect();
-    let i = t.left - e.left, a = t.top - e.top - 40;
-    a < 5 && (a = t.bottom - e.top + 5), i < 5 && (i = 5), this.textStyleBar.style.left = `${i}px`, this.textStyleBar.style.top = `${a}px`;
+    let i = t.left - e.left, s = t.top - e.top - 40;
+    s < 5 && (s = t.bottom - e.top + 5), i < 5 && (i = 5), this.textStyleBar.style.left = `${i}px`, this.textStyleBar.style.top = `${s}px`;
   }
   /** Update text style bar values */
   updateTextStyleBar() {
@@ -4247,9 +4249,9 @@ class ee {
   }
   /** Confirm and add text to canvas */
   confirmInlineText() {
-    var a, s, o;
+    var s, a, o;
     if (!this.inlineTextInput) return;
-    const t = this.inlineTextInput.querySelector(".ie-inline-text-input"), e = ((a = t == null ? void 0 : t.textContent) == null ? void 0 : a.trim()) || "", i = this.inlineTextInput.__canvasPos;
+    const t = this.inlineTextInput.querySelector(".ie-inline-text-input"), e = ((s = t == null ? void 0 : t.textContent) == null ? void 0 : s.trim()) || "", i = this.inlineTextInput.__canvasPos;
     if (document.removeEventListener("pointerdown", this.handleOutsideClick), e && i) {
       const r = this.editor.ctx;
       if (r) {
@@ -4259,7 +4261,7 @@ class ee {
           const d = r.measureText(e);
           r.strokeStyle = this.textColor, r.lineWidth = Math.max(1, this.textSize / 15), r.beginPath(), r.moveTo(i.x, i.y + this.textSize + 2), r.lineTo(i.x + d.width, i.y + this.textSize + 2), r.stroke();
         }
-        r.restore(), this.saveOriginalImage(), (o = (s = this.editor).saveToHistory) == null || o.call(s, "add text");
+        r.restore(), this.saveOriginalImage(), (o = (a = this.editor).saveToHistory) == null || o.call(a, "add text");
       }
     }
     this.inlineTextInput && (this.inlineTextInput.remove(), this.inlineTextInput = null), this.textStyleBar && (this.textStyleBar.remove(), this.textStyleBar = null), this.isAddingText = !1;
@@ -4269,21 +4271,21 @@ class ee {
   toggleCropTool() {
     var e;
     this.isCropActive ? this.hideCropOverlay() : this.showCropOverlay(), this.isCropActive = !this.isCropActive, (e = this.buttons.get("crop")) == null || e.classList.toggle("active", this.isCropActive);
-    const t = this.toolbar.querySelector(".ie-crop-action-group");
-    t && (t.style.display = this.isCropActive ? "flex" : "none");
+    const t = this.groups.get("cropAction");
+    t && (t.style.display = this.isCropActive ? "flex" : "none"), this.updateDividerVisibility(this.options.disabledTools || []);
   }
   /** Show crop overlay */
   showCropOverlay() {
     if (this.cropOverlay) return;
     const t = this.editor.canvas;
     this.cropOverlay = document.createElement("div"), this.cropOverlay.className = "ie-crop-overlay";
-    const e = 0.1, i = t.width * (1 - e * 2), a = t.height * (1 - e * 2), s = t.width * e, o = t.height * e;
+    const e = 0.1, i = t.width * (1 - e * 2), s = t.height * (1 - e * 2), a = t.width * e, o = t.height * e;
     this.cropOverlay.innerHTML = `
       <div class="ie-crop-mask ie-crop-mask-top"></div>
       <div class="ie-crop-mask ie-crop-mask-left"></div>
       <div class="ie-crop-mask ie-crop-mask-right"></div>
       <div class="ie-crop-mask ie-crop-mask-bottom"></div>
-      <div class="ie-crop-box" style="left:${s}px;top:${o}px;width:${i}px;height:${a}px;">
+      <div class="ie-crop-box" style="left:${a}px;top:${o}px;width:${i}px;height:${s}px;">
         <div class="ie-crop-grid">
           <div class="ie-crop-grid-h"></div>
           <div class="ie-crop-grid-h"></div>
@@ -4313,26 +4315,26 @@ class ee {
     var p, f;
     if (!this.cropOverlay) return;
     const t = this.cropOverlay.querySelector(".ie-crop-box");
-    let e = !1, i = !1, a = "", s = 0, o = 0, r = 0, l = 0, h = 0, d = 0;
+    let e = !1, i = !1, s = "", a = 0, o = 0, r = 0, l = 0, h = 0, d = 0;
     t.addEventListener("pointerdown", (x) => {
-      x.target.classList.contains("ie-crop-handle") || (x.stopPropagation(), e = !0, s = x.clientX, o = x.clientY, r = t.offsetLeft, l = t.offsetTop, t.setPointerCapture(x.pointerId));
+      x.target.classList.contains("ie-crop-handle") || (x.stopPropagation(), e = !0, a = x.clientX, o = x.clientY, r = t.offsetLeft, l = t.offsetTop, t.setPointerCapture(x.pointerId));
     }), this.cropOverlay.querySelectorAll(".ie-crop-handle").forEach((x) => {
       x.addEventListener("pointerdown", (v) => {
-        v.stopPropagation(), i = !0, a = v.target.getAttribute("data-handle") || "", s = v.clientX, o = v.clientY, r = t.offsetLeft, l = t.offsetTop, h = t.offsetWidth, d = t.offsetHeight, x.setPointerCapture(v.pointerId);
+        v.stopPropagation(), i = !0, s = v.target.getAttribute("data-handle") || "", a = v.clientX, o = v.clientY, r = t.offsetLeft, l = t.offsetTop, h = t.offsetWidth, d = t.offsetHeight, x.setPointerCapture(v.pointerId);
       });
     }), this.cropOverlay.addEventListener("pointermove", (x) => {
       if (!e && !i) return;
-      const v = (x.clientX - s) / this.scale, u = (x.clientY - o) / this.scale, g = this.editor.canvas;
+      const v = (x.clientX - a) / this.scale, u = (x.clientY - o) / this.scale, g = this.editor.canvas;
       if (e) {
         let C = r + v, S = l + u;
         C = Math.max(0, Math.min(C, g.width - t.offsetWidth)), S = Math.max(0, Math.min(S, g.height - t.offsetHeight)), t.style.left = `${C}px`, t.style.top = `${S}px`;
       } else if (i) {
         let C = r, S = l, M = h, T = d;
-        a.includes("e") && (M = Math.max(50, h + v)), a.includes("w") && (M = Math.max(50, h - v), C = r + v), a.includes("s") && (T = Math.max(50, d + u)), a.includes("n") && (T = Math.max(50, d - u), S = l + u), C < 0 && (M += C, C = 0), S < 0 && (T += S, S = 0), C + M > g.width && (M = g.width - C), S + T > g.height && (T = g.height - S), t.style.left = `${C}px`, t.style.top = `${S}px`, t.style.width = `${M}px`, t.style.height = `${T}px`;
+        s.includes("e") && (M = Math.max(50, h + v)), s.includes("w") && (M = Math.max(50, h - v), C = r + v), s.includes("s") && (T = Math.max(50, d + u)), s.includes("n") && (T = Math.max(50, d - u), S = l + u), C < 0 && (M += C, C = 0), S < 0 && (T += S, S = 0), C + M > g.width && (M = g.width - C), S + T > g.height && (T = g.height - S), t.style.left = `${C}px`, t.style.top = `${S}px`, t.style.width = `${M}px`, t.style.height = `${T}px`;
       }
       this.updateCropMask();
     }), this.cropOverlay.addEventListener("pointerup", () => {
-      e = !1, i = !1, a = "";
+      e = !1, i = !1, s = "";
     }), (p = this.cropOverlay.querySelector('[data-action="cancel"]')) == null || p.addEventListener("click", () => {
       this.toggleCropTool();
     }), (f = this.cropOverlay.querySelector('[data-action="apply"]')) == null || f.addEventListener("click", () => {
@@ -4344,8 +4346,8 @@ class ee {
     if (!this.cropOverlay) return;
     const t = this.cropOverlay.querySelector(".ie-crop-box");
     if (!t) return;
-    const e = this.editor.canvas, i = t.offsetLeft, a = t.offsetTop, s = t.offsetWidth, o = t.offsetHeight, r = this.cropOverlay.querySelector(".ie-crop-mask-top"), l = this.cropOverlay.querySelector(".ie-crop-mask-left"), h = this.cropOverlay.querySelector(".ie-crop-mask-right"), d = this.cropOverlay.querySelector(".ie-crop-mask-bottom");
-    r && (r.style.cssText = `left:0;top:0;width:${e.width}px;height:${a}px;`), l && (l.style.cssText = `left:0;top:${a}px;width:${i}px;height:${o}px;`), h && (h.style.cssText = `left:${i + s}px;top:${a}px;width:${e.width - i - s}px;height:${o}px;`), d && (d.style.cssText = `left:0;top:${a + o}px;width:${e.width}px;height:${e.height - a - o}px;`);
+    const e = this.editor.canvas, i = t.offsetLeft, s = t.offsetTop, a = t.offsetWidth, o = t.offsetHeight, r = this.cropOverlay.querySelector(".ie-crop-mask-top"), l = this.cropOverlay.querySelector(".ie-crop-mask-left"), h = this.cropOverlay.querySelector(".ie-crop-mask-right"), d = this.cropOverlay.querySelector(".ie-crop-mask-bottom");
+    r && (r.style.cssText = `left:0;top:0;width:${e.width}px;height:${s}px;`), l && (l.style.cssText = `left:0;top:${s}px;width:${i}px;height:${o}px;`), h && (h.style.cssText = `left:${i + a}px;top:${s}px;width:${e.width - i - a}px;height:${o}px;`), d && (d.style.cssText = `left:0;top:${s + o}px;width:${e.width}px;height:${e.height - s - o}px;`);
   }
   /** Apply crop to canvas */
   applyCrop() {
@@ -4353,13 +4355,13 @@ class ee {
     if (!this.cropOverlay) return;
     const t = this.cropOverlay.querySelector(".ie-crop-box");
     if (!t) return;
-    const e = t.offsetLeft, i = t.offsetTop, a = t.offsetWidth, s = t.offsetHeight, o = this.editor.ctx, r = this.editor.canvas;
+    const e = t.offsetLeft, i = t.offsetTop, s = t.offsetWidth, a = t.offsetHeight, o = this.editor.ctx, r = this.editor.canvas;
     !o || !r || ((h = (l = this.editor).saveToHistory) == null || h.call(l, "before crop"), this.cropOverlay.style.transition = "opacity 0.25s ease-out", this.cropOverlay.style.opacity = "0", setTimeout(() => {
       var f;
-      const d = o.getImageData(e, i, a, s);
-      r.width = a, r.height = s, o.putImageData(d, 0, 0), this.saveOriginalImage(), this.savePureImage(), this.cropOverlay && (this.cropOverlay.remove(), this.cropOverlay = null), this.isCropActive = !1, (f = this.buttons.get("crop")) == null || f.classList.remove("active");
-      const p = this.toolbar.querySelector(".ie-crop-action-group");
-      p && (p.style.display = "none"), this.viewport.style.transition = "transform 0.3s ease-out", this.resetView(), setTimeout(() => {
+      const d = o.getImageData(e, i, s, a);
+      r.width = s, r.height = a, o.putImageData(d, 0, 0), this.saveOriginalImage(), this.savePureImage(), this.cropOverlay && (this.cropOverlay.remove(), this.cropOverlay = null), this.isCropActive = !1, (f = this.buttons.get("crop")) == null || f.classList.remove("active");
+      const p = this.groups.get("cropAction");
+      p && (p.style.display = "none"), this.updateDividerVisibility(this.options.disabledTools || []), this.viewport.style.transition = "transform 0.3s ease-out", this.resetView(), setTimeout(() => {
         this.viewport.style.transition = "none";
       }, 300);
     }, 250));
@@ -4387,14 +4389,14 @@ class ee {
   }
   /** Restore original image pixels in a circular area */
   restoreOriginalPixels(t, e, i) {
-    const a = this.editor.ctx, s = this.editor.canvas, o = this.pureImageData;
-    if (!a || !s || !o) {
+    const s = this.editor.ctx, a = this.editor.canvas, o = this.pureImageData;
+    if (!s || !a || !o) {
       console.warn("[Eraser] Missing required data, skipping restore");
       return;
     }
-    const r = i * i, l = Math.max(0, Math.floor(t - i)), h = Math.min(s.width - 1, Math.ceil(t + i)), d = Math.max(0, Math.floor(e - i)), p = Math.min(s.height - 1, Math.ceil(e + i)), f = h - l + 1, x = p - d + 1;
+    const r = i * i, l = Math.max(0, Math.floor(t - i)), h = Math.min(a.width - 1, Math.ceil(t + i)), d = Math.max(0, Math.floor(e - i)), p = Math.min(a.height - 1, Math.ceil(e + i)), f = h - l + 1, x = p - d + 1;
     if (f <= 0 || x <= 0) return;
-    const v = a.getImageData(l, d, f, x), u = v.data, g = o.data, C = o.width;
+    const v = s.getImageData(l, d, f, x), u = v.data, g = o.data, C = o.width;
     let S = 0;
     for (let M = d; M <= p; M++)
       for (let T = l; T <= h; T++) {
@@ -4406,21 +4408,21 @@ class ee {
           D >= 1 ? (u[y] = g[m], u[y + 1] = g[m + 1], u[y + 2] = g[m + 2], u[y + 3] = g[m + 3]) : (u[y] = Math.round(u[y] * (1 - D) + g[m] * D), u[y + 1] = Math.round(u[y + 1] * (1 - D) + g[m + 1] * D), u[y + 2] = Math.round(u[y + 2] * (1 - D) + g[m + 2] * D), u[y + 3] = Math.round(u[y + 3] * (1 - D) + g[m + 3] * D));
         }
       }
-    S > 0 && console.log("[Eraser] Restoring", S, "different pixels"), a.putImageData(v, l, d);
+    S > 0 && console.log("[Eraser] Restoring", S, "different pixels"), s.putImageData(v, l, d);
   }
   /** Interpolate eraser stroke */
-  interpolateEraser(t, e, i, a) {
-    const s = Math.sqrt((i - t) ** 2 + (a - e) ** 2), o = Math.max(1, this.eraserSize / 6), r = Math.max(1, Math.ceil(s / o));
+  interpolateEraser(t, e, i, s) {
+    const a = Math.sqrt((i - t) ** 2 + (s - e) ** 2), o = Math.max(1, this.eraserSize / 6), r = Math.max(1, Math.ceil(a / o));
     for (let l = 0; l <= r; l++) {
-      const h = l / r, d = t + (i - t) * h, p = e + (a - e) * h;
+      const h = l / r, d = t + (i - t) * h, p = e + (s - e) * h;
       this.applyEraserAt(d, p);
     }
   }
   // Zoom methods
   setScale(t, e, i) {
     if (t = Math.max(0.1, Math.min(5, t)), e !== void 0 && i !== void 0) {
-      const a = this.canvasContainer.getBoundingClientRect(), s = e - a.left - a.width / 2, o = i - a.top - a.height / 2, r = t - this.scale;
-      this.translateX -= s * r / this.scale, this.translateY -= o * r / this.scale;
+      const s = this.canvasContainer.getBoundingClientRect(), a = e - s.left - s.width / 2, o = i - s.top - s.height / 2, r = t - this.scale;
+      this.translateX -= a * r / this.scale, this.translateY -= o * r / this.scale;
     }
     this.scale = t, this.updateTransform();
   }
@@ -4499,8 +4501,8 @@ class ee {
       // Export button
     ];
     for (const i of e) {
-      const a = this.buttons.get(i);
-      a && (t.includes(i) ? a.style.display = "none" : a.style.display = "");
+      const s = this.buttons.get(i);
+      s && (t.includes(i) ? s.style.display = "none" : s.style.display = "");
     }
     if (this.zoomText) {
       const i = t.includes("zoomIn") && t.includes("zoomOut") && t.includes("reset");
@@ -4510,7 +4512,30 @@ class ee {
       const i = this.panels.get(this.activePanel);
       i && (i.style.display = "none"), this.activePanel = null;
     }
-    this.currentTool && t.includes(this.currentTool) && (t.includes("move") ? this.currentTool = null : this.selectTool(null));
+    this.currentTool && t.includes(this.currentTool) && (t.includes("move") ? this.currentTool = null : this.selectTool(null)), this.updateDividerVisibility(t);
+  }
+  /** Update divider visibility to avoid empty dividers between hidden groups */
+  updateDividerVisibility(t) {
+    const e = {
+      zoom: ["zoomIn", "zoomOut", "reset"],
+      tool: ["move", "pen", "rect", "circle", "arrow", "line", "triangle", "text", "mosaic", "eraser"],
+      advanced: ["crop", "filter"],
+      history: ["undo", "redo"],
+      cropAction: []
+      // Special group, always hidden by default unless crop mode is active
+    }, i = (h) => {
+      if (h === "cropAction") {
+        const p = this.groups.get("cropAction");
+        return p ? p.style.display !== "none" : !1;
+      }
+      const d = e[h];
+      return !d || d.length === 0 ? !1 : d.some((p) => !t.includes(p));
+    }, s = !t.includes("export"), a = i("zoom"), o = i("tool") || i("advanced");
+    this.dividers[0] && (this.dividers[0].style.display = a && o ? "" : "none");
+    const r = i("history");
+    this.dividers[1] && (this.dividers[1].style.display = o && r ? "" : "none");
+    const l = i("cropAction");
+    this.dividers[2] && (this.dividers[2].style.display = r && (l || s) ? "" : "none"), this.dividers[3] && (this.dividers[3].style.display = l && s ? "" : "none");
   }
   /** Get current disabled tools */
   getDisabledTools() {
@@ -4553,17 +4578,17 @@ class ee {
     const t = this.options.theme === "auto" ? window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light" : this.options.theme || "dark";
     let e = this.options.placeholderWidth, i = this.options.placeholderHeight;
     if (!e || !i) {
-      const s = this.canvasContainer.getBoundingClientRect();
-      e = Math.max(400, Math.round(s.width)), i = Math.max(300, Math.round(s.height));
+      const a = this.canvasContainer.getBoundingClientRect();
+      e = Math.max(400, Math.round(a.width)), i = Math.max(300, Math.round(a.height));
     }
-    const a = Yt({
+    const s = Yt({
       width: e,
       height: i,
       text: this.options.placeholderText,
       subText: this.options.placeholderSubText,
       theme: t
     });
-    this.hasRealImage = !1, this.editor.loadImage(a, !1).then(() => {
+    this.hasRealImage = !1, this.editor.loadImage(s, !1).then(() => {
       this.options.autoHide && this.setToolbarVisible(!1);
     });
   }
@@ -4618,18 +4643,18 @@ const Y = class Y {
       deviceType: t.deviceType
     };
     this._configManager = new Ut(i), this._eventManager = new Xt();
-    const a = this._configManager.getConfig();
-    if (this._historyManager = new Vt(a.historyLimit), this._canvas = new Zt(this._container, a), this._pluginManager = new jt(), this._pluginManager.setContext(this.createPluginContext()), this._historyManager.onChange((o, r) => {
+    const s = this._configManager.getConfig();
+    if (this._historyManager = new Gt(s.historyLimit), this._canvas = new Zt(this._container, s), this._pluginManager = new jt(), this._pluginManager.setContext(this.createPluginContext()), this._historyManager.onChange((o, r) => {
       this._eventManager.emit("history-change", { canUndo: o, canRedo: r });
     }), this._pluginManager.onChange((o, r) => {
       this._eventManager.emit("tool-change", { tool: o || "", prevTool: r });
     }), t.plugins)
       for (const o of t.plugins)
         this.use(o);
-    const s = t.toolbar;
-    if (s !== !1) {
+    const a = t.toolbar;
+    if (a !== !1) {
       mt();
-      const o = typeof s == "object" ? s : {};
+      const o = typeof a == "object" ? a : {};
       this._toolbar = new ee(this, this._container, {
         zoom: o.zoom !== !1,
         tools: o.tools !== !1,
@@ -4725,11 +4750,11 @@ const Y = class Y {
     if (this._destroyed)
       throw new Error("Editor is destroyed");
     try {
-      const { width: i, height: a } = await this._canvas.loadImage(t);
-      this.saveState("init", "Initial state"), this._ready = !0, this._eventManager.emit("image-loaded", { width: i, height: a }), this._eventManager.emit("ready", { width: i, height: a }), e && this._toolbar && this._toolbar.onImageLoaded();
+      const { width: i, height: s } = await this._canvas.loadImage(t);
+      this.saveState("init", "Initial state"), this._ready = !0, this._eventManager.emit("image-loaded", { width: i, height: s }), this._eventManager.emit("ready", { width: i, height: s }), e && this._toolbar && this._toolbar.onImageLoaded();
     } catch (i) {
-      const a = i instanceof Error ? i : new Error(String(i));
-      throw this._eventManager.emit("error", { error: a }), a;
+      const s = i instanceof Error ? i : new Error(String(i));
+      throw this._eventManager.emit("error", { error: s }), s;
     }
   }
   /**
@@ -4824,8 +4849,8 @@ const Y = class Y {
       throw new Error("Editor is destroyed");
     const e = await Promise.resolve().then(() => Wt), i = t || {};
     this._eventManager.emit("before-export", { options: i });
-    const a = await e.exportImage(this._canvas.canvas, i);
-    return this._eventManager.emit("after-export", { data: a }), a;
+    const s = await e.exportImage(this._canvas.canvas, i);
+    return this._eventManager.emit("after-export", { data: s }), s;
   }
   /**
    * Subscribe to an event
@@ -5117,8 +5142,8 @@ class J {
   onConfigChange(t) {
   }
 }
-function ht(n, t, e, i, a, s, o) {
-  const r = n.data, l = n.width, h = n.height, d = Math.max(0, Math.floor(t)), p = Math.max(0, Math.floor(e)), f = Math.min(l, Math.ceil(t + i)), x = Math.min(h, Math.ceil(e + a)), v = Math.max(1, Math.floor(s)), u = Math.max(0, Math.min(100, o)) / 100;
+function ht(n, t, e, i, s, a, o) {
+  const r = n.data, l = n.width, h = n.height, d = Math.max(0, Math.floor(t)), p = Math.max(0, Math.floor(e)), f = Math.min(l, Math.ceil(t + i)), x = Math.min(h, Math.ceil(e + s)), v = Math.max(1, Math.floor(a)), u = Math.max(0, Math.min(100, o)) / 100;
   for (let g = p; g < x; g += v)
     for (let C = d; C < f; C += v) {
       const S = Math.min(C + v, f), M = Math.min(g + v, x), T = S - C, I = M - g, E = T * I;
@@ -5138,22 +5163,22 @@ function ht(n, t, e, i, a, s, o) {
     }
   return n;
 }
-function je(n, t, e, i, a) {
+function je(n, t, e, i, s) {
   if (t.length === 0) return n;
-  const s = e / 2;
+  const a = e / 2;
   for (const o of t)
     yt(
       n,
       o.x,
       o.y,
-      s,
+      a,
       i,
-      a
+      s
     );
   return n;
 }
-function yt(n, t, e, i, a, s) {
-  const o = n.data, r = n.width, l = n.height, h = Math.max(0, Math.floor(t - i)), d = Math.max(0, Math.floor(e - i)), p = Math.min(r, Math.ceil(t + i)), f = Math.min(l, Math.ceil(e + i)), x = Math.max(1, Math.floor(a)), v = Math.max(0, Math.min(100, s)) / 100, u = i * i;
+function yt(n, t, e, i, s, a) {
+  const o = n.data, r = n.width, l = n.height, h = Math.max(0, Math.floor(t - i)), d = Math.max(0, Math.floor(e - i)), p = Math.min(r, Math.ceil(t + i)), f = Math.min(l, Math.ceil(e + i)), x = Math.max(1, Math.floor(s)), v = Math.max(0, Math.min(100, a)) / 100, u = i * i;
   for (let g = d; g < f; g += x)
     for (let C = h; C < p; C += x) {
       const S = Math.min(C + x, p), M = Math.min(g + x, f), T = C + x / 2, I = g + x / 2, E = T - t, k = I - e;
@@ -5161,8 +5186,8 @@ function yt(n, t, e, i, a, s) {
       let m = 0, y = 0, z = 0, D = 0, B = 0;
       for (let L = g; L < M; L++)
         for (let O = C; O < S; O++) {
-          const H = O - t, q = L - e;
-          if (H * H + q * q <= u) {
+          const H = O - t, N = L - e;
+          if (H * H + N * N <= u) {
             const R = (L * r + O) * 4;
             m += o[R], y += o[R + 1], z += o[R + 2], D += o[R + 3], B++;
           }
@@ -5171,8 +5196,8 @@ function yt(n, t, e, i, a, s) {
       const X = Math.round(m / B), U = Math.round(y / B), $ = Math.round(z / B), A = Math.round(D / B);
       for (let L = g; L < M; L++)
         for (let O = C; O < S; O++) {
-          const H = O - t, q = L - e;
-          if (H * H + q * q <= u) {
+          const H = O - t, N = L - e;
+          if (H * H + N * N <= u) {
             const R = (L * r + O) * 4;
             o[R] = Math.round(o[R] * (1 - v) + X * v), o[R + 1] = Math.round(o[R + 1] * (1 - v) + U * v), o[R + 2] = Math.round(o[R + 2] * (1 - v) + $ * v), o[R + 3] = Math.round(o[R + 3] * (1 - v) + A * v);
           }
@@ -5180,19 +5205,19 @@ function yt(n, t, e, i, a, s) {
     }
   return n;
 }
-function ie(n, t, e, i, a) {
-  const s = [], o = e - n, r = i - t, l = Math.sqrt(o * o + r * r);
-  if (l < a)
-    return s.push({ x: e, y: i }), s;
-  const h = Math.ceil(l / a);
+function ie(n, t, e, i, s) {
+  const a = [], o = e - n, r = i - t, l = Math.sqrt(o * o + r * r);
+  if (l < s)
+    return a.push({ x: e, y: i }), a;
+  const h = Math.ceil(l / s);
   for (let d = 0; d <= h; d++) {
     const p = d / h;
-    s.push({
+    a.push({
       x: n + o * p,
       y: t + r * p
     });
   }
-  return s;
+  return a;
 }
 class Ze extends J {
   constructor() {
@@ -5283,19 +5308,19 @@ class Ze extends J {
    * Requirements: 3.3 - Touch event support
    */
   setupEventListeners(e) {
-    const i = ft("auto"), a = xt();
+    const i = ft("auto"), s = xt();
     if (i === "mobile") {
-      const s = this.handleTouchStart.bind(this), o = this.handleTouchMove.bind(this), r = this.handleTouchEnd.bind(this);
-      e.addEventListener("touchstart", s, a), e.addEventListener("touchmove", o, a), e.addEventListener("touchend", r), e.addEventListener("touchcancel", r), this.cleanupFunctions.push(
-        () => e.removeEventListener("touchstart", s),
+      const a = this.handleTouchStart.bind(this), o = this.handleTouchMove.bind(this), r = this.handleTouchEnd.bind(this);
+      e.addEventListener("touchstart", a, s), e.addEventListener("touchmove", o, s), e.addEventListener("touchend", r), e.addEventListener("touchcancel", r), this.cleanupFunctions.push(
+        () => e.removeEventListener("touchstart", a),
         () => e.removeEventListener("touchmove", o),
         () => e.removeEventListener("touchend", r),
         () => e.removeEventListener("touchcancel", r)
       );
     } else {
-      const s = this.handleMouseDown.bind(this), o = this.handleMouseMove.bind(this), r = this.handleMouseUp.bind(this);
-      e.addEventListener("mousedown", s), e.addEventListener("mousemove", o), e.addEventListener("mouseup", r), e.addEventListener("mouseleave", r), this.cleanupFunctions.push(
-        () => e.removeEventListener("mousedown", s),
+      const a = this.handleMouseDown.bind(this), o = this.handleMouseMove.bind(this), r = this.handleMouseUp.bind(this);
+      e.addEventListener("mousedown", a), e.addEventListener("mousemove", o), e.addEventListener("mouseup", r), e.addEventListener("mouseleave", r), this.cleanupFunctions.push(
+        () => e.removeEventListener("mousedown", a),
         () => e.removeEventListener("mousemove", o),
         () => e.removeEventListener("mouseup", r),
         () => e.removeEventListener("mouseleave", r)
@@ -5329,8 +5354,8 @@ class Ze extends J {
   handleMouseDown(e) {
     const i = this.getCanvas();
     if (!i) return;
-    const a = F(e, i, "start");
-    this.startDrawing(a.x, a.y);
+    const s = F(e, i, "start");
+    this.startDrawing(s.x, s.y);
   }
   /**
    * Handle mouse move event
@@ -5339,8 +5364,8 @@ class Ze extends J {
     if (!this.drawingState.isDrawing) return;
     const i = this.getCanvas();
     if (!i) return;
-    const a = F(e, i, "move");
-    this.continueDrawing(a.x, a.y);
+    const s = F(e, i, "move");
+    this.continueDrawing(s.x, s.y);
   }
   /**
    * Handle mouse up event
@@ -5356,8 +5381,8 @@ class Ze extends J {
     e.preventDefault();
     const i = this.getCanvas();
     if (!i) return;
-    const a = F(e, i, "start");
-    this.startDrawing(a.x, a.y);
+    const s = F(e, i, "start");
+    this.startDrawing(s.x, s.y);
   }
   /**
    * Handle touch move event
@@ -5367,8 +5392,8 @@ class Ze extends J {
     if (e.preventDefault(), !this.drawingState.isDrawing) return;
     const i = this.getCanvas();
     if (!i) return;
-    const a = F(e, i, "move");
-    this.continueDrawing(a.x, a.y);
+    const s = F(e, i, "move");
+    this.continueDrawing(s.x, s.y);
   }
   /**
    * Handle touch end event
@@ -5381,14 +5406,14 @@ class Ze extends J {
    * Start drawing operation
    */
   startDrawing(e, i) {
-    const a = this.getImageData();
-    a && (this.drawingState = {
+    const s = this.getImageData();
+    s && (this.drawingState = {
       isDrawing: !0,
       startX: e,
       startY: i,
       lastX: e,
       lastY: i,
-      originalImageData: gt(a)
+      originalImageData: gt(s)
     }, this.config.mode === "free" && this.applyMosaicAtPoint(e, i));
   }
   /**
@@ -5397,15 +5422,15 @@ class Ze extends J {
   continueDrawing(e, i) {
     if (this.drawingState.isDrawing)
       if (this.config.mode === "free") {
-        const a = ie(
+        const s = ie(
           this.drawingState.lastX,
           this.drawingState.lastY,
           e,
           i,
           this.config.brushSize / 4
         );
-        for (const s of a)
-          this.applyMosaicAtPoint(s.x, s.y);
+        for (const a of s)
+          this.applyMosaicAtPoint(a.x, a.y);
         this.drawingState.lastX = e, this.drawingState.lastY = i;
       } else
         this.previewRectMosaic(e, i);
@@ -5426,9 +5451,9 @@ class Ze extends J {
    * Requirements: 3.1, 3.5
    */
   applyMosaicAtPoint(e, i) {
-    const a = this.getContext(), s = this.getCanvas();
-    if (!a || !s) return;
-    const o = a.getImageData(0, 0, s.width, s.height);
+    const s = this.getContext(), a = this.getCanvas();
+    if (!s || !a) return;
+    const o = s.getImageData(0, 0, a.width, a.height);
     yt(
       o,
       e,
@@ -5436,17 +5461,17 @@ class Ze extends J {
       this.config.brushSize / 2,
       this.config.blockSize,
       this.config.intensity
-    ), a.putImageData(o, 0, 0);
+    ), s.putImageData(o, 0, 0);
   }
   /**
    * Preview rect mosaic (during drag)
    * Requirements: 3.5
    */
   previewRectMosaic(e, i) {
-    const a = this.getContext(), s = this.getCanvas();
-    if (!a || !s || !this.drawingState.originalImageData) return;
-    a.putImageData(this.drawingState.originalImageData, 0, 0);
-    const o = a.getImageData(0, 0, s.width, s.height), r = Math.min(this.drawingState.startX, e), l = Math.min(this.drawingState.startY, i), h = Math.abs(e - this.drawingState.startX), d = Math.abs(i - this.drawingState.startY);
+    const s = this.getContext(), a = this.getCanvas();
+    if (!s || !a || !this.drawingState.originalImageData) return;
+    s.putImageData(this.drawingState.originalImageData, 0, 0);
+    const o = s.getImageData(0, 0, a.width, a.height), r = Math.min(this.drawingState.startX, e), l = Math.min(this.drawingState.startY, i), h = Math.abs(e - this.drawingState.startX), d = Math.abs(i - this.drawingState.startY);
     ht(
       o,
       r,
@@ -5455,17 +5480,17 @@ class Ze extends J {
       d,
       this.config.blockSize,
       this.config.intensity
-    ), a.putImageData(o, 0, 0), this.drawingState.lastX = e, this.drawingState.lastY = i;
+    ), s.putImageData(o, 0, 0), this.drawingState.lastX = e, this.drawingState.lastY = i;
   }
   /**
    * Apply final rect mosaic
    * Requirements: 3.1, 3.5
    */
-  applyRectMosaic(e, i, a, s) {
+  applyRectMosaic(e, i, s, a) {
     const o = this.getContext(), r = this.getCanvas();
     if (!o || !r || !this.drawingState.originalImageData) return;
     o.putImageData(this.drawingState.originalImageData, 0, 0);
-    const l = o.getImageData(0, 0, r.width, r.height), h = Math.min(e, a), d = Math.min(i, s), p = Math.abs(a - e), f = Math.abs(s - i);
+    const l = o.getImageData(0, 0, r.width, r.height), h = Math.min(e, s), d = Math.min(i, a), p = Math.abs(s - e), f = Math.abs(a - i);
     ht(
       l,
       h,
@@ -5487,10 +5512,10 @@ const bt = {
   align: "left",
   lineHeight: 1.2
 };
-function ae() {
+function se() {
   return `text_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
 }
-class se {
+class ae {
   constructor() {
     /** Map of text layers by ID */
     c(this, "layers", /* @__PURE__ */ new Map());
@@ -5506,15 +5531,15 @@ class se {
    * @param config - Optional text configuration
    * @returns Created text layer
    */
-  createLayer(t, e, i, a) {
-    const s = {
-      id: ae(),
+  createLayer(t, e, i, s) {
+    const a = {
+      id: se(),
       text: t,
       x: e,
       y: i,
-      config: { ...bt, ...a }
+      config: { ...bt, ...s }
     };
-    return this.layers.set(s.id, s), s;
+    return this.layers.set(a.id, a), a;
   }
   /**
    * Get a text layer by ID
@@ -5551,8 +5576,8 @@ class se {
    * @returns Updated layer or undefined
    */
   updatePosition(t, e, i) {
-    const a = this.layers.get(t);
-    return a && (a.x = e, a.y = i), a;
+    const s = this.layers.get(t);
+    return s && (s.x = e, s.y = i), s;
   }
   /**
    * Update layer configuration
@@ -5624,16 +5649,16 @@ function wt(n) {
 function ne(n, t, e) {
   const i = n.font;
   n.font = wt(e);
-  const a = t.split(`
-`), s = e.fontSize * e.lineHeight;
+  const s = t.split(`
+`), a = e.fontSize * e.lineHeight;
   let o = 0;
-  for (const r of a) {
+  for (const r of s) {
     const l = n.measureText(r);
     o = Math.max(o, l.width);
   }
   return n.font = i, {
     width: o,
-    height: a.length * s
+    height: s.length * a
   };
 }
 function St(n, t) {
@@ -5646,30 +5671,30 @@ function St(n, t) {
     height: e.height
   };
 }
-function re(n, t, e, i, a = 5) {
-  const s = St(e, i);
-  return n >= s.x - a && n <= s.x + s.width + a && t >= s.y - a && t <= s.y + s.height + a;
+function re(n, t, e, i, s = 5) {
+  const a = St(e, i);
+  return n >= a.x - s && n <= a.x + a.width + s && t >= a.y - s && t <= a.y + a.height + s;
 }
 function dt(n, t, e, i) {
-  for (let a = e.length - 1; a >= 0; a--)
-    if (re(n, t, e[a], i))
-      return e[a];
+  for (let s = e.length - 1; s >= 0; s--)
+    if (re(n, t, e[s], i))
+      return e[s];
 }
 function oe(n, t, e = !1) {
-  const { text: i, x: a, y: s, config: o } = t;
+  const { text: i, x: s, y: a, config: o } = t;
   n.save(), n.font = wt(o), n.fillStyle = o.color, n.textAlign = o.align, n.textBaseline = "alphabetic";
   const r = i.split(`
 `), l = o.fontSize * o.lineHeight;
   for (let h = 0; h < r.length; h++) {
-    const d = s + h * l;
-    n.fillText(r[h], a, d), o.underline && le(n, r[h], a, d, o);
+    const d = a + h * l;
+    n.fillText(r[h], s, d), o.underline && le(n, r[h], s, d, o);
   }
   e && ce(n, t), n.restore();
 }
-function le(n, t, e, i, a) {
-  const s = n.measureText(t), o = i + a.fontSize * 0.1, r = Math.max(1, a.fontSize / 12);
+function le(n, t, e, i, s) {
+  const a = n.measureText(t), o = i + s.fontSize * 0.1, r = Math.max(1, s.fontSize / 12);
   let l = e;
-  a.align === "center" ? l = e - s.width / 2 : a.align === "right" && (l = e - s.width), n.strokeStyle = a.color, n.lineWidth = r, n.beginPath(), n.moveTo(l, o), n.lineTo(l + s.width, o), n.stroke();
+  s.align === "center" ? l = e - a.width / 2 : s.align === "right" && (l = e - a.width), n.strokeStyle = s.color, n.lineWidth = r, n.beginPath(), n.moveTo(l, o), n.lineTo(l + a.width, o), n.stroke();
 }
 function ce(n, t) {
   const e = St(t, n), i = 4;
@@ -5679,20 +5704,20 @@ function ce(n, t) {
     e.width + i * 2,
     e.height + i * 2
   ), n.setLineDash([]);
-  const a = 6;
+  const s = 6;
   n.fillStyle = "#0066ff";
-  const s = [
+  const a = [
     { x: e.x - i, y: e.y - i },
     { x: e.x + e.width + i, y: e.y - i },
     { x: e.x - i, y: e.y + e.height + i },
     { x: e.x + e.width + i, y: e.y + e.height + i }
   ];
-  for (const o of s)
+  for (const o of a)
     n.fillRect(
-      o.x - a / 2,
-      o.y - a / 2,
-      a,
-      a
+      o.x - s / 2,
+      o.y - s / 2,
+      s,
+      s
     );
 }
 function pt(n, t, e) {
@@ -5706,7 +5731,7 @@ class Ke extends J {
     c(this, "icon", "T");
     c(this, "title", "Text");
     /** Text layer manager */
-    c(this, "layerManager", new se());
+    c(this, "layerManager", new ae());
     /** Base image data (without text layers) */
     c(this, "baseImageData", null);
     /** Drag state */
@@ -5736,10 +5761,10 @@ class Ke extends J {
    * @param y - Y position
    * @returns Created text layer
    */
-  addText(e, i, a) {
+  addText(e, i, s) {
     this.baseImageData || this.saveBaseImage();
-    const s = this.layerManager.createLayer(e, i, a, this.config);
-    return this.layerManager.selectLayer(s.id), this.renderLayers(), this.saveState(), s;
+    const a = this.layerManager.createLayer(e, i, s, this.config);
+    return this.layerManager.selectLayer(a.id), this.renderLayers(), this.saveState(), a;
   }
   /**
    * Update text content of a layer
@@ -5757,8 +5782,8 @@ class Ke extends J {
    * @param x - New X position
    * @param y - New Y position
    */
-  updatePosition(e, i, a) {
-    this.layerManager.updatePosition(e, i, a) && this.renderLayers();
+  updatePosition(e, i, s) {
+    this.layerManager.updatePosition(e, i, s) && this.renderLayers();
   }
   /**
    * Update configuration of a layer
@@ -5832,27 +5857,27 @@ class Ke extends J {
     const e = this.getContext(), i = this.getCanvas();
     if (!e || !i) return;
     this.baseImageData && e.putImageData(this.baseImageData, 0, 0);
-    const a = this.layerManager.getAllLayers(), s = this.layerManager.getSelectedLayerId();
-    pt(e, a, s);
+    const s = this.layerManager.getAllLayers(), a = this.layerManager.getSelectedLayerId();
+    pt(e, s, a);
   }
   /**
    * Set up mouse and touch event listeners
    * Requirements: 4.4 - Touch event support for dragging
    */
   setupEventListeners(e) {
-    const i = ft("auto"), a = xt();
+    const i = ft("auto"), s = xt();
     if (i === "mobile") {
-      const s = this.handleTouchStart.bind(this), o = this.handleTouchMove.bind(this), r = this.handleTouchEnd.bind(this);
-      e.addEventListener("touchstart", s, a), e.addEventListener("touchmove", o, a), e.addEventListener("touchend", r), e.addEventListener("touchcancel", r), this.cleanupFunctions.push(
-        () => e.removeEventListener("touchstart", s),
+      const a = this.handleTouchStart.bind(this), o = this.handleTouchMove.bind(this), r = this.handleTouchEnd.bind(this);
+      e.addEventListener("touchstart", a, s), e.addEventListener("touchmove", o, s), e.addEventListener("touchend", r), e.addEventListener("touchcancel", r), this.cleanupFunctions.push(
+        () => e.removeEventListener("touchstart", a),
         () => e.removeEventListener("touchmove", o),
         () => e.removeEventListener("touchend", r),
         () => e.removeEventListener("touchcancel", r)
       );
     } else {
-      const s = this.handleMouseDown.bind(this), o = this.handleMouseMove.bind(this), r = this.handleMouseUp.bind(this), l = this.handleDoubleClick.bind(this);
-      e.addEventListener("mousedown", s), e.addEventListener("mousemove", o), e.addEventListener("mouseup", r), e.addEventListener("mouseleave", r), e.addEventListener("dblclick", l), this.cleanupFunctions.push(
-        () => e.removeEventListener("mousedown", s),
+      const a = this.handleMouseDown.bind(this), o = this.handleMouseMove.bind(this), r = this.handleMouseUp.bind(this), l = this.handleDoubleClick.bind(this);
+      e.addEventListener("mousedown", a), e.addEventListener("mousemove", o), e.addEventListener("mouseup", r), e.addEventListener("mouseleave", r), e.addEventListener("dblclick", l), this.cleanupFunctions.push(
+        () => e.removeEventListener("mousedown", a),
         () => e.removeEventListener("mousemove", o),
         () => e.removeEventListener("mouseup", r),
         () => e.removeEventListener("mouseleave", r),
@@ -5885,10 +5910,10 @@ class Ke extends J {
    * Handle mouse down event
    */
   handleMouseDown(e) {
-    const i = this.getCanvas(), a = this.getContext();
-    if (!i || !a) return;
-    const s = F(e, i, "start");
-    this.startInteraction(s.x, s.y, a);
+    const i = this.getCanvas(), s = this.getContext();
+    if (!i || !s) return;
+    const a = F(e, i, "start");
+    this.startInteraction(a.x, a.y, s);
   }
   /**
    * Handle mouse move event
@@ -5897,8 +5922,8 @@ class Ke extends J {
     if (!this.dragState.isDragging) return;
     const i = this.getCanvas();
     if (!i) return;
-    const a = F(e, i, "move");
-    this.continueDrag(a.x, a.y);
+    const s = F(e, i, "move");
+    this.continueDrag(s.x, s.y);
   }
   /**
    * Handle mouse up event
@@ -5910,20 +5935,20 @@ class Ke extends J {
    * Handle double click event - add new text
    */
   handleDoubleClick(e) {
-    const i = this.getCanvas(), a = this.getContext();
-    if (!i || !a) return;
-    const s = F(e, i, "start"), o = this.layerManager.getAllLayers();
-    dt(s.x, s.y, o, a) || this.addText("Double click to edit", s.x, s.y);
+    const i = this.getCanvas(), s = this.getContext();
+    if (!i || !s) return;
+    const a = F(e, i, "start"), o = this.layerManager.getAllLayers();
+    dt(a.x, a.y, o, s) || this.addText("Double click to edit", a.x, a.y);
   }
   /**
    * Handle touch start event
    */
   handleTouchStart(e) {
     e.preventDefault();
-    const i = this.getCanvas(), a = this.getContext();
-    if (!i || !a) return;
-    const s = F(e, i, "start");
-    this.startInteraction(s.x, s.y, a);
+    const i = this.getCanvas(), s = this.getContext();
+    if (!i || !s) return;
+    const a = F(e, i, "start");
+    this.startInteraction(a.x, a.y, s);
   }
   /**
    * Handle touch move event
@@ -5932,8 +5957,8 @@ class Ke extends J {
     if (e.preventDefault(), !this.dragState.isDragging) return;
     const i = this.getCanvas();
     if (!i) return;
-    const a = F(e, i, "move");
-    this.continueDrag(a.x, a.y);
+    const s = F(e, i, "move");
+    this.continueDrag(s.x, s.y);
   }
   /**
    * Handle touch end event
@@ -5944,8 +5969,8 @@ class Ke extends J {
   /**
    * Start interaction (select or drag)
    */
-  startInteraction(e, i, a) {
-    const s = this.layerManager.getAllLayers(), o = dt(e, i, s, a);
+  startInteraction(e, i, s) {
+    const a = this.layerManager.getAllLayers(), o = dt(e, i, a, s);
     o ? (this.layerManager.selectLayer(o.id), this.dragState = {
       isDragging: !0,
       layerId: o.id,
@@ -5961,8 +5986,8 @@ class Ke extends J {
    */
   continueDrag(e, i) {
     if (!this.dragState.isDragging || !this.dragState.layerId) return;
-    const a = e - this.dragState.offsetX, s = i - this.dragState.offsetY;
-    this.layerManager.updatePosition(this.dragState.layerId, a, s), this.renderLayers();
+    const s = e - this.dragState.offsetX, a = i - this.dragState.offsetY;
+    this.layerManager.updatePosition(this.dragState.layerId, s, a), this.renderLayers();
   }
   /**
    * End drag operation
@@ -5979,8 +6004,8 @@ class Ke extends J {
     const e = this.getContext(), i = this.getCanvas();
     if (!e || !i) return;
     this.baseImageData && e.putImageData(this.baseImageData, 0, 0);
-    const a = this.layerManager.getAllLayers();
-    pt(e, a, null), this.baseImageData = e.getImageData(0, 0, i.width, i.height), this.layerManager.clearAll();
+    const s = this.layerManager.getAllLayers();
+    pt(e, s, null), this.baseImageData = e.getImageData(0, 0, i.width, i.height), this.layerManager.clearAll();
   }
   /**
    * Update base image (call after external canvas changes)
@@ -5992,17 +6017,17 @@ class Ke extends J {
 function he(n, t) {
   if (t === 0) return;
   const e = n.data, i = t / 100 * 255;
-  for (let a = 0; a < e.length; a += 4)
-    e[a] = V(e[a] + i), e[a + 1] = V(e[a + 1] + i), e[a + 2] = V(e[a + 2] + i);
+  for (let s = 0; s < e.length; s += 4)
+    e[s] = G(e[s] + i), e[s + 1] = G(e[s + 1] + i), e[s + 2] = G(e[s + 2] + i);
 }
-function V(n) {
+function G(n) {
   return Math.max(0, Math.min(255, Math.round(n)));
 }
 function de(n, t) {
   if (t === 0) return;
   const e = n.data, i = 259 * (t + 255) / (255 * (259 - t));
-  for (let a = 0; a < e.length; a += 4)
-    e[a] = j(i * (e[a] - 128) + 128), e[a + 1] = j(i * (e[a + 1] - 128) + 128), e[a + 2] = j(i * (e[a + 2] - 128) + 128);
+  for (let s = 0; s < e.length; s += 4)
+    e[s] = j(i * (e[s] - 128) + 128), e[s + 1] = j(i * (e[s + 1] - 128) + 128), e[s + 2] = j(i * (e[s + 2] - 128) + 128);
 }
 function j(n) {
   return Math.max(0, Math.min(255, Math.round(n)));
@@ -6010,9 +6035,9 @@ function j(n) {
 function pe(n, t) {
   if (t === 0) return;
   const e = n.data, i = 1 + t / 100;
-  for (let a = 0; a < e.length; a += 4) {
-    const s = e[a], o = e[a + 1], r = e[a + 2], l = 0.2126 * s + 0.7152 * o + 0.0722 * r;
-    e[a] = Z(l + (s - l) * i), e[a + 1] = Z(l + (o - l) * i), e[a + 2] = Z(l + (r - l) * i);
+  for (let s = 0; s < e.length; s += 4) {
+    const a = e[s], o = e[s + 1], r = e[s + 2], l = 0.2126 * a + 0.7152 * o + 0.0722 * r;
+    e[s] = Z(l + (a - l) * i), e[s + 1] = Z(l + (o - l) * i), e[s + 2] = Z(l + (r - l) * i);
   }
 }
 function Z(n) {
@@ -6020,39 +6045,39 @@ function Z(n) {
 }
 function ue(n, t) {
   if (t === 0) return;
-  const { width: e, height: i, data: a } = n, s = Math.round(t / 100 * 10);
-  if (s === 0) return;
-  const o = new Uint8ClampedArray(a), r = new Uint8ClampedArray(a.length);
-  ge(o, r, e, i, s), fe(r, a, e, i, s);
+  const { width: e, height: i, data: s } = n, a = Math.round(t / 100 * 10);
+  if (a === 0) return;
+  const o = new Uint8ClampedArray(s), r = new Uint8ClampedArray(s.length);
+  ge(o, r, e, i, a), fe(r, s, e, i, a);
 }
-function ge(n, t, e, i, a) {
-  const s = a * 2 + 1;
+function ge(n, t, e, i, s) {
+  const a = s * 2 + 1;
   for (let o = 0; o < i; o++) {
     let r = 0, l = 0, h = 0, d = 0;
-    for (let p = -a; p <= a; p++) {
+    for (let p = -s; p <= s; p++) {
       const f = Math.max(0, Math.min(e - 1, p)), x = (o * e + f) * 4;
       r += n[x], l += n[x + 1], h += n[x + 2], d += n[x + 3];
     }
     for (let p = 0; p < e; p++) {
       const f = (o * e + p) * 4;
-      t[f] = Math.round(r / s), t[f + 1] = Math.round(l / s), t[f + 2] = Math.round(h / s), t[f + 3] = Math.round(d / s);
-      const x = Math.max(0, p - a), v = Math.min(e - 1, p + a + 1), u = (o * e + x) * 4, g = (o * e + v) * 4;
+      t[f] = Math.round(r / a), t[f + 1] = Math.round(l / a), t[f + 2] = Math.round(h / a), t[f + 3] = Math.round(d / a);
+      const x = Math.max(0, p - s), v = Math.min(e - 1, p + s + 1), u = (o * e + x) * 4, g = (o * e + v) * 4;
       r += n[g] - n[u], l += n[g + 1] - n[u + 1], h += n[g + 2] - n[u + 2], d += n[g + 3] - n[u + 3];
     }
   }
 }
-function fe(n, t, e, i, a) {
-  const s = a * 2 + 1;
+function fe(n, t, e, i, s) {
+  const a = s * 2 + 1;
   for (let o = 0; o < e; o++) {
     let r = 0, l = 0, h = 0, d = 0;
-    for (let p = -a; p <= a; p++) {
+    for (let p = -s; p <= s; p++) {
       const x = (Math.max(0, Math.min(i - 1, p)) * e + o) * 4;
       r += n[x], l += n[x + 1], h += n[x + 2], d += n[x + 3];
     }
     for (let p = 0; p < i; p++) {
       const f = (p * e + o) * 4;
-      t[f] = Math.round(r / s), t[f + 1] = Math.round(l / s), t[f + 2] = Math.round(h / s), t[f + 3] = Math.round(d / s);
-      const x = Math.max(0, p - a), v = Math.min(i - 1, p + a + 1), u = (x * e + o) * 4, g = (v * e + o) * 4;
+      t[f] = Math.round(r / a), t[f + 1] = Math.round(l / a), t[f + 2] = Math.round(h / a), t[f + 3] = Math.round(d / a);
+      const x = Math.max(0, p - s), v = Math.min(i - 1, p + s + 1), u = (x * e + o) * 4, g = (v * e + o) * 4;
       r += n[g] - n[u], l += n[g + 1] - n[u + 1], h += n[g + 2] - n[u + 2], d += n[g + 3] - n[u + 3];
     }
   }
@@ -6060,25 +6085,25 @@ function fe(n, t, e, i, a) {
 function ve(n, t) {
   if (t === 0) return;
   const e = n.data, i = t / 100;
-  for (let a = 0; a < e.length; a += 4) {
-    const s = e[a], o = e[a + 1], r = e[a + 2], l = 0.2126 * s + 0.7152 * o + 0.0722 * r;
-    e[a] = Math.round(s + (l - s) * i), e[a + 1] = Math.round(o + (l - o) * i), e[a + 2] = Math.round(r + (l - r) * i);
+  for (let s = 0; s < e.length; s += 4) {
+    const a = e[s], o = e[s + 1], r = e[s + 2], l = 0.2126 * a + 0.7152 * o + 0.0722 * r;
+    e[s] = Math.round(a + (l - a) * i), e[s + 1] = Math.round(o + (l - o) * i), e[s + 2] = Math.round(r + (l - r) * i);
   }
 }
 function xe(n, t) {
   if (t === 0) return;
   const e = n.data, i = t / 100;
-  for (let a = 0; a < e.length; a += 4) {
-    const s = e[a], o = e[a + 1], r = e[a + 2], l = Math.min(255, 0.393 * s + 0.769 * o + 0.189 * r), h = Math.min(255, 0.349 * s + 0.686 * o + 0.168 * r), d = Math.min(255, 0.272 * s + 0.534 * o + 0.131 * r);
-    e[a] = Math.round(s + (l - s) * i), e[a + 1] = Math.round(o + (h - o) * i), e[a + 2] = Math.round(r + (d - r) * i);
+  for (let s = 0; s < e.length; s += 4) {
+    const a = e[s], o = e[s + 1], r = e[s + 2], l = Math.min(255, 0.393 * a + 0.769 * o + 0.189 * r), h = Math.min(255, 0.349 * a + 0.686 * o + 0.168 * r), d = Math.min(255, 0.272 * a + 0.534 * o + 0.131 * r);
+    e[s] = Math.round(a + (l - a) * i), e[s + 1] = Math.round(o + (h - o) * i), e[s + 2] = Math.round(r + (d - r) * i);
   }
 }
 function me(n, t) {
   if (t === 0) return;
   const e = n.data, i = t / 100;
-  for (let a = 0; a < e.length; a += 4) {
-    const s = e[a], o = e[a + 1], r = e[a + 2], l = 255 - s, h = 255 - o, d = 255 - r;
-    e[a] = Math.round(s + (l - s) * i), e[a + 1] = Math.round(o + (h - o) * i), e[a + 2] = Math.round(r + (d - r) * i);
+  for (let s = 0; s < e.length; s += 4) {
+    const a = e[s], o = e[s + 1], r = e[s + 2], l = 255 - a, h = 255 - o, d = 255 - r;
+    e[s] = Math.round(a + (l - a) * i), e[s + 1] = Math.round(o + (h - o) * i), e[s + 2] = Math.round(r + (d - r) * i);
   }
 }
 const ye = {
@@ -6122,7 +6147,7 @@ class Je extends J {
    */
   storeOriginalImageData() {
     const e = this.getImageData();
-    e && (this.originalImageData = N(e));
+    e && (this.originalImageData = q(e));
   }
   /**
    * Update original image data (call after external changes)
@@ -6201,7 +6226,7 @@ class Je extends J {
    */
   reset() {
     if (this.config = this.getDefaultConfig(), this.originalImageData) {
-      const e = N(this.originalImageData);
+      const e = q(this.originalImageData);
       this.putImageData(e);
     }
   }
@@ -6217,7 +6242,7 @@ class Je extends J {
         throw new Error("No image data available");
       return i;
     }
-    const e = N(this.originalImageData);
+    const e = q(this.originalImageData);
     return this.applyFiltersToImageData(e), e;
   }
   /**
@@ -6227,7 +6252,7 @@ class Je extends J {
   applyAllFilters() {
     if (!this.originalImageData)
       return;
-    const e = N(this.originalImageData);
+    const e = q(this.originalImageData);
     this.applyFiltersToImageData(e), this.putImageData(e);
   }
   /**
@@ -6264,7 +6289,7 @@ class Je extends J {
 function P(n, t, e) {
   return Math.max(t, Math.min(e, n));
 }
-function N(n) {
+function q(n) {
   const t = new Uint8ClampedArray(n.data);
   if (typeof ImageData < "u")
     try {
@@ -6571,8 +6596,8 @@ class ut {
    */
   t(t, e) {
     let i = this.messages[t] || this.fallbackMessages[t] || t;
-    return e && Object.entries(e).forEach(([a, s]) => {
-      i = i.replace(new RegExp(`\\{${a}\\}`, "g"), String(s));
+    return e && Object.entries(e).forEach(([s, a]) => {
+      i = i.replace(new RegExp(`\\{${s}\\}`, "g"), String(a));
     }), i;
   }
   /**
@@ -6744,8 +6769,8 @@ class ti {
       <div class="ie-crop-grid-v"></div>
       <div class="ie-crop-grid-v"></div>
     `, this.cropBox.appendChild(t), ["nw", "n", "ne", "e", "se", "s", "sw", "w"].forEach((i) => {
-      const a = document.createElement("div");
-      a.className = `ie-crop-handle ie-crop-handle-${i}`, a.dataset.handle = i, this.cropBox.appendChild(a);
+      const s = document.createElement("div");
+      s.className = `ie-crop-handle ie-crop-handle-${i}`, s.dataset.handle = i, this.cropBox.appendChild(s);
     }), this.overlay.appendChild(this.cropBox), this.controlPanel = this.createControlPanel(), this.overlay.appendChild(this.controlPanel), this.container.appendChild(this.overlay);
   }
   /**
@@ -6754,7 +6779,7 @@ class ti {
   createControlPanel() {
     const t = document.createElement("div");
     t.className = "ie-crop-panel";
-    const e = (s) => this.i18n.t(s), i = document.createElement("div");
+    const e = (a) => this.i18n.t(a), i = document.createElement("div");
     if (i.className = "ie-crop-group", i.innerHTML = `
       <span class="ie-crop-label">${e("crop.ratio")}</span>
       <div class="ie-crop-buttons ie-crop-ratio-buttons">
@@ -6765,8 +6790,8 @@ class ti {
         <button class="ie-crop-btn ${this.currentRatio === "3:2" ? "active" : ""}" data-ratio="3:2">3:2</button>
       </div>
     `, t.appendChild(i), this.options.enableRotation || this.options.enableFlip) {
-      const s = document.createElement("div");
-      s.className = "ie-crop-group", s.innerHTML = `
+      const a = document.createElement("div");
+      a.className = "ie-crop-group", a.innerHTML = `
         <span class="ie-crop-label">${e("crop.rotate")}</span>
         <div class="ie-crop-buttons">
           ${this.options.enableRotation ? `
@@ -6778,14 +6803,14 @@ class ti {
             <button class="ie-crop-btn ie-crop-btn-icon" data-action="flip-v" title="${e("crop.flipV")}">${w.flipV}</button>
           ` : ""}
         </div>
-      `, t.appendChild(s);
+      `, t.appendChild(a);
     }
-    const a = document.createElement("div");
-    return a.className = "ie-crop-group ie-crop-actions", a.innerHTML = `
+    const s = document.createElement("div");
+    return s.className = "ie-crop-group ie-crop-actions", s.innerHTML = `
       <button class="ie-crop-btn ie-crop-btn-cancel" data-action="cancel">${e("crop.cancel")}</button>
       <button class="ie-crop-btn ie-crop-btn-apply" data-action="apply">${w.check} ${e("crop.apply")}</button>
-    `, t.appendChild(a), t.addEventListener("click", (s) => {
-      const r = s.target.closest("[data-ratio], [data-action]");
+    `, t.appendChild(s), t.addEventListener("click", (a) => {
+      const r = a.target.closest("[data-ratio], [data-action]");
       if (!r) return;
       const l = r.dataset.ratio, h = r.dataset.action;
       if (l)
@@ -6817,12 +6842,12 @@ class ti {
    * Initialize crop rect to cover most of image
    */
   initCropRect() {
-    const t = this.canvas.getBoundingClientRect(), e = this.container.getBoundingClientRect(), i = t.left - e.left, a = t.top - e.top, s = 0.1;
+    const t = this.canvas.getBoundingClientRect(), e = this.container.getBoundingClientRect(), i = t.left - e.left, s = t.top - e.top, a = 0.1;
     this.cropRect = {
-      x: i + t.width * s,
-      y: a + t.height * s,
-      width: t.width * (1 - 2 * s),
-      height: t.height * (1 - 2 * s)
+      x: i + t.width * a,
+      y: s + t.height * a,
+      width: t.width * (1 - 2 * a),
+      height: t.height * (1 - 2 * a)
     }, this.applyRatioConstraint();
   }
   /**
@@ -6830,9 +6855,9 @@ class ti {
    */
   applyRatioConstraint() {
     if (this.currentRatio === "free") return;
-    const [t, e] = this.currentRatio.split(":").map(Number), i = t / e, a = this.cropRect.x + this.cropRect.width / 2, s = this.cropRect.y + this.cropRect.height / 2;
+    const [t, e] = this.currentRatio.split(":").map(Number), i = t / e, s = this.cropRect.x + this.cropRect.width / 2, a = this.cropRect.y + this.cropRect.height / 2;
     let o = this.cropRect.width, r = this.cropRect.height;
-    o / r > i ? o = r * i : r = o / i, this.cropRect.width = o, this.cropRect.height = r, this.cropRect.x = a - o / 2, this.cropRect.y = s - r / 2;
+    o / r > i ? o = r * i : r = o / i, this.cropRect.width = o, this.cropRect.height = r, this.cropRect.x = s - o / 2, this.cropRect.y = a - r / 2;
   }
   /**
    * Update crop box position/size
@@ -6845,8 +6870,8 @@ class ti {
    */
   updateOverlayMask() {
     if (!this.overlay) return;
-    const { x: t, y: e, width: i, height: a } = this.cropRect;
-    this.overlay.style.setProperty("--crop-x", `${t}px`), this.overlay.style.setProperty("--crop-y", `${e}px`), this.overlay.style.setProperty("--crop-w", `${i}px`), this.overlay.style.setProperty("--crop-h", `${a}px`);
+    const { x: t, y: e, width: i, height: s } = this.cropRect;
+    this.overlay.style.setProperty("--crop-x", `${t}px`), this.overlay.style.setProperty("--crop-y", `${e}px`), this.overlay.style.setProperty("--crop-w", `${i}px`), this.overlay.style.setProperty("--crop-h", `${s}px`);
   }
   /**
    * Update ratio buttons active state
@@ -6877,35 +6902,35 @@ class ti {
    */
   resizeCropBox(t, e) {
     if (!this.activeHandle) return;
-    const { x: i, y: a, width: s, height: o } = this.cropStart, r = this.options.minSize;
-    let l = i, h = a, d = s, p = o;
+    const { x: i, y: s, width: a, height: o } = this.cropStart, r = this.options.minSize;
+    let l = i, h = s, d = a, p = o;
     switch (this.activeHandle) {
       case "nw":
-        l = i + t, h = a + e, d = s - t, p = o - e;
+        l = i + t, h = s + e, d = a - t, p = o - e;
         break;
       case "n":
-        h = a + e, p = o - e;
+        h = s + e, p = o - e;
         break;
       case "ne":
-        h = a + e, d = s + t, p = o - e;
+        h = s + e, d = a + t, p = o - e;
         break;
       case "e":
-        d = s + t;
+        d = a + t;
         break;
       case "se":
-        d = s + t, p = o + e;
+        d = a + t, p = o + e;
         break;
       case "s":
         p = o + e;
         break;
       case "sw":
-        l = i + t, d = s - t, p = o + e;
+        l = i + t, d = a - t, p = o + e;
         break;
       case "w":
-        l = i + t, d = s - t;
+        l = i + t, d = a - t;
         break;
     }
-    if (d < r && (this.activeHandle.includes("w") && (l = i + s - r), d = r), p < r && (this.activeHandle.includes("n") && (h = a + o - r), p = r), this.currentRatio !== "free") {
+    if (d < r && (this.activeHandle.includes("w") && (l = i + a - r), d = r), p < r && (this.activeHandle.includes("n") && (h = s + o - r), p = r), this.currentRatio !== "free") {
       const [f, x] = this.currentRatio.split(":").map(Number), v = f / x;
       ["n", "s"].includes(this.activeHandle) ? d = p * v : ["e", "w"].includes(this.activeHandle) ? p = d / v : d / p > v ? d = p * v : p = d / v;
     }
@@ -6915,18 +6940,18 @@ class ti {
    * Constrain crop rect to container bounds
    */
   constrainToContainer() {
-    const t = this.canvas.getBoundingClientRect(), e = this.container.getBoundingClientRect(), i = t.left - e.left, a = t.top - e.top, s = i + t.width, o = a + t.height;
-    this.cropRect.x = Math.max(i, Math.min(s - this.cropRect.width, this.cropRect.x)), this.cropRect.y = Math.max(a, Math.min(o - this.cropRect.height, this.cropRect.y)), this.cropRect.width = Math.min(this.cropRect.width, s - this.cropRect.x), this.cropRect.height = Math.min(this.cropRect.height, o - this.cropRect.y);
+    const t = this.canvas.getBoundingClientRect(), e = this.container.getBoundingClientRect(), i = t.left - e.left, s = t.top - e.top, a = i + t.width, o = s + t.height;
+    this.cropRect.x = Math.max(i, Math.min(a - this.cropRect.width, this.cropRect.x)), this.cropRect.y = Math.max(s, Math.min(o - this.cropRect.height, this.cropRect.y)), this.cropRect.width = Math.min(this.cropRect.width, a - this.cropRect.x), this.cropRect.height = Math.min(this.cropRect.height, o - this.cropRect.y);
   }
   /**
    * Convert screen rect to canvas coordinates
    */
   toCanvasCoords() {
-    const t = this.canvas.getBoundingClientRect(), e = this.container.getBoundingClientRect(), i = t.left - e.left, a = t.top - e.top, s = this.canvas.width / t.width, o = this.canvas.height / t.height;
+    const t = this.canvas.getBoundingClientRect(), e = this.container.getBoundingClientRect(), i = t.left - e.left, s = t.top - e.top, a = this.canvas.width / t.width, o = this.canvas.height / t.height;
     return {
-      x: (this.cropRect.x - i) * s,
-      y: (this.cropRect.y - a) * o,
-      width: this.cropRect.width * s,
+      x: (this.cropRect.x - i) * a,
+      y: (this.cropRect.y - s) * o,
+      width: this.cropRect.width * a,
       height: this.cropRect.height * o
     };
   }
@@ -6962,15 +6987,15 @@ class ti {
     this.hide(), this.onApplyCallback = null, this.onCancelCallback = null;
   }
 }
-function ei(n, t, e, i, a) {
-  const s = n.getContext("2d");
-  if (!s) return n;
+function ei(n, t, e, i, s) {
+  const a = n.getContext("2d");
+  if (!a) return n;
   let o = t.width, r = t.height;
   (e === 90 || e === 270) && ([o, r] = [r, o]);
   const l = document.createElement("canvas");
   l.width = o, l.height = r;
   const h = l.getContext("2d");
-  h.save(), h.translate(o / 2, r / 2), e && h.rotate(e * Math.PI / 180), i && h.scale(-1, 1), a && h.scale(1, -1);
+  h.save(), h.translate(o / 2, r / 2), e && h.rotate(e * Math.PI / 180), i && h.scale(-1, 1), s && h.scale(1, -1);
   let d = t.width, p = t.height;
   return (e === 90 || e === 270) && ([d, p] = [p, d]), h.drawImage(
     n,
@@ -6982,7 +7007,7 @@ function ei(n, t, e, i, a) {
     -p / 2,
     d,
     p
-  ), h.restore(), n.width = o, n.height = r, s.drawImage(l, 0, 0), n;
+  ), h.restore(), n.width = o, n.height = r, a.drawImage(l, 0, 0), n;
 }
 class ii {
   constructor(t) {
@@ -7032,8 +7057,8 @@ class ii {
           ${e.icon ? `<span class="ie-context-menu-icon">${e.icon}</span>` : ""}
           <span class="ie-context-menu-label">${e.label}</span>
           ${e.shortcut ? `<span class="ie-context-menu-shortcut">${e.shortcut}</span>` : ""}
-        `, !e.disabled && e.action && i.addEventListener("click", (a) => {
-          a.stopPropagation(), e.action(), this.hide();
+        `, !e.disabled && e.action && i.addEventListener("click", (s) => {
+          s.stopPropagation(), e.action(), this.hide();
         }), t.appendChild(i);
       }
     }), t;
@@ -7043,8 +7068,8 @@ class ii {
    */
   positionMenu(t, e) {
     if (!this.menu) return;
-    const i = this.menu.getBoundingClientRect(), a = window.innerWidth, s = window.innerHeight;
-    t + i.width > a && (t = a - i.width - 5), e + i.height > s && (e = s - i.height - 5), this.menu.style.left = `${Math.max(5, t)}px`, this.menu.style.top = `${Math.max(5, e)}px`;
+    const i = this.menu.getBoundingClientRect(), s = window.innerWidth, a = window.innerHeight;
+    t + i.width > s && (t = s - i.width - 5), e + i.height > a && (e = a - i.height - 5), this.menu.style.left = `${Math.max(5, t)}px`, this.menu.style.top = `${Math.max(5, e)}px`;
   }
   /**
    * Handle click outside menu
@@ -7059,8 +7084,8 @@ class ii {
     this.hide(), this.items = [];
   }
 }
-function ai(n, t) {
-  const e = (t == null ? void 0 : t.t.bind(t)) || ((a) => a), i = [];
+function si(n, t) {
+  const e = (t == null ? void 0 : t.t.bind(t)) || ((s) => s), i = [];
   return n.copy && i.push({
     id: "copy",
     label: e("context.copy"),
@@ -7105,7 +7130,7 @@ function ai(n, t) {
     action: n.sendToBack
   }), i;
 }
-class si {
+class ai {
   constructor(t) {
     c(this, "overlay", null);
     c(this, "dialog", null);
@@ -7219,11 +7244,11 @@ class si {
    * Setup event listeners
    */
   setupEvents() {
-    var a, s, o, r, l, h, d;
+    var s, a, o, r, l, h, d;
     if (!this.dialog) return;
-    (a = this.dialog.querySelector('[data-action="close"]')) == null || a.addEventListener("click", () => {
+    (s = this.dialog.querySelector('[data-action="close"]')) == null || s.addEventListener("click", () => {
       this.cancel();
-    }), (s = this.dialog.querySelector('[data-action="cancel"]')) == null || s.addEventListener("click", () => {
+    }), (a = this.dialog.querySelector('[data-action="cancel"]')) == null || a.addEventListener("click", () => {
       this.cancel();
     }), (o = this.dialog.querySelector('[data-action="export"]')) == null || o.addEventListener("click", () => {
       this.confirm();
@@ -7259,11 +7284,11 @@ class si {
    * Set export format
    */
   setFormat(t) {
-    var i, a;
-    this.format = t, (i = this.dialog) == null || i.querySelectorAll("[data-format]").forEach((s) => {
-      s.classList.toggle("active", s.getAttribute("data-format") === t);
+    var i, s;
+    this.format = t, (i = this.dialog) == null || i.querySelectorAll("[data-format]").forEach((a) => {
+      a.classList.toggle("active", a.getAttribute("data-format") === t);
     });
-    const e = (a = this.dialog) == null ? void 0 : a.querySelector(".ie-quality-section");
+    const e = (s = this.dialog) == null ? void 0 : s.querySelector(".ie-quality-section");
     e && (e.style.display = t === "png" ? "none" : "block");
   }
   /**
@@ -7312,24 +7337,24 @@ function ni(n, t) {
   e.save();
   const i = Math.max(12, Math.min(n.width, n.height) * 0.03);
   e.font = `${i}px sans-serif`, e.fillStyle = `rgba(255, 255, 255, ${t.opacity || 0.5})`, e.strokeStyle = `rgba(0, 0, 0, ${(t.opacity || 0.5) * 0.5})`, e.lineWidth = 1;
-  const a = e.measureText(t.text), s = i;
+  const s = e.measureText(t.text), a = i;
   let o, r;
   switch (t.position) {
     case "top-left":
-      o = s, r = s + i;
+      o = a, r = a + i;
       break;
     case "top-right":
-      o = n.width - a.width - s, r = s + i;
+      o = n.width - s.width - a, r = a + i;
       break;
     case "bottom-left":
-      o = s, r = n.height - s;
+      o = a, r = n.height - a;
       break;
     case "center":
-      o = (n.width - a.width) / 2, r = n.height / 2;
+      o = (n.width - s.width) / 2, r = n.height / 2;
       break;
     case "bottom-right":
     default:
-      o = n.width - a.width - s, r = n.height - s;
+      o = n.width - s.width - a, r = n.height - a;
       break;
   }
   e.strokeText(t.text, o, r), e.fillText(t.text, o, r), e.restore();
@@ -7403,8 +7428,8 @@ class Ce {
       `, this.container.appendChild(this.gridOverlay)), this.updateRulers();
   }
   /** Update view state */
-  updateView(t, e, i, a, s) {
-    this.scale = t, this.offsetX = e, this.offsetY = i, this.canvasWidth = a, this.canvasHeight = s, this.updateRulers();
+  updateView(t, e, i, s, a) {
+    this.scale = t, this.offsetX = e, this.offsetY = i, this.canvasWidth = s, this.canvasHeight = a, this.updateRulers();
   }
   /** Update ruler drawings */
   updateRulers() {
@@ -7417,11 +7442,11 @@ class Ce {
     const i = t.getContext("2d");
     if (!i) return;
     i.scale(window.devicePixelRatio, window.devicePixelRatio), i.clearRect(0, 0, e.width, e.height), i.fillStyle = this.options.rulerColor, i.font = "10px sans-serif", i.textAlign = "center";
-    const a = this.getTickInterval(), o = e.width / 2 + this.offsetX - this.canvasWidth * this.scale / 2;
-    for (let r = 0; r <= this.canvasWidth; r += a) {
+    const s = this.getTickInterval(), o = e.width / 2 + this.offsetX - this.canvasWidth * this.scale / 2;
+    for (let r = 0; r <= this.canvasWidth; r += s) {
       const l = o + r * this.scale;
       if (l < 0 || l > e.width) continue;
-      const h = r % (a * 5) === 0, d = h ? 12 : 6;
+      const h = r % (s * 5) === 0, d = h ? 12 : 6;
       i.beginPath(), i.moveTo(l, e.height), i.lineTo(l, e.height - d), i.stroke(), h && i.fillText(String(r), l, e.height - 14);
     }
   }
@@ -7432,11 +7457,11 @@ class Ce {
     const i = t.getContext("2d");
     if (!i) return;
     i.scale(window.devicePixelRatio, window.devicePixelRatio), i.clearRect(0, 0, e.width, e.height), i.fillStyle = this.options.rulerColor, i.font = "10px sans-serif", i.textAlign = "right";
-    const a = this.getTickInterval(), o = e.height / 2 + this.offsetY - this.canvasHeight * this.scale / 2;
-    for (let r = 0; r <= this.canvasHeight; r += a) {
+    const s = this.getTickInterval(), o = e.height / 2 + this.offsetY - this.canvasHeight * this.scale / 2;
+    for (let r = 0; r <= this.canvasHeight; r += s) {
       const l = o + r * this.scale;
       if (l < 0 || l > e.height) continue;
-      const h = r % (a * 5) === 0, d = h ? 12 : 6;
+      const h = r % (s * 5) === 0, d = h ? 12 : 6;
       i.beginPath(), i.moveTo(e.width, l), i.lineTo(e.width - d, l), i.stroke(), h && (i.save(), i.translate(e.width - 14, l), i.rotate(-Math.PI / 2), i.textAlign = "center", i.fillText(String(r), 0, 0), i.restore());
     }
   }
@@ -7447,7 +7472,7 @@ class Ce {
     const i = t.getContext("2d");
     if (!i) return;
     i.scale(window.devicePixelRatio, window.devicePixelRatio), i.clearRect(0, 0, e.width, e.height), i.strokeStyle = this.options.gridColor, i.lineWidth = 1;
-    const a = e.width / 2, s = e.height / 2, o = a + this.offsetX - this.canvasWidth * this.scale / 2, r = s + this.offsetY - this.canvasHeight * this.scale / 2, l = o + this.canvasWidth * this.scale, h = r + this.canvasHeight * this.scale;
+    const s = e.width / 2, a = e.height / 2, o = s + this.offsetX - this.canvasWidth * this.scale / 2, r = a + this.offsetY - this.canvasHeight * this.scale / 2, l = o + this.canvasWidth * this.scale, h = r + this.canvasHeight * this.scale;
     for (let d = 0; d <= this.canvasWidth; d += this.options.gridSize) {
       const p = o + d * this.scale;
       p < 0 || p > e.width || (i.beginPath(), i.moveTo(p, Math.max(0, r)), i.lineTo(p, Math.min(e.height, h)), i.stroke());
@@ -7479,8 +7504,8 @@ class Ce {
   }
   /** Destroy rulers */
   destroy() {
-    var t, e, i, a;
-    (t = this.horizontalRuler) == null || t.remove(), (e = this.verticalRuler) == null || e.remove(), (i = this.gridOverlay) == null || i.remove(), (a = this.container.querySelector(".ie-ruler-corner")) == null || a.remove();
+    var t, e, i, s;
+    (t = this.horizontalRuler) == null || t.remove(), (e = this.verticalRuler) == null || e.remove(), (i = this.gridOverlay) == null || i.remove(), (s = this.container.querySelector(".ie-ruler-corner")) == null || s.remove();
   }
 }
 function ri(n, t) {
@@ -7503,17 +7528,17 @@ export {
   Ee as EDITOR_EVENTS,
   ct as Editor,
   Xt as EventManager,
-  si as ExportDialog,
+  ai as ExportDialog,
   Je as FilterPlugin,
-  Vt as HistoryManager,
+  Gt as HistoryManager,
   ut as I18n,
-  Ge as KeyboardManager,
+  Ve as KeyboardManager,
   Ze as MosaicPlugin,
   De as PLUGIN_EVENTS,
   jt as PluginManager,
   Ce as Rulers,
   Qt as ShapeLayerManager,
-  se as TextLayerManager,
+  ae as TextLayerManager,
   Ke as TextPlugin,
   ee as Toolbar,
   oi as VERSION,
@@ -7531,25 +7556,25 @@ export {
   xe as applySepia,
   ni as applyWatermark,
   wt as buildFontString,
-  at as calculateAspectRatioFit,
+  st as calculateAspectRatioFit,
   rt as canvasToBlob,
   nt as canvasToDataURL,
   et as clearCanvas,
   gt as cloneImageData,
   It as createCanvas,
-  Ve as createEditorShortcuts,
+  Ge as createEditorShortcuts,
   Re as createImageData,
   _e as createPanEvent,
   Be as createPinchEvent,
   Yt as createPlaceholder,
   ri as createRulers,
-  G as createScaledCanvas,
-  ai as createShapeMenuItems,
+  V as createScaledCanvas,
+  si as createShapeMenuItems,
   Ae as debounce,
-  qt as detectDeviceType,
-  st as drawImageToCanvas,
+  Nt as detectDeviceType,
+  at as drawImageToCanvas,
   be as enUS,
-  Nt as exportImage,
+  qt as exportImage,
   zt as fillCanvas,
   dt as findTextLayerAtPoint,
   Et as getContext2D,
@@ -7570,8 +7595,8 @@ export {
   w as icons,
   mt as injectStyles,
   ie as interpolatePoints,
-  Ne as isAndroidDevice,
-  qe as isIOSDevice,
+  qe as isAndroidDevice,
+  Ne as isIOSDevice,
   Pe as isInViewport,
   Ht as isMobileDevice,
   re as isPointInTextLayer,

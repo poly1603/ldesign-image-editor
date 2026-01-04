@@ -110,6 +110,8 @@ export class Toolbar {
   // Elements
   private panels: Map<string, HTMLElement> = new Map();
   private buttons: Map<string, HTMLButtonElement> = new Map();
+  private groups: Map<string, HTMLElement> = new Map();
+  private dividers: HTMLElement[] = [];
   private zoomText: HTMLElement | null = null;
   
   // Inline text editing
@@ -216,8 +218,10 @@ export class Toolbar {
     if (disabled.includes('reset')) resetBtn.style.display = 'none';
     zoomGroup.appendChild(resetBtn);
     
+    this.groups.set('zoom', zoomGroup);
     toolbar.appendChild(zoomGroup);
-    toolbar.appendChild(this.createDivider());
+    this.dividers.push(this.createDivider());
+    toolbar.appendChild(this.dividers[this.dividers.length - 1]);
     
     // Tool controls (always create, respect disabledTools)
     const toolGroup = this.createGroup();
@@ -263,6 +267,7 @@ export class Toolbar {
     if (disabled.includes('eraser')) eraserBtn.style.display = 'none';
     toolGroup.appendChild(eraserBtn);
     
+    this.groups.set('tool', toolGroup);
     toolbar.appendChild(toolGroup);
     
     // Crop and filter tools
@@ -277,9 +282,11 @@ export class Toolbar {
     if (disabled.includes('filter')) filterBtn.style.display = 'none';
     advancedGroup.appendChild(filterBtn);
     
+    this.groups.set('advanced', advancedGroup);
     toolbar.appendChild(advancedGroup);
     
-    toolbar.appendChild(this.createDivider());
+    this.dividers.push(this.createDivider());
+    toolbar.appendChild(this.dividers[this.dividers.length - 1]);
     
     // Create all settings panels (they are hidden until tool is selected)
     this.createDrawPanel(toolbar);
@@ -300,8 +307,10 @@ export class Toolbar {
     if (disabled.includes('redo')) redoBtn.style.display = 'none';
     historyGroup.appendChild(redoBtn);
     
+    this.groups.set('history', historyGroup);
     toolbar.appendChild(historyGroup);
-    toolbar.appendChild(this.createDivider());
+    this.dividers.push(this.createDivider());
+    toolbar.appendChild(this.dividers[this.dividers.length - 1]);
     
     // Crop action buttons (hidden by default, shown when crop is active)
     const cropActionGroup = document.createElement('div');
@@ -320,10 +329,12 @@ export class Toolbar {
     cropConfirmBtn.onclick = () => this.applyCrop();
     cropActionGroup.appendChild(cropConfirmBtn);
     
+    this.groups.set('cropAction', cropActionGroup);
     toolbar.appendChild(cropActionGroup);
     this.buttons.set('cropActionGroup', cropCancelBtn); // Store reference
     
-    toolbar.appendChild(this.createDivider());
+    this.dividers.push(this.createDivider());
+    toolbar.appendChild(this.dividers[this.dividers.length - 1]);
     
     // Export (always create, respect disabledTools)
     const exportBtn = this.createButton('export', icons.download, () => this.exportImage());
@@ -333,6 +344,9 @@ export class Toolbar {
     exportBtn.appendChild(span);
     if (disabled.includes('export')) exportBtn.style.display = 'none';
     toolbar.appendChild(exportBtn);
+    
+    // Initialize divider visibility based on disabled tools
+    this.updateDividerVisibility(disabled);
     
     return toolbar;
   }
@@ -1783,10 +1797,13 @@ export class Toolbar {
     this.buttons.get('crop')?.classList.toggle('active', this.isCropActive);
     
     // Show/hide crop action buttons in toolbar
-    const cropActionGroup = this.toolbar.querySelector('.ie-crop-action-group') as HTMLElement;
+    const cropActionGroup = this.groups.get('cropAction');
     if (cropActionGroup) {
       cropActionGroup.style.display = this.isCropActive ? 'flex' : 'none';
     }
+    
+    // Update divider visibility
+    this.updateDividerVisibility(this.options.disabledTools || []);
   }
   
   /** Show crop overlay */
@@ -2019,10 +2036,13 @@ export class Toolbar {
       this.buttons.get('crop')?.classList.remove('active');
       
       // Hide crop action buttons in toolbar
-      const cropActionGroup = this.toolbar.querySelector('.ie-crop-action-group') as HTMLElement;
+      const cropActionGroup = this.groups.get('cropAction');
       if (cropActionGroup) {
         cropActionGroup.style.display = 'none';
       }
+      
+      // Update divider visibility
+      this.updateDividerVisibility(this.options.disabledTools || []);
       
       // Reset view with animation
       this.viewport.style.transition = 'transform 0.3s ease-out';
@@ -2319,6 +2339,64 @@ export class Toolbar {
       } else {
         this.currentTool = null;
       }
+    }
+    
+    // Update divider visibility based on adjacent groups
+    this.updateDividerVisibility(disabledTools);
+  }
+  
+  /** Update divider visibility to avoid empty dividers between hidden groups */
+  private updateDividerVisibility(disabledTools: ToolName[]): void {
+    // Define which tools belong to which group
+    const groupTools: Record<string, ToolName[]> = {
+      zoom: ['zoomIn', 'zoomOut', 'reset'],
+      tool: ['move', 'pen', 'rect', 'circle', 'arrow', 'line', 'triangle', 'text', 'mosaic', 'eraser'],
+      advanced: ['crop', 'filter'],
+      history: ['undo', 'redo'],
+      cropAction: [], // Special group, always hidden by default unless crop mode is active
+    };
+    
+    // Check if a group has any visible tools
+    const isGroupVisible = (groupName: string): boolean => {
+      // cropAction group is special - it's controlled separately
+      if (groupName === 'cropAction') {
+        const cropActionGroup = this.groups.get('cropAction');
+        return cropActionGroup ? cropActionGroup.style.display !== 'none' : false;
+      }
+      
+      const tools = groupTools[groupName];
+      if (!tools || tools.length === 0) return false;
+      return tools.some(tool => !disabledTools.includes(tool));
+    };
+    
+    // Check if export button is visible
+    const isExportVisible = !disabledTools.includes('export');
+    
+    // Dividers layout:
+    // [zoomGroup] [divider0] [toolGroup] [advancedGroup] [divider1] [panels] [historyGroup] [divider2] [cropActionGroup] [divider3] [export]
+    
+    // divider0: visible if zoom group AND (tool group OR advanced group) are visible
+    const zoomVisible = isGroupVisible('zoom');
+    const toolOrAdvancedVisible = isGroupVisible('tool') || isGroupVisible('advanced');
+    if (this.dividers[0]) {
+      this.dividers[0].style.display = (zoomVisible && toolOrAdvancedVisible) ? '' : 'none';
+    }
+    
+    // divider1: visible if (tool group OR advanced group) AND history group are visible
+    const historyVisible = isGroupVisible('history');
+    if (this.dividers[1]) {
+      this.dividers[1].style.display = (toolOrAdvancedVisible && historyVisible) ? '' : 'none';
+    }
+    
+    // divider2: visible if history group AND (cropAction group OR export) are visible
+    const cropActionVisible = isGroupVisible('cropAction');
+    if (this.dividers[2]) {
+      this.dividers[2].style.display = (historyVisible && (cropActionVisible || isExportVisible)) ? '' : 'none';
+    }
+    
+    // divider3: visible if cropAction group AND export are visible
+    if (this.dividers[3]) {
+      this.dividers[3].style.display = (cropActionVisible && isExportVisible) ? '' : 'none';
     }
   }
   
