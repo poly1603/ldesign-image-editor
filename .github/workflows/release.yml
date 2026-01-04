@@ -1,0 +1,108 @@
+# Release - 自动发布 npm 包和 GitHub Release
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*' # 匹配 v1.0.0, v0.2.0 等标签
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build packages
+        run: |
+          pnpm --filter @ldesign/image-editor build
+          pnpm --filter @ldesign/image-editor-vue build
+
+      - name: Run tests
+        run: |
+          pnpm --filter @ldesign/image-editor test
+          pnpm --filter @ldesign/image-editor-vue test
+        continue-on-error: true
+
+      # 获取版本号（从 tag 中提取）
+      - name: Get version
+        id: version
+        run: echo "version=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+
+      # 更新 package.json 版本号
+      - name: Update package versions
+        run: |
+          cd packages/core && npm version ${{ steps.version.outputs.version }} --no-git-tag-version
+          cd ../vue && npm version ${{ steps.version.outputs.version }} --no-git-tag-version
+
+      # 发布到 npm
+      - name: Publish @ldesign/image-editor to npm
+        run: pnpm --filter @ldesign/image-editor publish --access public --no-git-checks
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish @ldesign/image-editor-vue to npm
+        run: pnpm --filter @ldesign/image-editor-vue publish --access public --no-git-checks
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      # 生成 changelog
+      - name: Generate changelog
+        id: changelog
+        run: |
+          # 获取上一个 tag
+          PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+          
+          if [ -z "$PREV_TAG" ]; then
+            # 如果没有上一个 tag，获取所有提交
+            CHANGELOG=$(git log --pretty=format:"- %s (%h)" --no-merges)
+          else
+            # 获取两个 tag 之间的提交
+            CHANGELOG=$(git log ${PREV_TAG}..HEAD --pretty=format:"- %s (%h)" --no-merges)
+          fi
+          
+          # 写入到文件（处理多行）
+          echo "$CHANGELOG" > changelog.txt
+          echo "Generated changelog"
+
+      # 创建 GitHub Release
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: v${{ steps.version.outputs.version }}
+          body_path: changelog.txt
+          draft: false
+          prerelease: ${{ contains(steps.version.outputs.version, '-') }}
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Output Release Info
+        run: |
+          echo "## 🎉 发布成功!" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**版本:** v${{ steps.version.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**已发布的包:**" >> $GITHUB_STEP_SUMMARY
+          echo "- [@ldesign/image-editor](https://www.npmjs.com/package/@ldesign/image-editor)" >> $GITHUB_STEP_SUMMARY
+          echo "- [@ldesign/image-editor-vue](https://www.npmjs.com/package/@ldesign/image-editor-vue)" >> $GITHUB_STEP_SUMMARY
