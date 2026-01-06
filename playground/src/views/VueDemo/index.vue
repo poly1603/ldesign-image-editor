@@ -3,13 +3,21 @@
  * Vue Demo - 演示 @ldesign/image-editor-vue 组件用法
  * 与 Native Demo 保持一致的UI和功能
  */
-import { ref, computed, watch } from 'vue';
+import { ref, computed, watch, nextTick } from 'vue';
 import { RouterLink } from 'vue-router';
 import { ImageEditor } from '@ldesign/image-editor-vue';
 import { MosaicPlugin, TextPlugin, FilterPlugin } from '@ldesign/image-editor';
 import type { ToolName } from '@ldesign/image-editor';
-import { ChevronLeft, Upload, Sun, Moon, Save, X, Download, Copy, Check, CloudUpload, Settings, Sliders } from 'lucide-vue-next';
+import { ChevronLeft, Upload, Sun, Moon, Save, X, Download, Copy, Check, CloudUpload, Settings, Sliders, Code } from 'lucide-vue-next';
 import { useTheme } from '@/composables/useTheme';
+import hljs from 'highlight.js/lib/core';
+import typescript from 'highlight.js/lib/languages/typescript';
+import xml from 'highlight.js/lib/languages/xml';
+import 'highlight.js/styles/github-dark.css';
+
+// Register languages
+hljs.registerLanguage('typescript', typescript);
+hljs.registerLanguage('html', xml);
 
 // 编辑器组件 ref
 const editorRef = ref<InstanceType<typeof ImageEditor> | null>(null);
@@ -146,6 +154,10 @@ const copied = ref(false);
 const selectedFormat = ref<'png' | 'jpeg'>('png');
 const jpegQuality = ref(0.92);
 const isUploading = ref(false);
+const showCodeModal = ref(false);
+const codeCopiedMain = ref(false);
+const codeTab = ref<'component' | 'hook'>('component');
+const codeBlockRef = ref<HTMLElement | null>(null);
 
 // 上传图片
 const handleFileUpload = async (event: Event) => {
@@ -261,6 +273,226 @@ const closePreview = () => {
   previewImage.value = '';
   previewBlob.value = null;
 };
+
+// Generate Vue code based on current settings
+const generateVueCode = computed(() => {
+  const disabledTools = getDisabledTools();
+  const disabledToolsStr = disabledTools.length > 0 
+    ? `['${disabledTools.join("', '")}']` 
+    : '[]';
+  
+  const themeStr = currentTheme.value;
+  const primaryColorStr = editorSettings.value.primaryColor;
+  const autoHideStr = editorSettings.value.autoHide;
+  const historyLimitStr = editorSettings.value.historyLimit;
+  
+  // 组件模式代码 - 使用 ImageEditor 组件
+  const componentCode = `<script setup lang="ts">
+import { ref } from 'vue';
+import { ImageEditor } from '@ldesign/image-editor-vue';
+import { MosaicPlugin, TextPlugin, FilterPlugin } from '@ldesign/image-editor';
+import type { ToolName } from '@ldesign/image-editor';
+
+// 编辑器组件引用
+const editorRef = ref<InstanceType<typeof ImageEditor> | null>(null);
+
+// 图片源
+const imageSrc = ref<string | undefined>(undefined);
+
+// 插件配置
+const plugins = [MosaicPlugin, TextPlugin, FilterPlugin];
+
+// 禁用的工具列表
+const disabledTools: ToolName[] = ${disabledToolsStr};
+
+// 编辑器选项
+const editorOptions = {
+  historyLimit: ${historyLimitStr},
+  responsive: true,
+  toolbar: {
+    theme: '${themeStr}',
+    primaryColor: '${primaryColorStr}',
+    autoHide: ${autoHideStr},
+    disabledTools,
+  },
+};
+
+// 编辑器就绪
+const onEditorReady = (e: { width: number; height: number }) => {
+  console.log('Editor ready:', e.width, 'x', e.height);
+};
+
+// 加载图片
+const loadImage = (file: File) => {
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    imageSrc.value = e.target?.result as string;
+  };
+  reader.readAsDataURL(file);
+};
+
+// 导出图片
+const exportImage = async () => {
+  if (!editorRef.value) return;
+  const blob = await editorRef.value.export({ format: 'png', type: 'blob' });
+  return blob;
+};
+<\/script>
+
+<template>
+  <div class="editor-wrapper">
+    <ImageEditor
+      ref="editorRef"
+      :image="imageSrc"
+      :plugins="plugins"
+      :options="editorOptions"
+      @ready="onEditorReady"
+    />
+  </div>
+</template>
+
+<style scoped>
+.editor-wrapper {
+  width: 100%;
+  height: 600px;
+  background: ${themeStr === 'dark' ? '#1a1a1a' : '#f5f5f5'};
+}
+</style>`;
+
+  // Hook 模式代码 - 使用 useImageEditor hook
+  const hookCode = `<script setup lang="ts">
+import { ref, onMounted } from 'vue';
+import { useImageEditor } from '@ldesign/image-editor-vue';
+import { MosaicPlugin, TextPlugin, FilterPlugin } from '@ldesign/image-editor';
+import type { ToolName } from '@ldesign/image-editor';
+
+// 容器引用
+const containerRef = ref<HTMLDivElement | null>(null);
+
+// 禁用的工具列表
+const disabledTools: ToolName[] = ${disabledToolsStr};
+
+// 使用 useImageEditor hook
+const {
+  editor,
+  isReady,
+  isLoading,
+  width,
+  height,
+  canUndo,
+  canRedo,
+  init,
+  loadImage,
+  exportImage,
+  undo,
+  redo,
+  setTool,
+} = useImageEditor({
+  plugins: [MosaicPlugin, TextPlugin, FilterPlugin],
+  options: {
+    historyLimit: ${historyLimitStr},
+    responsive: true,
+    toolbar: {
+      theme: '${themeStr}',
+      primaryColor: '${primaryColorStr}',
+      autoHide: ${autoHideStr},
+      disabledTools,
+    },
+  },
+});
+
+// 初始化编辑器
+onMounted(() => {
+  if (containerRef.value) {
+    init(containerRef.value);
+  }
+});
+
+// 上传图片
+const handleFileUpload = async (event: Event) => {
+  const input = event.target as HTMLInputElement;
+  const file = input.files?.[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    loadImage(e.target?.result as string);
+  };
+  reader.readAsDataURL(file);
+};
+
+// 导出图片
+const handleExport = async () => {
+  const blob = await exportImage({ format: 'png', type: 'blob' });
+  console.log('Exported:', blob);
+};
+<\/script>
+
+<template>
+  <div class="editor-page">
+    <div class="toolbar">
+      <input type="file" accept="image/*" @change="handleFileUpload" />
+      <button @click="undo" :disabled="!canUndo">撤销</button>
+      <button @click="redo" :disabled="!canRedo">重做</button>
+      <button @click="handleExport" :disabled="!isReady">导出</button>
+      <span v-if="isReady">{{ width }} × {{ height }}</span>
+    </div>
+    <div ref="containerRef" class="editor-container" />
+  </div>
+</template>
+
+<style scoped>
+.editor-page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.toolbar {
+  display: flex;
+  gap: 8px;
+  padding: 12px;
+  background: ${themeStr === 'dark' ? '#2d2d2d' : '#fff'};
+  border-bottom: 1px solid ${themeStr === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'};
+}
+
+.editor-container {
+  flex: 1;
+  background: ${themeStr === 'dark' ? '#1a1a1a' : '#f5f5f5'};
+}
+</style>`;
+
+  return { component: componentCode, hook: hookCode };
+});
+
+// Copy generated code
+const copyGeneratedCode = async () => {
+  const code = codeTab.value === 'component' ? generateVueCode.value.component : generateVueCode.value.hook;
+  try {
+    await navigator.clipboard.writeText(code);
+    codeCopiedMain.value = true;
+    setTimeout(() => { codeCopiedMain.value = false; }, 2000);
+  } catch (err) {
+    console.error('Failed to copy code:', err);
+  }
+};
+
+// Highlight code when modal opens or tab changes
+const highlightCode = () => {
+  nextTick(() => {
+    if (codeBlockRef.value) {
+      const codeEl = codeBlockRef.value.querySelector('code');
+      if (codeEl) {
+        codeEl.removeAttribute('data-highlighted');
+        hljs.highlightElement(codeEl);
+      }
+    }
+  });
+};
+
+watch([showCodeModal, codeTab], ([show]) => {
+  if (show) highlightCode();
+});
 
 const uploadToServer = async () => {
   if (!previewBlob.value || !previewImage.value) return;
@@ -389,6 +621,11 @@ const response = await fetch('/api/upload', {
         </Transition>
       </div>
       
+      <button class="header-btn code-btn" @click.stop="showCodeModal = true">
+        <Code :size="18" />
+        <span>查看代码</span>
+      </button>
+      
       <button class="theme-btn" @click.stop="toggleTheme" :title="currentTheme === 'dark' ? '切换亮色主题' : '切换暗色主题'">
         <Sun v-if="currentTheme === 'dark'" :size="18" />
         <Moon v-else :size="18" />
@@ -467,6 +704,46 @@ const response = await fetch('/api/upload', {
             <button class="action-btn primary" @click="uploadToServer" :disabled="!previewBlob || isUploading">
               <CloudUpload :size="18" />
               <span>{{ isUploading ? '上传中...' : '上传到服务器' }}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </Teleport>
+    
+    <!-- Code Preview Modal -->
+    <Teleport to="body">
+      <div v-if="showCodeModal" class="code-modal-overlay" @click.self="showCodeModal = false">
+        <div class="code-modal" :class="`theme-${currentTheme}`">
+          <div class="code-modal-header">
+            <h2>当前配置代码 (Vue SFC)</h2>
+            <button class="close-btn" @click="showCodeModal = false">
+              <X :size="20" />
+            </button>
+          </div>
+          
+          <div class="code-tabs">
+            <button 
+              class="code-tab" 
+              :class="{ active: codeTab === 'component' }" 
+              @click="codeTab = 'component'"
+            >组件模式</button>
+            <button 
+              class="code-tab" 
+              :class="{ active: codeTab === 'hook' }" 
+              @click="codeTab = 'hook'"
+            >Hook 模式</button>
+          </div>
+          
+          <div class="code-content-wrapper" ref="codeBlockRef">
+            <pre class="code-block"><code class="language-typescript">{{ codeTab === 'component' ? generateVueCode.component : generateVueCode.hook }}</code></pre>
+          </div>
+          
+          <div class="code-modal-footer">
+            <div class="code-hint">代码根据当前配置实时生成</div>
+            <button class="copy-btn-main" @click="copyGeneratedCode">
+              <Check v-if="codeCopiedMain" :size="18" />
+              <Copy v-else :size="18" />
+              <span>{{ codeCopiedMain ? '已复制' : '复制代码' }}</span>
             </button>
           </div>
         </div>
@@ -1195,5 +1472,193 @@ const response = await fetch('/api/upload', {
 .action-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+/* Code button style */
+.code-btn {
+  background: rgba(16, 185, 129, 0.1) !important;
+  border-color: #10b981 !important;
+  color: #10b981 !important;
+}
+
+.code-btn:hover {
+  background: rgba(16, 185, 129, 0.2) !important;
+}
+
+/* Code Modal */
+.code-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.code-modal {
+  width: 100%;
+  max-width: 800px;
+  max-height: 85vh;
+  border-radius: 16px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.code-modal.theme-dark {
+  background: #1e1e1e;
+  color: #d4d4d4;
+}
+
+.code-modal.theme-light {
+  background: #fff;
+  color: #333;
+}
+
+.code-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(128, 128, 128, 0.2);
+}
+
+.code-modal-header h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.code-modal .close-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.code-modal.theme-dark .close-btn {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.code-modal.theme-light .close-btn {
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.code-modal .close-btn:hover {
+  background: rgba(128, 128, 128, 0.2);
+}
+
+.code-tabs {
+  display: flex;
+  padding: 12px 20px;
+  gap: 8px;
+  border-bottom: 1px solid rgba(128, 128, 128, 0.15);
+}
+
+.code-tab {
+  padding: 8px 16px;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.code-modal.theme-dark .code-tab {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.code-modal.theme-light .code-tab {
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.code-tab:hover {
+  background: rgba(128, 128, 128, 0.15);
+}
+
+.code-tab.active {
+  background: #667eea;
+  color: #fff;
+}
+
+.code-content-wrapper {
+  flex: 1;
+  overflow: auto;
+  padding: 0;
+}
+
+.code-block {
+  margin: 0;
+  padding: 20px;
+  font-size: 13px;
+  font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Consolas', monospace;
+  line-height: 1.6;
+  white-space: pre;
+  overflow-x: auto;
+}
+
+.code-modal.theme-dark .code-block {
+  background: #1e1e1e;
+  color: #d4d4d4;
+}
+
+.code-modal.theme-light .code-block {
+  background: #f8f8f8;
+  color: #333;
+}
+
+.code-block code {
+  font-family: inherit;
+  background: transparent !important;
+}
+
+/* Override highlight.js default background */
+.code-block code.hljs {
+  background: transparent !important;
+  padding: 0;
+}
+
+.code-modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  border-top: 1px solid rgba(128, 128, 128, 0.15);
+}
+
+.code-hint {
+  font-size: 12px;
+  opacity: 0.5;
+}
+
+.copy-btn-main {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: #667eea;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.copy-btn-main:hover {
+  filter: brightness(0.9);
 }
 </style>

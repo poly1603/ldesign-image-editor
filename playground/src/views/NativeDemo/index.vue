@@ -1,9 +1,17 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, watch, computed } from 'vue';
+import { ref, onMounted, onUnmounted, watch, computed, nextTick } from 'vue';
 import { RouterLink } from 'vue-router';
 import { Editor, MosaicPlugin, TextPlugin, FilterPlugin, Toolbar, ToolName } from '@ldesign/image-editor';
-import { ChevronLeft, Upload, Sun, Moon, Save, X, Download, Copy, Check, CloudUpload, Settings, Sliders } from 'lucide-vue-next';
+import { ChevronLeft, Upload, Sun, Moon, Save, X, Download, Copy, Check, CloudUpload, Settings, Sliders, Code } from 'lucide-vue-next';
 import { useTheme } from '@/composables/useTheme';
+import hljs from 'highlight.js/lib/core';
+import typescript from 'highlight.js/lib/languages/typescript';
+import xml from 'highlight.js/lib/languages/xml';
+import 'highlight.js/styles/github-dark.css';
+
+// Register languages
+hljs.registerLanguage('typescript', typescript);
+hljs.registerLanguage('html', xml);
 
 const containerRef = ref<HTMLDivElement | null>(null);
 let editor: Editor | null = null;
@@ -85,6 +93,10 @@ const selectedFormat = ref<'png' | 'jpeg'>('png');
 const jpegQuality = ref(0.92);
 const isUploading = ref(false);
 const exportTab = ref<'base64' | 'dataurl' | 'blob'>('base64');
+const showCodeModal = ref(false);
+const codeTab = ref<'esm' | 'umd'>('esm');
+const codeCopiedMain = ref(false);
+const codeBlockRef = ref<HTMLElement | null>(null);
 
 // Get disabled tools based on enabled tools
 const getDisabledTools = (): ToolName[] => {
@@ -342,6 +354,127 @@ const closePreview = () => {
 };
 
 // Upload to server - complete example
+// Generate code based on current settings
+const generateCode = computed(() => {
+  const disabledTools = getDisabledTools();
+  const disabledToolsStr = disabledTools.length > 0 
+    ? `['${disabledTools.join("', '")}']` 
+    : '[]';
+  
+  const themeStr = currentTheme.value;
+  const primaryColorStr = editorSettings.value.primaryColor;
+  const autoHideStr = editorSettings.value.autoHide;
+  const historyLimitStr = editorSettings.value.historyLimit;
+  
+  // ESM code
+  const esmCode = `import { Editor, MosaicPlugin, TextPlugin, FilterPlugin } from '@ldesign/image-editor';
+
+// 创建编辑器
+const editor = new Editor({
+  container: '#editor-container',
+  plugins: [MosaicPlugin, TextPlugin, FilterPlugin],
+  historyLimit: ${historyLimitStr},
+  responsive: true,
+  toolbar: {
+    theme: '${themeStr}',
+    primaryColor: '${primaryColorStr}',
+    autoHide: ${autoHideStr},
+    disabledTools: ${disabledToolsStr},
+  },
+});
+
+// 加载图片
+await editor.loadImage('https://example.com/image.jpg');
+
+// 导出图片
+const blob = await editor.export({
+  format: 'png',
+  type: 'blob',
+});
+
+// 销毁编辑器
+editor.destroy();`;
+
+  // UMD code
+  const umdCode = `<!DOCTYPE html>
+<html>
+<head>
+  <title>Image Editor Demo</title>
+  <style>
+    #editor-container {
+      width: 100%;
+      height: 600px;
+      background: ${themeStr === 'dark' ? '#1a1a1a' : '#f5f5f5'};
+    }
+  </style>
+</head>
+<body>
+  <div id="editor-container"></div>
+
+  <script src="https://unpkg.com/@ldesign/image-editor/dist/index.umd.js"><\/script>
+  <script>
+    const { Editor, MosaicPlugin, TextPlugin, FilterPlugin } = ImageEditorCore;
+
+    const editor = new Editor({
+      container: '#editor-container',
+      plugins: [MosaicPlugin, TextPlugin, FilterPlugin],
+      historyLimit: ${historyLimitStr},
+      responsive: true,
+      toolbar: {
+        theme: '${themeStr}',
+        primaryColor: '${primaryColorStr}',
+        autoHide: ${autoHideStr},
+        disabledTools: ${disabledToolsStr},
+      },
+    });
+
+    // 加载图片
+    editor.loadImage('https://example.com/image.jpg');
+
+    // 导出图片
+    async function exportImage() {
+      const blob = await editor.export({
+        format: 'png',
+        type: 'blob',
+      });
+      // 处理 blob...
+    }
+  <\/script>
+</body>
+</html>`;
+
+  return { esm: esmCode, umd: umdCode };
+});
+
+// Copy generated code
+const copyGeneratedCode = async () => {
+  const code = codeTab.value === 'esm' ? generateCode.value.esm : generateCode.value.umd;
+  try {
+    await navigator.clipboard.writeText(code);
+    codeCopiedMain.value = true;
+    setTimeout(() => { codeCopiedMain.value = false; }, 2000);
+  } catch (err) {
+    console.error('Failed to copy code:', err);
+  }
+};
+
+// Highlight code when modal opens or tab changes
+const highlightCode = () => {
+  nextTick(() => {
+    if (codeBlockRef.value) {
+      const codeEl = codeBlockRef.value.querySelector('code');
+      if (codeEl) {
+        codeEl.removeAttribute('data-highlighted');
+        hljs.highlightElement(codeEl);
+      }
+    }
+  });
+};
+
+watch([showCodeModal, codeTab], ([show]) => {
+  if (show) highlightCode();
+});
+
 const uploadToServer = async () => {
   if (!previewBlob.value || !previewImage.value) return;
   
@@ -470,6 +603,11 @@ const response = await fetch('/api/upload', {
         </Transition>
       </div>
       
+      <button class="header-btn code-btn" @click.stop="showCodeModal = true">
+        <Code :size="18" />
+        <span>查看代码</span>
+      </button>
+      
       <button class="theme-btn" @click.stop="toggleTheme" :title="currentTheme === 'dark' ? '切换亮色主题' : '切换暗色主题'">
         <Sun v-if="currentTheme === 'dark'" :size="18" />
         <Moon v-else :size="18" />
@@ -585,6 +723,46 @@ const response = await fetch('/api/upload', {
             <button class="action-btn primary" @click="uploadToServer" :disabled="!previewBlob || isUploading">
               <CloudUpload :size="18" />
               <span>{{ isUploading ? '上传中...' : '上传到服务器' }}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </Teleport>
+    
+    <!-- Code Preview Modal -->
+    <Teleport to="body">
+      <div v-if="showCodeModal" class="code-modal-overlay" @click.self="showCodeModal = false">
+        <div class="code-modal" :class="`theme-${currentTheme}`">
+          <div class="code-modal-header">
+            <h2>当前配置代码</h2>
+            <button class="close-btn" @click="showCodeModal = false">
+              <X :size="20" />
+            </button>
+          </div>
+          
+          <div class="code-tabs">
+            <button 
+              class="code-tab" 
+              :class="{ active: codeTab === 'esm' }" 
+              @click="codeTab = 'esm'"
+            >ES Module</button>
+            <button 
+              class="code-tab" 
+              :class="{ active: codeTab === 'umd' }" 
+              @click="codeTab = 'umd'"
+            >UMD (HTML)</button>
+          </div>
+          
+          <div class="code-content-wrapper" ref="codeBlockRef">
+            <pre class="code-block"><code :class="codeTab === 'esm' ? 'language-typescript' : 'language-html'">{{ codeTab === 'esm' ? generateCode.esm : generateCode.umd }}</code></pre>
+          </div>
+          
+          <div class="code-modal-footer">
+            <div class="code-hint">代码根据当前配置实时生成</div>
+            <button class="copy-btn-main" @click="copyGeneratedCode">
+              <Check v-if="codeCopiedMain" :size="18" />
+              <Copy v-else :size="18" />
+              <span>{{ codeCopiedMain ? '已复制' : '复制代码' }}</span>
             </button>
           </div>
         </div>
@@ -1420,5 +1598,193 @@ const response = await fetch('/api/upload', {
 .action-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+/* Code button style */
+.code-btn {
+  background: rgba(16, 185, 129, 0.1) !important;
+  border-color: #10b981 !important;
+  color: #10b981 !important;
+}
+
+.code-btn:hover {
+  background: rgba(16, 185, 129, 0.2) !important;
+}
+
+/* Code Modal */
+.code-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.code-modal {
+  width: 100%;
+  max-width: 800px;
+  max-height: 85vh;
+  border-radius: 16px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.code-modal.theme-dark {
+  background: #1e1e1e;
+  color: #d4d4d4;
+}
+
+.code-modal.theme-light {
+  background: #fff;
+  color: #333;
+}
+
+.code-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(128, 128, 128, 0.2);
+}
+
+.code-modal-header h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.code-modal .close-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.code-modal.theme-dark .close-btn {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.code-modal.theme-light .close-btn {
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.code-modal .close-btn:hover {
+  background: rgba(128, 128, 128, 0.2);
+}
+
+.code-tabs {
+  display: flex;
+  padding: 12px 20px;
+  gap: 8px;
+  border-bottom: 1px solid rgba(128, 128, 128, 0.15);
+}
+
+.code-tab {
+  padding: 8px 16px;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.code-modal.theme-dark .code-tab {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.code-modal.theme-light .code-tab {
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.code-tab:hover {
+  background: rgba(128, 128, 128, 0.15);
+}
+
+.code-tab.active {
+  background: #667eea;
+  color: #fff;
+}
+
+.code-content-wrapper {
+  flex: 1;
+  overflow: auto;
+  padding: 0;
+}
+
+.code-block {
+  margin: 0;
+  padding: 20px;
+  font-size: 13px;
+  font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Consolas', monospace;
+  line-height: 1.6;
+  white-space: pre;
+  overflow-x: auto;
+}
+
+.code-modal.theme-dark .code-block {
+  background: #1e1e1e;
+  color: #d4d4d4;
+}
+
+.code-modal.theme-light .code-block {
+  background: #f8f8f8;
+  color: #333;
+}
+
+.code-block code {
+  font-family: inherit;
+  background: transparent !important;
+}
+
+/* Override highlight.js default background */
+.code-block code.hljs {
+  background: transparent !important;
+  padding: 0;
+}
+
+.code-modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  border-top: 1px solid rgba(128, 128, 128, 0.15);
+}
+
+.code-hint {
+  font-size: 12px;
+  opacity: 0.5;
+}
+
+.copy-btn-main {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: #667eea;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.copy-btn-main:hover {
+  filter: brightness(0.9);
 }
 </style>
