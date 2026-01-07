@@ -70,4 +70,8 @@ export const DEFAULT_EXPORT_OPTIONS: Required<ExportOptions> = {
   height: 0,
   type: 'base64',
   fileName: 'image',
+  preserveTransparency: true,
+  backgroundColor: '#ffffff',
+  maxFileSize: 0, // 0 means no limit
+  addTimestamp: false,
 };

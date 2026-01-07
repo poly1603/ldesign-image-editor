@@ -1,0 +1,556 @@
+
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Code coverage report for src/i18n/locales/zh-CN.ts</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../../../prettify.css" />
+    <link rel="stylesheet" href="../../../base.css" />
+    <link rel="shortcut icon" type="image/x-icon" href="../../../favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../../../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+    
+<body>
+<div class='wrapper'>
+    <div class='pad1'>
+        <h1><a href="../../../index.html">All files</a> / <a href="index.html">src/i18n/locales</a> zh-CN.ts</h1>
+        <div class='clearfix'>
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">0% </span>
+                <span class="quiet">Statements</span>
+                <span class='fraction'>0/157</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">0% </span>
+                <span class="quiet">Branches</span>
+                <span class='fraction'>0/1</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">0% </span>
+                <span class="quiet">Functions</span>
+                <span class='fraction'>0/1</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">0% </span>
+                <span class="quiet">Lines</span>
+                <span class='fraction'>0/157</span>
+            </div>
+        
+            
+        </div>
+        <p class="quiet">
+            Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
+        </p>
+        <template id="filterTemplate">
+            <div class="quiet">
+                Filter:
+                <input type="search" id="fileSearch">
+            </div>
+        </template>
+    </div>
+    <div class='status-line low'></div>
+    <pre><table class="coverage">
+<tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
+<a name='L2'></a><a href='#L2'>2</a>
+<a name='L3'></a><a href='#L3'>3</a>
+<a name='L4'></a><a href='#L4'>4</a>
+<a name='L5'></a><a href='#L5'>5</a>
+<a name='L6'></a><a href='#L6'>6</a>
+<a name='L7'></a><a href='#L7'>7</a>
+<a name='L8'></a><a href='#L8'>8</a>
+<a name='L9'></a><a href='#L9'>9</a>
+<a name='L10'></a><a href='#L10'>10</a>
+<a name='L11'></a><a href='#L11'>11</a>
+<a name='L12'></a><a href='#L12'>12</a>
+<a name='L13'></a><a href='#L13'>13</a>
+<a name='L14'></a><a href='#L14'>14</a>
+<a name='L15'></a><a href='#L15'>15</a>
+<a name='L16'></a><a href='#L16'>16</a>
+<a name='L17'></a><a href='#L17'>17</a>
+<a name='L18'></a><a href='#L18'>18</a>
+<a name='L19'></a><a href='#L19'>19</a>
+<a name='L20'></a><a href='#L20'>20</a>
+<a name='L21'></a><a href='#L21'>21</a>
+<a name='L22'></a><a href='#L22'>22</a>
+<a name='L23'></a><a href='#L23'>23</a>
+<a name='L24'></a><a href='#L24'>24</a>
+<a name='L25'></a><a href='#L25'>25</a>
+<a name='L26'></a><a href='#L26'>26</a>
+<a name='L27'></a><a href='#L27'>27</a>
+<a name='L28'></a><a href='#L28'>28</a>
+<a name='L29'></a><a href='#L29'>29</a>
+<a name='L30'></a><a href='#L30'>30</a>
+<a name='L31'></a><a href='#L31'>31</a>
+<a name='L32'></a><a href='#L32'>32</a>
+<a name='L33'></a><a href='#L33'>33</a>
+<a name='L34'></a><a href='#L34'>34</a>
+<a name='L35'></a><a href='#L35'>35</a>
+<a name='L36'></a><a href='#L36'>36</a>
+<a name='L37'></a><a href='#L37'>37</a>
+<a name='L38'></a><a href='#L38'>38</a>
+<a name='L39'></a><a href='#L39'>39</a>
+<a name='L40'></a><a href='#L40'>40</a>
+<a name='L41'></a><a href='#L41'>41</a>
+<a name='L42'></a><a href='#L42'>42</a>
+<a name='L43'></a><a href='#L43'>43</a>
+<a name='L44'></a><a href='#L44'>44</a>
+<a name='L45'></a><a href='#L45'>45</a>
+<a name='L46'></a><a href='#L46'>46</a>
+<a name='L47'></a><a href='#L47'>47</a>
+<a name='L48'></a><a href='#L48'>48</a>
+<a name='L49'></a><a href='#L49'>49</a>
+<a name='L50'></a><a href='#L50'>50</a>
+<a name='L51'></a><a href='#L51'>51</a>
+<a name='L52'></a><a href='#L52'>52</a>
+<a name='L53'></a><a href='#L53'>53</a>
+<a name='L54'></a><a href='#L54'>54</a>
+<a name='L55'></a><a href='#L55'>55</a>
+<a name='L56'></a><a href='#L56'>56</a>
+<a name='L57'></a><a href='#L57'>57</a>
+<a name='L58'></a><a href='#L58'>58</a>
+<a name='L59'></a><a href='#L59'>59</a>
+<a name='L60'></a><a href='#L60'>60</a>
+<a name='L61'></a><a href='#L61'>61</a>
+<a name='L62'></a><a href='#L62'>62</a>
+<a name='L63'></a><a href='#L63'>63</a>
+<a name='L64'></a><a href='#L64'>64</a>
+<a name='L65'></a><a href='#L65'>65</a>
+<a name='L66'></a><a href='#L66'>66</a>
+<a name='L67'></a><a href='#L67'>67</a>
+<a name='L68'></a><a href='#L68'>68</a>
+<a name='L69'></a><a href='#L69'>69</a>
+<a name='L70'></a><a href='#L70'>70</a>
+<a name='L71'></a><a href='#L71'>71</a>
+<a name='L72'></a><a href='#L72'>72</a>
+<a name='L73'></a><a href='#L73'>73</a>
+<a name='L74'></a><a href='#L74'>74</a>
+<a name='L75'></a><a href='#L75'>75</a>
+<a name='L76'></a><a href='#L76'>76</a>
+<a name='L77'></a><a href='#L77'>77</a>
+<a name='L78'></a><a href='#L78'>78</a>
+<a name='L79'></a><a href='#L79'>79</a>
+<a name='L80'></a><a href='#L80'>80</a>
+<a name='L81'></a><a href='#L81'>81</a>
+<a name='L82'></a><a href='#L82'>82</a>
+<a name='L83'></a><a href='#L83'>83</a>
+<a name='L84'></a><a href='#L84'>84</a>
+<a name='L85'></a><a href='#L85'>85</a>
+<a name='L86'></a><a href='#L86'>86</a>
+<a name='L87'></a><a href='#L87'>87</a>
+<a name='L88'></a><a href='#L88'>88</a>
+<a name='L89'></a><a href='#L89'>89</a>
+<a name='L90'></a><a href='#L90'>90</a>
+<a name='L91'></a><a href='#L91'>91</a>
+<a name='L92'></a><a href='#L92'>92</a>
+<a name='L93'></a><a href='#L93'>93</a>
+<a name='L94'></a><a href='#L94'>94</a>
+<a name='L95'></a><a href='#L95'>95</a>
+<a name='L96'></a><a href='#L96'>96</a>
+<a name='L97'></a><a href='#L97'>97</a>
+<a name='L98'></a><a href='#L98'>98</a>
+<a name='L99'></a><a href='#L99'>99</a>
+<a name='L100'></a><a href='#L100'>100</a>
+<a name='L101'></a><a href='#L101'>101</a>
+<a name='L102'></a><a href='#L102'>102</a>
+<a name='L103'></a><a href='#L103'>103</a>
+<a name='L104'></a><a href='#L104'>104</a>
+<a name='L105'></a><a href='#L105'>105</a>
+<a name='L106'></a><a href='#L106'>106</a>
+<a name='L107'></a><a href='#L107'>107</a>
+<a name='L108'></a><a href='#L108'>108</a>
+<a name='L109'></a><a href='#L109'>109</a>
+<a name='L110'></a><a href='#L110'>110</a>
+<a name='L111'></a><a href='#L111'>111</a>
+<a name='L112'></a><a href='#L112'>112</a>
+<a name='L113'></a><a href='#L113'>113</a>
+<a name='L114'></a><a href='#L114'>114</a>
+<a name='L115'></a><a href='#L115'>115</a>
+<a name='L116'></a><a href='#L116'>116</a>
+<a name='L117'></a><a href='#L117'>117</a>
+<a name='L118'></a><a href='#L118'>118</a>
+<a name='L119'></a><a href='#L119'>119</a>
+<a name='L120'></a><a href='#L120'>120</a>
+<a name='L121'></a><a href='#L121'>121</a>
+<a name='L122'></a><a href='#L122'>122</a>
+<a name='L123'></a><a href='#L123'>123</a>
+<a name='L124'></a><a href='#L124'>124</a>
+<a name='L125'></a><a href='#L125'>125</a>
+<a name='L126'></a><a href='#L126'>126</a>
+<a name='L127'></a><a href='#L127'>127</a>
+<a name='L128'></a><a href='#L128'>128</a>
+<a name='L129'></a><a href='#L129'>129</a>
+<a name='L130'></a><a href='#L130'>130</a>
+<a name='L131'></a><a href='#L131'>131</a>
+<a name='L132'></a><a href='#L132'>132</a>
+<a name='L133'></a><a href='#L133'>133</a>
+<a name='L134'></a><a href='#L134'>134</a>
+<a name='L135'></a><a href='#L135'>135</a>
+<a name='L136'></a><a href='#L136'>136</a>
+<a name='L137'></a><a href='#L137'>137</a>
+<a name='L138'></a><a href='#L138'>138</a>
+<a name='L139'></a><a href='#L139'>139</a>
+<a name='L140'></a><a href='#L140'>140</a>
+<a name='L141'></a><a href='#L141'>141</a>
+<a name='L142'></a><a href='#L142'>142</a>
+<a name='L143'></a><a href='#L143'>143</a>
+<a name='L144'></a><a href='#L144'>144</a>
+<a name='L145'></a><a href='#L145'>145</a>
+<a name='L146'></a><a href='#L146'>146</a>
+<a name='L147'></a><a href='#L147'>147</a>
+<a name='L148'></a><a href='#L148'>148</a>
+<a name='L149'></a><a href='#L149'>149</a>
+<a name='L150'></a><a href='#L150'>150</a>
+<a name='L151'></a><a href='#L151'>151</a>
+<a name='L152'></a><a href='#L152'>152</a>
+<a name='L153'></a><a href='#L153'>153</a>
+<a name='L154'></a><a href='#L154'>154</a>
+<a name='L155'></a><a href='#L155'>155</a>
+<a name='L156'></a><a href='#L156'>156</a>
+<a name='L157'></a><a href='#L157'>157</a>
+<a name='L158'></a><a href='#L158'>158</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" >/**<span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span></span>
+<span class="cstat-no" title="statement not covered" > * 中文语言包 (Simplified Chinese)</span>
+<span class="cstat-no" title="statement not covered" > */</span>
+<span class="cstat-no" title="statement not covered" >export const zhCN = {</span>
+<span class="cstat-no" title="statement not covered" >  // Tool names</span>
+<span class="cstat-no" title="statement not covered" >  'tool.move': '移动',</span>
+<span class="cstat-no" title="statement not covered" >  'tool.pen': '画笔',</span>
+<span class="cstat-no" title="statement not covered" >  'tool.rect': '矩形',</span>
+<span class="cstat-no" title="statement not covered" >  'tool.circle': '圆形',</span>
+<span class="cstat-no" title="statement not covered" >  'tool.arrow': '箭头',</span>
+<span class="cstat-no" title="statement not covered" >  'tool.line': '直线',</span>
+<span class="cstat-no" title="statement not covered" >  'tool.triangle': '三角形',</span>
+<span class="cstat-no" title="statement not covered" >  'tool.text': '文字',</span>
+<span class="cstat-no" title="statement not covered" >  'tool.mosaic': '马赛克',</span>
+<span class="cstat-no" title="statement not covered" >  'tool.eraser': '橡皮擦',</span>
+<span class="cstat-no" title="statement not covered" >  'tool.crop': '裁剪',</span>
+<span class="cstat-no" title="statement not covered" >  'tool.filter': '滤镜',</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >  // Zoom controls</span>
+<span class="cstat-no" title="statement not covered" >  'zoom.in': '放大',</span>
+<span class="cstat-no" title="statement not covered" >  'zoom.out': '缩小',</span>
+<span class="cstat-no" title="statement not covered" >  'zoom.reset': '重置视图',</span>
+<span class="cstat-no" title="statement not covered" >  'zoom.fitScreen': '适应屏幕',</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >  // History controls</span>
+<span class="cstat-no" title="statement not covered" >  'history.undo': '撤销',</span>
+<span class="cstat-no" title="statement not covered" >  'history.redo': '重做',</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >  // Export</span>
+<span class="cstat-no" title="statement not covered" >  'export.button': '导出',</span>
+<span class="cstat-no" title="statement not covered" >  'export.title': '导出图片',</span>
+<span class="cstat-no" title="statement not covered" >  'export.format': '格式',</span>
+<span class="cstat-no" title="statement not covered" >  'export.quality': '质量',</span>
+<span class="cstat-no" title="statement not covered" >  'export.size': '尺寸',</span>
+<span class="cstat-no" title="statement not covered" >  'export.original': '原始尺寸',</span>
+<span class="cstat-no" title="statement not covered" >  'export.custom': '自定义',</span>
+<span class="cstat-no" title="statement not covered" >  'export.width': '宽度',</span>
+<span class="cstat-no" title="statement not covered" >  'export.height': '高度',</span>
+<span class="cstat-no" title="statement not covered" >  'export.keepRatio': '保持比例',</span>
+<span class="cstat-no" title="statement not covered" >  'export.watermark': '水印',</span>
+<span class="cstat-no" title="statement not covered" >  'export.watermarkText': '文字水印',</span>
+<span class="cstat-no" title="statement not covered" >  'export.watermarkImage': '图片水印',</span>
+<span class="cstat-no" title="statement not covered" >  'export.preview': '预览',</span>
+<span class="cstat-no" title="statement not covered" >  'export.download': '下载',</span>
+<span class="cstat-no" title="statement not covered" >  'export.cancel': '取消',</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >  // Panels</span>
+<span class="cstat-no" title="statement not covered" >  'panel.draw': '绘图设置',</span>
+<span class="cstat-no" title="statement not covered" >  'panel.strokeWidth': '线宽',</span>
+<span class="cstat-no" title="statement not covered" >  'panel.strokeColor': '颜色',</span>
+<span class="cstat-no" title="statement not covered" >  'panel.fillColor': '填充颜色',</span>
+<span class="cstat-no" title="statement not covered" >  'panel.strokeStyle': '线条样式',</span>
+<span class="cstat-no" title="statement not covered" >  'panel.solid': '实线',</span>
+<span class="cstat-no" title="statement not covered" >  'panel.dashed': '虚线',</span>
+<span class="cstat-no" title="statement not covered" >  'panel.dotted': '点线',</span>
+<span class="cstat-no" title="statement not covered" >  'panel.fill': '填充',</span>
+<span class="cstat-no" title="statement not covered" >  'panel.stroke': '描边',</span>
+<span class="cstat-no" title="statement not covered" >  'panel.both': '描边+填充',</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >  'panel.mosaic': '马赛克设置',</span>
+<span class="cstat-no" title="statement not covered" >  'panel.brushSize': '笔刷大小',</span>
+<span class="cstat-no" title="statement not covered" >  'panel.blockSize': '色块大小',</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >  'panel.text': '文字设置',</span>
+<span class="cstat-no" title="statement not covered" >  'panel.textHint': '点击图片添加文字',</span>
+<span class="cstat-no" title="statement not covered" >  'panel.fontSize': '字号',</span>
+<span class="cstat-no" title="statement not covered" >  'panel.fontFamily': '字体',</span>
+<span class="cstat-no" title="statement not covered" >  'panel.fontStyle': '样式',</span>
+<span class="cstat-no" title="statement not covered" >  'panel.bold': '粗体',</span>
+<span class="cstat-no" title="statement not covered" >  'panel.italic': '斜体',</span>
+<span class="cstat-no" title="statement not covered" >  'panel.underline': '下划线',</span>
+<span class="cstat-no" title="statement not covered" >  'panel.textStroke': '文字描边',</span>
+<span class="cstat-no" title="statement not covered" >  'panel.textStrokeWidth': '描边宽度',</span>
+<span class="cstat-no" title="statement not covered" >  'panel.textStrokeColor': '描边颜色',</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >  'panel.eraser': '橡皮擦设置',</span>
+<span class="cstat-no" title="statement not covered" >  'panel.eraserSize': '橡皮擦大小',</span>
+<span class="cstat-no" title="statement not covered" >  'panel.eraserMode': '擦除模式',</span>
+<span class="cstat-no" title="statement not covered" >  'panel.eraserShape': '擦除形状',</span>
+<span class="cstat-no" title="statement not covered" >  'panel.eraserPixel': '擦除像素',</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >  // Filter</span>
+<span class="cstat-no" title="statement not covered" >  'filter.title': '滤镜调整',</span>
+<span class="cstat-no" title="statement not covered" >  'filter.brightness': '亮度',</span>
+<span class="cstat-no" title="statement not covered" >  'filter.contrast': '对比度',</span>
+<span class="cstat-no" title="statement not covered" >  'filter.saturation': '饱和度',</span>
+<span class="cstat-no" title="statement not covered" >  'filter.blur': '模糊',</span>
+<span class="cstat-no" title="statement not covered" >  'filter.grayscale': '灰度',</span>
+<span class="cstat-no" title="statement not covered" >  'filter.sepia': '复古',</span>
+<span class="cstat-no" title="statement not covered" >  'filter.invert': '反色',</span>
+<span class="cstat-no" title="statement not covered" >  'filter.presets': '预设滤镜',</span>
+<span class="cstat-no" title="statement not covered" >  'filter.preset.original': '原图',</span>
+<span class="cstat-no" title="statement not covered" >  'filter.preset.vintage': '复古',</span>
+<span class="cstat-no" title="statement not covered" >  'filter.preset.cold': '冷色',</span>
+<span class="cstat-no" title="statement not covered" >  'filter.preset.warm': '暖色',</span>
+<span class="cstat-no" title="statement not covered" >  'filter.preset.grayscale': '黑白',</span>
+<span class="cstat-no" title="statement not covered" >  'filter.reset': '重置',</span>
+<span class="cstat-no" title="statement not covered" >  'filter.apply': '应用',</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >  // Crop</span>
+<span class="cstat-no" title="statement not covered" >  'crop.title': '裁剪',</span>
+<span class="cstat-no" title="statement not covered" >  'crop.ratio': '裁剪比例',</span>
+<span class="cstat-no" title="statement not covered" >  'crop.free': '自由',</span>
+<span class="cstat-no" title="statement not covered" >  'crop.square': '正方形 1:1',</span>
+<span class="cstat-no" title="statement not covered" >  'crop.ratio43': '标准 4:3',</span>
+<span class="cstat-no" title="statement not covered" >  'crop.ratio169': '宽屏 16:9',</span>
+<span class="cstat-no" title="statement not covered" >  'crop.ratio32': '横幅 3:2',</span>
+<span class="cstat-no" title="statement not covered" >  'crop.rotate': '旋转',</span>
+<span class="cstat-no" title="statement not covered" >  'crop.rotateLeft': '逆时针90°',</span>
+<span class="cstat-no" title="statement not covered" >  'crop.rotateRight': '顺时针90°',</span>
+<span class="cstat-no" title="statement not covered" >  'crop.flipH': '水平翻转',</span>
+<span class="cstat-no" title="statement not covered" >  'crop.flipV': '垂直翻转',</span>
+<span class="cstat-no" title="statement not covered" >  'crop.apply': '应用裁剪',</span>
+<span class="cstat-no" title="statement not covered" >  'crop.cancel': '取消',</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >  // Ruler &amp; Grid</span>
+<span class="cstat-no" title="statement not covered" >  'ruler.show': '显示标尺',</span>
+<span class="cstat-no" title="statement not covered" >  'ruler.hide': '隐藏标尺',</span>
+<span class="cstat-no" title="statement not covered" >  'grid.show': '显示网格',</span>
+<span class="cstat-no" title="statement not covered" >  'grid.hide': '隐藏网格',</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >  // Context Menu</span>
+<span class="cstat-no" title="statement not covered" >  'context.copy': '复制',</span>
+<span class="cstat-no" title="statement not covered" >  'context.paste': '粘贴',</span>
+<span class="cstat-no" title="statement not covered" >  'context.delete': '删除',</span>
+<span class="cstat-no" title="statement not covered" >  'context.bringToFront': '置于顶层',</span>
+<span class="cstat-no" title="statement not covered" >  'context.sendToBack': '置于底层',</span>
+<span class="cstat-no" title="statement not covered" >  'context.bringForward': '上移一层',</span>
+<span class="cstat-no" title="statement not covered" >  'context.sendBackward': '下移一层',</span>
+<span class="cstat-no" title="statement not covered" >  'context.duplicate': '复制图层',</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >  // Messages</span>
+<span class="cstat-no" title="statement not covered" >  'message.exportSuccess': '导出成功',</span>
+<span class="cstat-no" title="statement not covered" >  'message.exportFailed': '导出失败',</span>
+<span class="cstat-no" title="statement not covered" >  'message.loadImageFailed': '加载图片失败',</span>
+<span class="cstat-no" title="statement not covered" >  'message.noImageLoaded': '请先加载图片',</span>
+<span class="cstat-no" title="statement not covered" >  'message.cropApplied': '裁剪已应用',</span>
+<span class="cstat-no" title="statement not covered" >  'message.filterApplied': '滤镜已应用',</span>
+<span class="cstat-no" title="statement not covered" >  'message.copied': '已复制',</span>
+<span class="cstat-no" title="statement not covered" >  'message.pasted': '已粘贴',</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >  // Placeholder</span>
+<span class="cstat-no" title="statement not covered" >  'placeholder.title': '点击或拖拽图片到此处',</span>
+<span class="cstat-no" title="statement not covered" >  'placeholder.subtitle': '支持 JPG、PNG、WebP 格式',</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >  // Keyboard shortcuts hints</span>
+<span class="cstat-no" title="statement not covered" >  'shortcut.undo': 'Ctrl+Z',</span>
+<span class="cstat-no" title="statement not covered" >  'shortcut.redo': 'Ctrl+Y',</span>
+<span class="cstat-no" title="statement not covered" >  'shortcut.copy': 'Ctrl+C',</span>
+<span class="cstat-no" title="statement not covered" >  'shortcut.paste': 'Ctrl+V',</span>
+<span class="cstat-no" title="statement not covered" >  'shortcut.delete': 'Delete',</span>
+<span class="cstat-no" title="statement not covered" >  'shortcut.escape': 'Esc',</span>
+<span class="cstat-no" title="statement not covered" >  'shortcut.zoomIn': '+',</span>
+<span class="cstat-no" title="statement not covered" >  'shortcut.zoomOut': '-',</span>
+<span class="cstat-no" title="statement not covered" >};</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >export type LocaleMessages = typeof zhCN;</span>
+&nbsp;</pre></td></tr></table></pre>
+
+                <div class='push'></div><!-- for sticky footer -->
+            </div><!-- /wrapper -->
+            <div class='footer quiet pad2 space-top1 center small'>
+                Code coverage generated by
+                <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
+                at 2026-01-06T08:51:40.680Z
+            </div>
+        <script src="../../../prettify.js"></script>
+        <script>
+            window.onload = function () {
+                prettyPrint();
+            };
+        </script>
+        <script src="../../../sorter.js"></script>
+        <script src="../../../block-navigation.js"></script>
+    </body>
+</html>
+    

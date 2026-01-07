@@ -5,7 +5,7 @@
 import { icons } from './icons';
 import type { I18n } from '../i18n';
 import { getI18n } from '../i18n';
-import type { ExportFormat } from '../types/config.types';
+import type { ExportFormat, ExportDataType } from '../types/config.types';
 
 export interface ExportDialogOptions {
   /** Initial format */
@@ -20,6 +20,10 @@ export interface ExportDialogOptions {
   enableWatermark?: boolean;
   /** i18n instance */
   i18n?: I18n;
+  /** Canvas element for size estimation */
+  canvas?: HTMLCanvasElement;
+  /** Show copy to clipboard option */
+  enableClipboard?: boolean;
 }
 
 export interface ExportDialogResult {
@@ -27,11 +31,19 @@ export interface ExportDialogResult {
   quality: number;
   width: number;
   height: number;
+  /** Data type for export */
+  dataType: ExportDataType;
+  /** Action: download, copy, or custom */
+  action: 'download' | 'copy' | 'custom';
   watermark?: {
     text?: string;
     position?: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right' | 'center';
     opacity?: number;
   };
+  /** Preserve transparency */
+  preserveTransparency?: boolean;
+  /** Background color for non-transparent formats */
+  backgroundColor?: string;
 }
 
 /**
@@ -52,6 +64,9 @@ export class ExportDialog {
   private aspectRatio: number;
   private watermarkText: string = '';
   private watermarkEnabled: boolean = false;
+  private preserveTransparency: boolean = true;
+  private backgroundColor: string = '#ffffff';
+  private estimatedSize: string = '';
   
   // Callbacks
   private resolvePromise: ((result: ExportDialogResult | null) => void) | null = null;
@@ -111,9 +126,22 @@ export class ExportDialog {
         <div class="ie-export-section">
           <label class="ie-export-label">${t('export.format')}</label>
           <div class="ie-export-format-buttons">
-            <button class="ie-export-format-btn ${this.format === 'png' ? 'active' : ''}" data-format="png">PNG</button>
-            <button class="ie-export-format-btn ${this.format === 'jpeg' ? 'active' : ''}" data-format="jpeg">JPG</button>
-            <button class="ie-export-format-btn ${this.format === 'webp' ? 'active' : ''}" data-format="webp">WebP</button>
+            <button class="ie-export-format-btn ${this.format === 'png' ? 'active' : ''}" data-format="png" title="Lossless, supports transparency">PNG</button>
+            <button class="ie-export-format-btn ${this.format === 'jpeg' ? 'active' : ''}" data-format="jpeg" title="Lossy compression, smaller file size">JPG</button>
+            <button class="ie-export-format-btn ${this.format === 'webp' ? 'active' : ''}" data-format="webp" title="Modern format, good compression">WebP</button>
+            <button class="ie-export-format-btn ${this.format === 'gif' ? 'active' : ''}" data-format="gif" title="Limited colors, small file size">GIF</button>
+          </div>
+        </div>
+        
+        <!-- Transparency (only for png/webp/gif) -->
+        <div class="ie-export-section ie-transparency-section" style="display:${this.supportsTransparency() ? 'block' : 'none'}">
+          <label class="ie-export-label">
+            <input type="checkbox" data-check="transparency" ${this.preserveTransparency ? 'checked' : ''}>
+            ${t('export.preserveTransparency') || 'Preserve transparency'}
+          </label>
+          <div class="ie-bg-color-row" style="display:${!this.preserveTransparency ? 'flex' : 'none'}">
+            <span style="color:var(--ie-text-muted);font-size:12px;">Background:</span>
+            <input type="color" class="ie-color-input" value="${this.backgroundColor}" data-input="bg-color">
           </div>
         </div>
         
@@ -159,12 +187,19 @@ export class ExportDialog {
           <label class="ie-export-label">${t('export.preview')}</label>
           <div class="ie-export-preview">
             <div style="color:var(--ie-text-muted);font-size:12px;">${this.width} × ${this.height} px</div>
+            <div class="ie-export-size" style="color:var(--ie-text-muted);font-size:11px;margin-top:4px;" data-value="file-size">Calculating...</div>
           </div>
         </div>
       </div>
       
       <div class="ie-export-footer">
         <button class="ie-export-cancel" data-action="cancel">${t('export.cancel')}</button>
+        ${this.options.enableClipboard !== false ? `
+        <button class="ie-export-copy" data-action="copy" title="Copy to clipboard">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          ${t('export.copy') || 'Copy'}
+        </button>
+        ` : ''}
         <button class="ie-export-download" data-action="export">${icons.download} ${t('export.download')}</button>
       </div>
     `;
@@ -237,6 +272,25 @@ export class ExportDialog {
       this.quality = parseFloat(qualitySlider.value);
       const valueEl = this.dialog!.querySelector('[data-value="quality"]');
       if (valueEl) valueEl.textContent = `${Math.round(this.quality * 100)}%`;
+      this.updateEstimatedSize();
+    });
+    
+    // Transparency checkbox
+    this.dialog.querySelector('[data-check="transparency"]')?.addEventListener('change', (e) => {
+      this.preserveTransparency = (e.target as HTMLInputElement).checked;
+      const bgRow = this.dialog!.querySelector('.ie-bg-color-row') as HTMLElement;
+      if (bgRow) bgRow.style.display = this.preserveTransparency ? 'none' : 'flex';
+      this.updateEstimatedSize();
+    });
+    
+    // Background color
+    this.dialog.querySelector('[data-input="bg-color"]')?.addEventListener('input', (e) => {
+      this.backgroundColor = (e.target as HTMLInputElement).value;
+    });
+    
+    // Copy button
+    this.dialog.querySelector('[data-action="copy"]')?.addEventListener('click', () => {
+      this.copyToClipboard();
     });
     
     // Watermark checkbox
@@ -271,6 +325,13 @@ export class ExportDialog {
   };
 
   /**
+   * Check if current format supports transparency
+   */
+  private supportsTransparency(): boolean {
+    return this.format === 'png' || this.format === 'webp' || this.format === 'gif';
+  }
+
+  /**
    * Set export format
    */
   private setFormat(format: ExportFormat): void {
@@ -281,11 +342,19 @@ export class ExportDialog {
       btn.classList.toggle('active', btn.getAttribute('data-format') === format);
     });
     
-    // Show/hide quality section
+    // Show/hide quality section (not for png/gif)
     const qualitySection = this.dialog?.querySelector('.ie-quality-section') as HTMLElement;
     if (qualitySection) {
-      qualitySection.style.display = format === 'png' ? 'none' : 'block';
+      qualitySection.style.display = (format === 'png' || format === 'gif') ? 'none' : 'block';
     }
+    
+    // Show/hide transparency section
+    const transparencySection = this.dialog?.querySelector('.ie-transparency-section') as HTMLElement;
+    if (transparencySection) {
+      transparencySection.style.display = this.supportsTransparency() ? 'block' : 'none';
+    }
+    
+    this.updateEstimatedSize();
   }
 
   /**
@@ -294,7 +363,94 @@ export class ExportDialog {
   private updatePreview(): void {
     const preview = this.dialog?.querySelector('.ie-export-preview');
     if (preview) {
-      preview.innerHTML = `<div style="color:var(--ie-text-muted);font-size:12px;">${this.width} × ${this.height} px</div>`;
+      preview.innerHTML = `
+        <div style="color:var(--ie-text-muted);font-size:12px;">${this.width} × ${this.height} px</div>
+        <div class="ie-export-size" style="color:var(--ie-text-muted);font-size:11px;margin-top:4px;" data-value="file-size">${this.estimatedSize || 'Calculating...'}</div>
+      `;
+    }
+    this.updateEstimatedSize();
+  }
+  
+  /**
+   * Update estimated file size
+   */
+  private async updateEstimatedSize(): Promise<void> {
+    if (!this.options.canvas) {
+      this.estimatedSize = '';
+      return;
+    }
+    
+    try {
+      // Create a temporary scaled canvas
+      const tempCanvas = document.createElement('canvas');
+      tempCanvas.width = this.width;
+      tempCanvas.height = this.height;
+      const ctx = tempCanvas.getContext('2d');
+      if (!ctx) return;
+      
+      // Handle background for non-transparent formats
+      if (!this.supportsTransparency() || !this.preserveTransparency) {
+        ctx.fillStyle = this.backgroundColor;
+        ctx.fillRect(0, 0, this.width, this.height);
+      }
+      ctx.drawImage(this.options.canvas, 0, 0, this.width, this.height);
+      
+      // Get blob to estimate size
+      const format = this.format === 'jpg' ? 'jpeg' : this.format;
+      const blob = await new Promise<Blob | null>((resolve) => {
+        tempCanvas.toBlob(resolve, `image/${format}`, this.quality);
+      });
+      
+      if (blob) {
+        this.estimatedSize = this.formatSize(blob.size);
+        const sizeEl = this.dialog?.querySelector('[data-value="file-size"]');
+        if (sizeEl) sizeEl.textContent = `~${this.estimatedSize}`;
+      }
+    } catch (err) {
+      console.warn('Failed to estimate file size:', err);
+    }
+  }
+  
+  /**
+   * Format file size for display
+   */
+  private formatSize(bytes: number): string {
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
+  }
+  
+  /**
+   * Copy to clipboard action
+   */
+  private async copyToClipboard(): Promise<void> {
+    if (!this.options.canvas) return;
+    
+    try {
+      const canvas = this.options.canvas;
+      const blob = await new Promise<Blob | null>((resolve) => {
+        canvas.toBlob(resolve, 'image/png', 1);
+      });
+      
+      if (blob) {
+        await navigator.clipboard.write([
+          new ClipboardItem({ 'image/png': blob })
+        ]);
+        
+        // Show success feedback
+        const copyBtn = this.dialog?.querySelector('[data-action="copy"]') as HTMLButtonElement;
+        if (copyBtn) {
+          const originalText = copyBtn.innerHTML;
+          copyBtn.innerHTML = `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Copied!`;
+          copyBtn.style.background = 'var(--ie-success, #22c55e)';
+          setTimeout(() => {
+            copyBtn.innerHTML = originalText;
+            copyBtn.style.background = '';
+          }, 2000);
+        }
+      }
+    } catch (err) {
+      console.error('Failed to copy to clipboard:', err);
     }
   }
 
@@ -308,9 +464,16 @@ export class ExportDialog {
   }
 
   /**
-   * Confirm and return result
+   * Confirm and return result (download action)
    */
   private confirm(): void {
+    this.finishWithAction('download');
+  }
+  
+  /**
+   * Finish dialog with specified action
+   */
+  private finishWithAction(action: 'download' | 'copy' | 'custom'): void {
     document.removeEventListener('keydown', this.handleKeyDown);
     
     const result: ExportDialogResult = {
@@ -318,6 +481,10 @@ export class ExportDialog {
       quality: this.quality,
       width: this.width,
       height: this.height,
+      dataType: 'base64',
+      action,
+      preserveTransparency: this.preserveTransparency,
+      backgroundColor: this.backgroundColor,
     };
     
     if (this.watermarkEnabled && this.watermarkText) {

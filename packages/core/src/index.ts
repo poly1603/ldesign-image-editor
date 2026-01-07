@@ -77,6 +77,7 @@ export {
   loadImage,
   getImageDimensions,
   calculateAspectRatioFit,
+  safeCalculateAspectRatioFit,
   drawImageToCanvas,
   getImageData,
   putImageData,
@@ -85,7 +86,11 @@ export {
   canvasToDataURL,
   canvasToBlob,
   createScaledCanvas,
+  cropCanvas,
+  rotateCanvas,
+  flipCanvas,
 } from './utils/image.utils';
+export type { LoadImageOptions } from './utils/image.utils';
 
 // Event utilities
 export {
@@ -118,12 +123,92 @@ export {
 } from './utils/device.utils';
 
 // Export utilities
-export { exportImage } from './utils/export.utils';
+export {
+  exportImage,
+  exportToPNG,
+  exportToJPEG,
+  exportToWebP,
+  downloadImage,
+  copyImageToClipboard,
+  isClipboardSupported,
+  isFormatSupported,
+  getSupportedFormats,
+  dataUrlToBlob,
+  blobToDataUrl,
+  estimateFileSize,
+  formatFileSize,
+  getImageInfo,
+  getMimeType,
+  supportsTransparency,
+  supportsQuality,
+} from './utils/export.utils';
 export { createPlaceholder } from './utils/placeholder';
 export type { PlaceholderOptions } from './utils/placeholder';
 
+// Math utilities
+export {
+  clamp,
+  lerp,
+  inverseLerp,
+  remap,
+  distance,
+  distanceSquared,
+  angle,
+  angleDegrees,
+  degreesToRadians,
+  radiansToDegrees,
+  normalizeAngle,
+  rotatePoint,
+  midpoint,
+  isPointInRect,
+  isPointInCircle,
+  doRectsIntersect,
+  getRectsIntersection,
+  scaleRectFromCenter,
+  roundTo,
+  smoothstep,
+  smootherstep,
+  randomRange,
+  randomInt,
+} from './utils/math.utils';
+export type { Point as MathPoint, Rect as MathRect } from './utils/math.utils';
+
+// Color utilities
+export {
+  hexToRgb,
+  hexToRgba,
+  rgbToHex,
+  rgbaToHex,
+  rgbToHsl,
+  hslToRgb,
+  rgbToHsv,
+  hsvToRgb,
+  parseColor,
+  rgbaToCss,
+  mixColors,
+  lighten,
+  darken,
+  saturate,
+  desaturate,
+  getComplementary,
+  invertColor,
+  toGrayscale,
+  getLuminance,
+  getContrastRatio,
+  isLightColor,
+  getContrastingTextColor,
+} from './utils/color.utils';
+export type {
+  RGB,
+  RGBA,
+  HSL,
+  HSLA,
+  HSV,
+} from './utils/color.utils';
+
 // Managers
 export { EventManager } from './managers/EventManager';
+export type { ExtendedEventListenerOptions } from './managers/EventManager';
 export { ConfigManager } from './managers/ConfigManager';
 export { HistoryManager } from './managers/HistoryManager';
 export { PluginManager } from './managers/PluginManager';

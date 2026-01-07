@@ -129,7 +129,7 @@ export interface EditorInterface {
   destroy(): void;
 
   /** Register plugin */
-  use(plugin: PluginConstructor): EditorInterface;
+  use(plugin: PluginConstructor): this;
   /** Set current tool */
   setTool(toolName: string): void;
   /** Get tool by name */
@@ -145,7 +145,7 @@ export interface EditorInterface {
   canRedo(): boolean;
 
   /** Export image */
-  export(options?: ExportOptions): Promise<string | Blob | File>;
+  export(options?: ExportOptions): Promise<string | Blob | File | ArrayBuffer>;
 
   /** Subscribe to event */
   on<K extends keyof EditorEvents>(

@@ -371,7 +371,7 @@ export class Editor implements EditorInterface {
    * @param options - Export options
    * @returns Promise with exported data
    */
-  async export(options?: ExportOptions): Promise<string | Blob | File> {
+  async export(options?: ExportOptions): Promise<string | Blob | File | ArrayBuffer> {
     if (this._destroyed) {
       throw new Error('Editor is destroyed');
     }
@@ -565,6 +565,290 @@ export class Editor implements EditorInterface {
       height,
       aspectRatio: width / height,
     };
+  }
+  
+  // ============ Convenient Export Methods ============
+  
+  /**
+   * Quick export to PNG base64
+   * @returns PNG data URL string
+   */
+  toPNG(): string {
+    if (this._destroyed) {
+      throw new Error('Editor is destroyed');
+    }
+    return this._canvas.canvas.toDataURL('image/png');
+  }
+  
+  /**
+   * Quick export to JPEG base64
+   * @param quality - Image quality (0-1, default: 0.92)
+   * @returns JPEG data URL string
+   */
+  toJPEG(quality = 0.92): string {
+    if (this._destroyed) {
+      throw new Error('Editor is destroyed');
+    }
+    // Create temp canvas with white background (JPEG doesn't support transparency)
+    const tempCanvas = document.createElement('canvas');
+    tempCanvas.width = this._canvas.width;
+    tempCanvas.height = this._canvas.height;
+    const ctx = tempCanvas.getContext('2d');
+    if (ctx) {
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+      ctx.drawImage(this._canvas.canvas, 0, 0);
+    }
+    return tempCanvas.toDataURL('image/jpeg', quality);
+  }
+  
+  /**
+   * Alias for toJPEG
+   */
+  toJPG(quality = 0.92): string {
+    return this.toJPEG(quality);
+  }
+  
+  /**
+   * Quick export to WebP base64
+   * @param quality - Image quality (0-1, default: 0.92)
+   * @returns WebP data URL string
+   */
+  toWebP(quality = 0.92): string {
+    if (this._destroyed) {
+      throw new Error('Editor is destroyed');
+    }
+    return this._canvas.canvas.toDataURL('image/webp', quality);
+  }
+  
+  /**
+   * Quick export to base64 with custom format
+   * @param format - Image format ('png' | 'jpeg' | 'jpg' | 'webp')
+   * @param quality - Image quality for jpeg/webp (0-1)
+   * @returns Data URL string
+   */
+  toBase64(format: 'png' | 'jpeg' | 'jpg' | 'webp' = 'png', quality = 0.92): string {
+    if (this._destroyed) {
+      throw new Error('Editor is destroyed');
+    }
+    const normalizedFormat = format === 'jpg' ? 'jpeg' : format;
+    if (normalizedFormat === 'jpeg') {
+      return this.toJPEG(quality);
+    }
+    return this._canvas.canvas.toDataURL(`image/${normalizedFormat}`, quality);
+  }
+  
+  /**
+   * Download the edited image
+   * @param filename - Download filename (without extension, default: 'image')
+   * @param options - Export options
+   */
+  async download(filename = 'image', options?: ExportOptions): Promise<void> {
+    if (this._destroyed) {
+      throw new Error('Editor is destroyed');
+    }
+    
+    const exportUtils = await import('../utils/export.utils');
+    await exportUtils.downloadImage(this._canvas.canvas, filename, options);
+  }
+  
+  /**
+   * Copy image to clipboard
+   * @returns Promise that resolves when copied
+   */
+  async copyToClipboard(): Promise<void> {
+    if (this._destroyed) {
+      throw new Error('Editor is destroyed');
+    }
+    
+    const exportUtils = await import('../utils/export.utils');
+    await exportUtils.copyImageToClipboard(this._canvas.canvas);
+  }
+  
+  /**
+   * Get estimated file size for export
+   * @param options - Export options
+   * @returns Estimated size in bytes
+   */
+  async getExportSize(options?: ExportOptions): Promise<number> {
+    if (this._destroyed) {
+      throw new Error('Editor is destroyed');
+    }
+    
+    const exportUtils = await import('../utils/export.utils');
+    return exportUtils.estimateFileSize(this._canvas.canvas, options);
+  }
+  
+  // ============ Transform Methods ============
+  
+  /**
+   * Rotate the image by specified degrees
+   * @param degrees - Rotation angle in degrees (90, 180, 270, or any value)
+   */
+  rotate(degrees: number): void {
+    if (this._destroyed) {
+      throw new Error('Editor is destroyed');
+    }
+    
+    this._canvas.rotate(degrees);
+    this.saveState('rotate', `Rotate ${degrees}°`);
+    this._eventManager.emit('transform', { type: 'rotate', degrees });
+    
+    // Notify toolbar to update
+    if (this._toolbar) {
+      this._toolbar.saveOriginalImage();
+    }
+  }
+  
+  /**
+   * Rotate the image 90 degrees clockwise
+   */
+  rotateRight(): void {
+    this.rotate(90);
+  }
+  
+  /**
+   * Rotate the image 90 degrees counter-clockwise
+   */
+  rotateLeft(): void {
+    this.rotate(-90);
+  }
+  
+  /**
+   * Rotate the image 180 degrees
+   */
+  rotate180(): void {
+    this.rotate(180);
+  }
+  
+  /**
+   * Flip the image horizontally (mirror)
+   */
+  flipHorizontal(): void {
+    if (this._destroyed) {
+      throw new Error('Editor is destroyed');
+    }
+    
+    this._canvas.flip('horizontal');
+    this.saveState('flip', 'Flip horizontal');
+    this._eventManager.emit('transform', { type: 'flip', direction: 'horizontal' });
+    
+    // Notify toolbar to update
+    if (this._toolbar) {
+      this._toolbar.saveOriginalImage();
+    }
+  }
+  
+  /**
+   * Flip the image vertically
+   */
+  flipVertical(): void {
+    if (this._destroyed) {
+      throw new Error('Editor is destroyed');
+    }
+    
+    this._canvas.flip('vertical');
+    this.saveState('flip', 'Flip vertical');
+    this._eventManager.emit('transform', { type: 'flip', direction: 'vertical' });
+    
+    // Notify toolbar to update
+    if (this._toolbar) {
+      this._toolbar.saveOriginalImage();
+    }
+  }
+  
+  /**
+   * Crop the image to specified region
+   * @param x - X coordinate of crop region
+   * @param y - Y coordinate of crop region
+   * @param width - Width of crop region
+   * @param height - Height of crop region
+   */
+  crop(x: number, y: number, width: number, height: number): void {
+    if (this._destroyed) {
+      throw new Error('Editor is destroyed');
+    }
+    
+    this._canvas.crop(x, y, width, height);
+    this.saveState('crop', `Crop to ${width}x${height}`);
+    this._eventManager.emit('transform', { type: 'crop', x, y, width, height });
+    
+    // Notify toolbar to update
+    if (this._toolbar) {
+      this._toolbar.saveOriginalImage();
+    }
+  }
+  
+  /**
+   * Scale/resize the image to new dimensions
+   * @param width - New width
+   * @param height - New height
+   * @param maintainAspectRatio - Whether to maintain aspect ratio (default: false)
+   */
+  resize(width: number, height: number, maintainAspectRatio: boolean = false): void {
+    if (this._destroyed) {
+      throw new Error('Editor is destroyed');
+    }
+    
+    this._canvas.scale(width, height, maintainAspectRatio);
+    this.saveState('resize', `Resize to ${this._canvas.width}x${this._canvas.height}`);
+    this._eventManager.emit('transform', { 
+      type: 'resize', 
+      width: this._canvas.width, 
+      height: this._canvas.height 
+    });
+    
+    // Notify toolbar to update
+    if (this._toolbar) {
+      this._toolbar.saveOriginalImage();
+    }
+  }
+  
+  /**
+   * Scale the image by a factor
+   * @param factor - Scale factor (e.g., 0.5 for 50%, 2 for 200%)
+   */
+  scale(factor: number): void {
+    if (this._destroyed) {
+      throw new Error('Editor is destroyed');
+    }
+    
+    if (factor <= 0) {
+      throw new Error('Scale factor must be positive');
+    }
+    
+    const newWidth = Math.round(this._canvas.width * factor);
+    const newHeight = Math.round(this._canvas.height * factor);
+    this.resize(newWidth, newHeight);
+  }
+  
+  /**
+   * Fit the image to specified dimensions while maintaining aspect ratio
+   * @param maxWidth - Maximum width
+   * @param maxHeight - Maximum height
+   */
+  fit(maxWidth: number, maxHeight: number): void {
+    if (this._destroyed) {
+      throw new Error('Editor is destroyed');
+    }
+    
+    const currentRatio = this._canvas.width / this._canvas.height;
+    const targetRatio = maxWidth / maxHeight;
+    
+    let newWidth: number;
+    let newHeight: number;
+    
+    if (currentRatio > targetRatio) {
+      // Width is limiting factor
+      newWidth = maxWidth;
+      newHeight = Math.round(maxWidth / currentRatio);
+    } else {
+      // Height is limiting factor
+      newHeight = maxHeight;
+      newWidth = Math.round(maxHeight * currentRatio);
+    }
+    
+    this.resize(newWidth, newHeight);
   }
 
   /**

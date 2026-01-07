@@ -297,9 +297,21 @@ export class Canvas {
    * @param width - Width (defaults to canvas width)
    * @param height - Height (defaults to canvas height)
    * @returns ImageData
+   * @throws Error if canvas is destroyed or dimensions are invalid
    */
   getImageData(x: number = 0, y: number = 0, width?: number, height?: number): ImageData {
-    return getImageData(this._ctx, x, y, width ?? this.width, height ?? this.height);
+    if (this._destroyed) {
+      throw new Error('Cannot get image data from destroyed canvas');
+    }
+    
+    const w = width ?? this.width;
+    const h = height ?? this.height;
+    
+    if (w <= 0 || h <= 0) {
+      throw new Error(`Invalid dimensions for getImageData: ${w}x${h}`);
+    }
+    
+    return getImageData(this._ctx, x, y, w, h);
   }
 
   /**
@@ -307,8 +319,12 @@ export class Canvas {
    * @param imageData - ImageData to put
    * @param x - X coordinate
    * @param y - Y coordinate
+   * @throws Error if canvas is destroyed
    */
   putImageData(imageData: ImageData, x: number = 0, y: number = 0): void {
+    if (this._destroyed) {
+      throw new Error('Cannot put image data to destroyed canvas');
+    }
     putImageData(this._ctx, imageData, x, y);
   }
 
@@ -323,16 +339,24 @@ export class Canvas {
 
   /**
    * Clear the canvas
+   * @throws Error if canvas is destroyed
    */
   clear(): void {
+    if (this._destroyed) {
+      throw new Error('Cannot clear destroyed canvas');
+    }
     clearCanvas(this._ctx, this.width, this.height);
     this.fillBackground();
   }
 
   /**
    * Reset canvas to original image
+   * @throws Error if canvas is destroyed
    */
   reset(): void {
+    if (this._destroyed) {
+      throw new Error('Cannot reset destroyed canvas');
+    }
     if (this._originalImageData) {
       this.clear();
       this.putImageData(this._originalImageData);
@@ -345,6 +369,193 @@ export class Canvas {
    */
   setBackgroundColor(color: string): void {
     this._backgroundColor = color;
+  }
+
+  /**
+   * Rotate the canvas by specified degrees
+   * @param degrees - Rotation angle (90, 180, 270, or any value)
+   * @throws Error if canvas is destroyed
+   */
+  rotate(degrees: number): void {
+    if (this._destroyed) {
+      throw new Error('Cannot rotate destroyed canvas');
+    }
+    
+    const radians = (degrees * Math.PI) / 180;
+    const sin = Math.abs(Math.sin(radians));
+    const cos = Math.abs(Math.cos(radians));
+    
+    const oldWidth = this.width;
+    const oldHeight = this.height;
+    
+    // Calculate new dimensions
+    const newWidth = Math.round(oldWidth * cos + oldHeight * sin);
+    const newHeight = Math.round(oldWidth * sin + oldHeight * cos);
+    
+    // Save current content
+    const imageData = this.getImageData();
+    
+    // Create temp canvas with old content
+    const tempCanvas = document.createElement('canvas');
+    tempCanvas.width = oldWidth;
+    tempCanvas.height = oldHeight;
+    const tempCtx = tempCanvas.getContext('2d');
+    if (!tempCtx) return;
+    tempCtx.putImageData(imageData, 0, 0);
+    
+    // Resize main canvas
+    this._canvas.width = newWidth;
+    this._canvas.height = newHeight;
+    
+    // Fill background
+    this.fillBackground();
+    
+    // Draw rotated content
+    this._ctx.save();
+    this._ctx.translate(newWidth / 2, newHeight / 2);
+    this._ctx.rotate(radians);
+    this._ctx.drawImage(tempCanvas, -oldWidth / 2, -oldHeight / 2);
+    this._ctx.restore();
+    
+    // Update original image if exists
+    if (this._originalImage) {
+      this._originalImageData = this.getImageData();
+    }
+  }
+
+  /**
+   * Flip the canvas horizontally or vertically
+   * @param direction - 'horizontal' or 'vertical'
+   * @throws Error if canvas is destroyed
+   */
+  flip(direction: 'horizontal' | 'vertical'): void {
+    if (this._destroyed) {
+      throw new Error('Cannot flip destroyed canvas');
+    }
+    
+    // Save current content
+    const imageData = this.getImageData();
+    
+    // Create temp canvas
+    const tempCanvas = document.createElement('canvas');
+    tempCanvas.width = this.width;
+    tempCanvas.height = this.height;
+    const tempCtx = tempCanvas.getContext('2d');
+    if (!tempCtx) return;
+    tempCtx.putImageData(imageData, 0, 0);
+    
+    // Clear and redraw flipped
+    this.clear();
+    
+    this._ctx.save();
+    if (direction === 'horizontal') {
+      this._ctx.translate(this.width, 0);
+      this._ctx.scale(-1, 1);
+    } else {
+      this._ctx.translate(0, this.height);
+      this._ctx.scale(1, -1);
+    }
+    this._ctx.drawImage(tempCanvas, 0, 0);
+    this._ctx.restore();
+    
+    // Update original image data if exists
+    if (this._originalImage) {
+      this._originalImageData = this.getImageData();
+    }
+  }
+
+  /**
+   * Apply crop to the canvas
+   * @param x - Crop region X
+   * @param y - Crop region Y
+   * @param width - Crop width
+   * @param height - Crop height
+   * @throws Error if canvas is destroyed or dimensions are invalid
+   */
+  crop(x: number, y: number, width: number, height: number): void {
+    if (this._destroyed) {
+      throw new Error('Cannot crop destroyed canvas');
+    }
+    
+    if (width <= 0 || height <= 0) {
+      throw new Error(`Invalid crop dimensions: ${width}x${height}`);
+    }
+    
+    // Clamp to canvas bounds
+    const clampedX = Math.max(0, Math.min(x, this.width - 1));
+    const clampedY = Math.max(0, Math.min(y, this.height - 1));
+    const clampedW = Math.min(width, this.width - clampedX);
+    const clampedH = Math.min(height, this.height - clampedY);
+    
+    if (clampedW <= 0 || clampedH <= 0) {
+      throw new Error('Crop region is outside canvas bounds');
+    }
+    
+    // Get cropped region
+    const croppedData = this._ctx.getImageData(clampedX, clampedY, clampedW, clampedH);
+    
+    // Resize canvas
+    this._canvas.width = clampedW;
+    this._canvas.height = clampedH;
+    
+    // Fill background and put cropped data
+    this.fillBackground();
+    this._ctx.putImageData(croppedData, 0, 0);
+    
+    // Update original image data
+    this._originalImageData = this.getImageData();
+  }
+
+  /**
+   * Scale the canvas to new dimensions
+   * @param width - New width
+   * @param height - New height
+   * @param maintainAspectRatio - Whether to maintain aspect ratio (default: false)
+   * @throws Error if canvas is destroyed or dimensions are invalid
+   */
+  scale(width: number, height: number, maintainAspectRatio: boolean = false): void {
+    if (this._destroyed) {
+      throw new Error('Cannot scale destroyed canvas');
+    }
+    
+    if (width <= 0 || height <= 0) {
+      throw new Error(`Invalid scale dimensions: ${width}x${height}`);
+    }
+    
+    let targetWidth = Math.round(width);
+    let targetHeight = Math.round(height);
+    
+    if (maintainAspectRatio) {
+      const ratio = Math.min(width / this.width, height / this.height);
+      targetWidth = Math.round(this.width * ratio);
+      targetHeight = Math.round(this.height * ratio);
+    }
+    
+    // Save current content
+    const imageData = this.getImageData();
+    
+    // Create temp canvas
+    const tempCanvas = document.createElement('canvas');
+    tempCanvas.width = this.width;
+    tempCanvas.height = this.height;
+    const tempCtx = tempCanvas.getContext('2d');
+    if (!tempCtx) return;
+    tempCtx.putImageData(imageData, 0, 0);
+    
+    // Resize main canvas
+    this._canvas.width = targetWidth;
+    this._canvas.height = targetHeight;
+    
+    // Fill background
+    this.fillBackground();
+    
+    // Draw scaled content with high quality
+    this._ctx.imageSmoothingEnabled = true;
+    this._ctx.imageSmoothingQuality = 'high';
+    this._ctx.drawImage(tempCanvas, 0, 0, targetWidth, targetHeight);
+    
+    // Update original image data
+    this._originalImageData = this.getImageData();
   }
 
   /**

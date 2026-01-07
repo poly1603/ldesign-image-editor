@@ -2238,6 +2238,13 @@ export class Toolbar {
   }
 
   private async exportImage(): Promise<void> {
+    // Check if advanced export dialog is enabled
+    if (this.options.enableExportDialog) {
+      this.showExportDialog();
+      return;
+    }
+    
+    // Default: quick download as PNG
     try {
       const data = await this.editor.export({
         format: 'png',
@@ -2251,6 +2258,109 @@ export class Toolbar {
       link.click();
     } catch (err) {
       console.error('Export failed:', err);
+    }
+  }
+  
+  /**
+   * Show advanced export dialog
+   */
+  private async showExportDialog(): Promise<void> {
+    // Dynamic import to avoid circular dependencies
+    const { ExportDialog, applyWatermark } = await import('./ExportDialog');
+    
+    const dialog = new ExportDialog({
+      width: this.editor.width,
+      height: this.editor.height,
+      format: 'png',
+      quality: 0.92,
+      enableWatermark: this.options.enableWatermark,
+      canvas: this.editor.canvas,
+      enableClipboard: true,
+    });
+    
+    const result = await dialog.show();
+    if (!result) return;
+    
+    try {
+      // Handle copy action (already done in dialog)
+      if (result.action === 'copy') {
+        return;
+      }
+      
+      // Prepare export options
+      const exportOptions = {
+        format: result.format,
+        quality: result.quality,
+        width: result.width,
+        height: result.height,
+        preserveTransparency: result.preserveTransparency,
+        backgroundColor: result.backgroundColor,
+        type: 'base64' as const,
+      };
+      
+      // Export image
+      let data = await this.editor.export(exportOptions) as string;
+      
+      // Apply watermark if specified
+      if (result.watermark?.text) {
+        const tempCanvas = document.createElement('canvas');
+        tempCanvas.width = result.width;
+        tempCanvas.height = result.height;
+        const ctx = tempCanvas.getContext('2d');
+        if (ctx) {
+          const img = new Image();
+          img.src = data;
+          await new Promise((resolve) => { img.onload = resolve; });
+          ctx.drawImage(img, 0, 0);
+          applyWatermark(tempCanvas, result.watermark);
+          data = tempCanvas.toDataURL(`image/${result.format}`, result.quality);
+        }
+      }
+      
+      // Download
+      const link = document.createElement('a');
+      link.href = data;
+      const extension = result.format === 'jpeg' ? 'jpg' : result.format;
+      link.download = `image-${Date.now()}.${extension}`;
+      link.click();
+    } catch (err) {
+      console.error('Export failed:', err);
+    }
+  }
+  
+  /**
+   * Export with specific format (public API)
+   * @param format - Image format
+   * @param quality - Quality (0-1) for jpeg/webp
+   */
+  async exportAs(format: 'png' | 'jpeg' | 'jpg' | 'webp' = 'png', quality = 0.92): Promise<void> {
+    try {
+      const data = await this.editor.export({
+        format,
+        quality,
+        type: 'base64',
+      });
+      
+      const link = document.createElement('a');
+      link.href = data as string;
+      const extension = format === 'jpeg' ? 'jpg' : format;
+      link.download = `image-${Date.now()}.${extension}`;
+      link.click();
+    } catch (err) {
+      console.error('Export failed:', err);
+    }
+  }
+  
+  /**
+   * Copy current image to clipboard
+   */
+  async copyToClipboard(): Promise<boolean> {
+    try {
+      await this.editor.copyToClipboard();
+      return true;
+    } catch (err) {
+      console.error('Copy to clipboard failed:', err);
+      return false;
     }
   }
 

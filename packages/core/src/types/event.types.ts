@@ -23,7 +23,17 @@ export interface EditorEvents {
   /** Before export */
   'before-export': { options: ExportOptions };
   /** After export */
-  'after-export': { data: string | Blob | File };
+  'after-export': { data: string | Blob | File | ArrayBuffer };
+  /** Image transformed (rotate, flip, crop, resize) */
+  transform: {
+    type: 'rotate' | 'flip' | 'crop' | 'resize';
+    degrees?: number;
+    direction?: 'horizontal' | 'vertical';
+    x?: number;
+    y?: number;
+    width?: number;
+    height?: number;
+  };
   /** Editor destroyed */
   destroy: void;
 }

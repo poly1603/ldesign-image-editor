@@ -5,13 +5,22 @@
 
 /**
  * Export format options
+ * - png: Lossless format, supports transparency
+ * - jpeg/jpg: Lossy format, smaller file size, no transparency
+ * - webp: Modern format, good compression, supports transparency
+ * - bmp: Uncompressed bitmap format
+ * - gif: Limited colors (256), supports animation
  */
-export type ExportFormat = 'png' | 'jpeg' | 'webp';
+export type ExportFormat = 'png' | 'jpeg' | 'jpg' | 'webp' | 'bmp' | 'gif';
 
 /**
  * Export data type options
+ * - base64: Data URL string (data:image/...)
+ * - blob: Blob object for further processing
+ * - file: File object for upload
+ * - arraybuffer: ArrayBuffer for binary operations
  */
-export type ExportDataType = 'base64' | 'blob' | 'file';
+export type ExportDataType = 'base64' | 'blob' | 'file' | 'arraybuffer';
 
 /**
  * Device type options
@@ -23,18 +32,26 @@ export type DeviceType = 'auto' | 'pc' | 'mobile';
  * Requirements: 7.1, 7.2, 7.3, 7.4, 7.5
  */
 export interface ExportOptions {
-  /** Export format: png, jpeg, or webp */
+  /** Export format: png, jpeg, jpg, webp, bmp, gif */
   format?: ExportFormat;
-  /** Quality 0-1, only for jpeg/webp */
+  /** Quality 0-1, only for jpeg/webp (default: 0.92) */
   quality?: number;
-  /** Export width */
+  /** Export width (pixels) */
   width?: number;
-  /** Export height */
+  /** Export height (pixels) */
   height?: number;
-  /** Data type: base64, blob, or file */
+  /** Data type: base64, blob, file, or arraybuffer */
   type?: ExportDataType;
-  /** File name, only for file type */
+  /** File name (without extension), only for file type */
   fileName?: string;
+  /** Whether to preserve transparency (only for png/webp) */
+  preserveTransparency?: boolean;
+  /** Background color when transparency is not preserved (default: '#ffffff') */
+  backgroundColor?: string;
+  /** Maximum file size in bytes (will reduce quality if exceeded) */
+  maxFileSize?: number;
+  /** Whether to add timestamp to filename */
+  addTimestamp?: boolean;
 }
 
 /**
