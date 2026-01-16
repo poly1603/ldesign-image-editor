@@ -34,6 +34,8 @@ export interface ToolbarConfig {
   placeholderText?: string;
   /** Placeholder sub text */
   placeholderSubText?: string;
+  /** Default tool to select when image is loaded */
+  defaultTool?: ToolName;
 }
 
 /**

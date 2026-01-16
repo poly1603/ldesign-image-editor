@@ -1,6 +1,6 @@
 {
   "name": "@ldesign/image-editor-vue",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Vue components for @ldesign/image-editor",
   "type": "module",
   "main": "./dist/index.umd.js",

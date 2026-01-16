@@ -4930,7 +4930,7 @@ class $e {
       i && (i.disabled = !t), a && (a.disabled = !e);
     }), this.editor.on("image-loaded", () => {
       setTimeout(() => {
-        this.pureImageData || this.savePureImage(), this.saveOriginalImage();
+        this.pureImageData || this.savePureImage(), this.saveOriginalImage(), this.options.defaultTool && this.selectTool(this.options.defaultTool);
       }, 50);
     });
   }

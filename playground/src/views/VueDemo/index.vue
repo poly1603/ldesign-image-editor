@@ -286,7 +286,7 @@ const generateVueCode = computed(() => {
   const autoHideStr = editorSettings.value.autoHide;
   const historyLimitStr = editorSettings.value.historyLimit;
   
-  // 组件模式代码 - 使用 ImageEditor 组件
+  // 组件模式代码 - 使用 ImageEditor 组件 (新简化 API)
   const componentCode = `<script setup lang="ts">
 import { ref } from 'vue';
 import { ImageEditor } from '@ldesign/image-editor-vue';
@@ -305,18 +305,6 @@ const plugins = [MosaicPlugin, TextPlugin, FilterPlugin];
 // 禁用的工具列表
 const disabledTools: ToolName[] = ${disabledToolsStr};
 
-// 编辑器选项
-const editorOptions = {
-  historyLimit: ${historyLimitStr},
-  responsive: true,
-  toolbar: {
-    theme: '${themeStr}',
-    primaryColor: '${primaryColorStr}',
-    autoHide: ${autoHideStr},
-    disabledTools,
-  },
-};
-
 // 编辑器就绪
 const onEditorReady = (e: { width: number; height: number }) => {
   console.log('Editor ready:', e.width, 'x', e.height);
@@ -331,23 +319,53 @@ const loadImage = (file: File) => {
   reader.readAsDataURL(file);
 };
 
-// 导出图片
+// 导出图片 - 直接使用快捷方法
 const exportImage = async () => {
   if (!editorRef.value) return;
+  // 方式1: 使用 toPNG/toJPEG 快捷方法
+  const dataUrl = editorRef.value.toPNG();
+  // 方式2: 使用完整导出选项
   const blob = await editorRef.value.export({ format: 'png', type: 'blob' });
   return blob;
+};
+
+// 图像变换操作
+const handleTransform = () => {
+  if (!editorRef.value) return;
+  editorRef.value.rotateRight();      // 顺时针旋转90°
+  editorRef.value.flipHorizontal();   // 水平翻转
+};
+
+// 动态修改工具栏
+const updateToolbar = () => {
+  if (!editorRef.value) return;
+  editorRef.value.setTheme('light');          // 切换主题
+  editorRef.value.setPrimaryColor('#ff6b6b'); // 修改主题色
+  editorRef.value.disableTool('mosaic');      // 禁用马赛克
 };
 <\/script>
 
 <template>
   <div class="editor-wrapper">
+    <!-- 新简化 API: 直接传递 props，无需嵌套 options -->
     <ImageEditor
       ref="editorRef"
       :image="imageSrc"
       :plugins="plugins"
-      :options="editorOptions"
+      theme="${themeStr}"
+      primary-color="${primaryColorStr}"
+      :disabled-tools="disabledTools"
+      :history-limit="${historyLimitStr}"
+      responsive
       @ready="onEditorReady"
-    />
+      @tool-change="(e) => console.log('Tool:', e.tool)"
+      @history-change="(e) => console.log('History:', e)"
+    >
+      <!-- 可选: 自定义工具栏插槽 -->
+      <template #toolbar="{ currentTool, undo, redo, canUndo, canRedo }">        
+        <!-- 自定义工具栏内容 -->
+      </template>
+    </ImageEditor>
   </div>
 </template>
 
@@ -359,10 +377,15 @@ const exportImage = async () => {
 }
 </style>`;
 
-  // Hook 模式代码 - 使用 useImageEditor hook
+  // Hook 模式代码 - 使用多个 composables
   const hookCode = `<script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { useImageEditor } from '@ldesign/image-editor-vue';
+import { 
+  useImageEditor,
+  useEditorToolbar,
+  useEditorTransform,
+  useEditorExport,
+} from '@ldesign/image-editor-vue';
 import { MosaicPlugin, TextPlugin, FilterPlugin } from '@ldesign/image-editor';
 import type { ToolName } from '@ldesign/image-editor';
 
@@ -372,7 +395,7 @@ const containerRef = ref<HTMLDivElement | null>(null);
 // 禁用的工具列表
 const disabledTools: ToolName[] = ${disabledToolsStr};
 
-// 使用 useImageEditor hook
+// 1️⃣ 核心 Hook - 编辑器生命周期管理
 const {
   editor,
   isReady,
@@ -401,7 +424,44 @@ const {
   },
 });
 
-// 初始化编辑器
+// 2️⃣ 工具栏 Hook - 动态控制工具栏
+const {
+  theme,
+  primaryColor,
+  setTheme,
+  setPrimaryColor,
+  toggleTool,
+  enableTool,
+  disableTool,
+} = useEditorToolbar(editor, {
+  theme: '${themeStr}',
+  primaryColor: '${primaryColorStr}',
+  disabledTools,
+});
+
+// 3️⃣ 变换 Hook - 图像变换操作
+const {
+  rotate,
+  rotateLeft,
+  rotateRight,
+  flipHorizontal,
+  flipVertical,
+  resize,
+  scale,
+  reset,
+} = useEditorTransform(editor);
+
+// 4️⃣ 导出 Hook - 多种导出方式
+const {
+  toPNG,
+  toJPEG,
+  toBase64,
+  download,
+  copyToClipboard,
+  getImageInfo,
+} = useEditorExport(editor);
+
+// 初始化
 onMounted(() => {
   if (containerRef.value) {
     init(containerRef.value);
@@ -413,19 +473,29 @@ const handleFileUpload = async (event: Event) => {
   const input = event.target as HTMLInputElement;
   const file = input.files?.[0];
   if (!file) return;
-
   const reader = new FileReader();
-  reader.onload = (e) => {
-    loadImage(e.target?.result as string);
-  };
+  reader.onload = (e) => loadImage(e.target?.result as string);
   reader.readAsDataURL(file);
 };
 
-// 导出图片
-const handleExport = async () => {
-  const blob = await exportImage({ format: 'png', type: 'blob' });
-  console.log('Exported:', blob);
+// 快速导出示例
+const handleQuickExport = () => {
+  const dataUrl = toPNG();           // PNG 快捷导出
+  const jpegUrl = toJPEG(0.8);       // JPEG 带质量参数
+  const info = getImageInfo();       // 获取图片信息
+  console.log('Size:', info?.width, 'x', info?.height);
 };
+
+// 变换操作示例
+const handleTransform = () => {
+  rotateRight();                     // 顺时针旋转 90°
+  flipHorizontal();                  // 水平翻转
+  scale(0.5);                        // 缩小到 50%
+};
+
+// 一键下载或复制
+const handleDownload = () => download('my-image', { format: 'png' });
+const handleCopy = () => copyToClipboard();
 <\/script>
 
 <template>
@@ -434,7 +504,10 @@ const handleExport = async () => {
       <input type="file" accept="image/*" @change="handleFileUpload" />
       <button @click="undo" :disabled="!canUndo">撤销</button>
       <button @click="redo" :disabled="!canRedo">重做</button>
-      <button @click="handleExport" :disabled="!isReady">导出</button>
+      <button @click="rotateRight">旋转</button>
+      <button @click="flipHorizontal">翻转</button>
+      <button @click="handleDownload" :disabled="!isReady">下载</button>
+      <button @click="handleCopy" :disabled="!isReady">复制</button>
       <span v-if="isReady">{{ width }} × {{ height }}</span>
     </div>
     <div ref="containerRef" class="editor-container" />
@@ -447,7 +520,6 @@ const handleExport = async () => {
   flex-direction: column;
   height: 100vh;
 }
-
 .toolbar {
   display: flex;
   gap: 8px;
@@ -455,7 +527,6 @@ const handleExport = async () => {
   background: ${themeStr === 'dark' ? '#2d2d2d' : '#fff'};
   border-bottom: 1px solid ${themeStr === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'};
 }
-
 .editor-container {
   flex: 1;
   background: ${themeStr === 'dark' ? '#1a1a1a' : '#f5f5f5'};

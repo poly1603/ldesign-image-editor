@@ -2,12 +2,24 @@
 /**
  * ImageEditor Vue Component
  * Requirements: 9.1, 9.2, 9.3, 9.4
+ * 
+ * Enhanced with:
+ * - v-model support for image data
+ * - provide/inject context for child components
+ * - More slots for customization
+ * - Transform methods exposed
+ * - Toolbar configuration props
  */
 
-import { ref, watch, onMounted, onUnmounted } from 'vue';
+import { ref, watch, onMounted, onUnmounted, provide, computed } from 'vue';
 import type { PluginConstructor, ExportOptions } from '@ldesign/image-editor';
 import { useImageEditor } from '../../composables/useImageEditor';
 import { useEditorEvents } from '../../composables/useEditorEvents';
+import { useEditorToolbar } from '../../composables/useEditorToolbar';
+import { useEditorTransform } from '../../composables/useEditorTransform';
+import { useEditorExport } from '../../composables/useEditorExport';
+import { EditorInjectionKey } from '../../types';
+import type { ToolbarTheme, ToolbarOptions } from '../../types';
 
 /**
  * Additional editor options type (excluding props that are passed separately)
@@ -17,18 +29,7 @@ interface AdditionalEditorOptions {
   historyLimit?: number;
   responsive?: boolean;
   deviceType?: 'auto' | 'pc' | 'mobile';
-  toolbar?: {
-    theme?: 'light' | 'dark' | 'auto';
-    zoom?: boolean;
-    tools?: boolean;
-    history?: boolean;
-    export?: boolean;
-    primaryColor?: string;
-    disabledTools?: string[];
-    autoHide?: boolean;
-    placeholderText?: string;
-    placeholderSubText?: string;
-  } | false;
+  toolbar?: ToolbarOptions | false;
 }
 
 /**
@@ -36,7 +37,7 @@ interface AdditionalEditorOptions {
  * Requirements: 9.2
  */
 const props = withDefaults(defineProps<{
-  /** Image source URL */
+  /** Image source URL (supports v-model:image) */
   image?: string;
   /** Canvas width */
   width?: number;
@@ -46,12 +47,36 @@ const props = withDefaults(defineProps<{
   plugins?: PluginConstructor[];
   /** Additional editor options */
   options?: AdditionalEditorOptions;
+  /** Toolbar theme (shortcut for options.toolbar.theme) */
+  theme?: ToolbarTheme;
+  /** Primary color (shortcut for options.toolbar.primaryColor) */
+  primaryColor?: string;
+  /** Disabled tools (shortcut for options.toolbar.disabledTools) */
+  disabledTools?: string[];
+  /** Whether toolbar is disabled */
+  toolbarDisabled?: boolean;
+  /** History limit */
+  historyLimit?: number;
+  /** Background color */
+  backgroundColor?: string;
+  /** Whether responsive */
+  responsive?: boolean;
+  /** Default tool to select when image is loaded (e.g., 'pen', 'mosaic', 'rect') */
+  defaultTool?: string;
 }>(), {
   image: undefined,
   width: undefined,
   height: undefined,
   plugins: () => [],
   options: () => ({}),
+  theme: undefined,
+  primaryColor: undefined,
+  disabledTools: undefined,
+  toolbarDisabled: false,
+  historyLimit: undefined,
+  backgroundColor: undefined,
+  responsive: undefined,
+  defaultTool: undefined,
 });
 
 /**
@@ -75,10 +100,33 @@ const emit = defineEmits<{
   (e: 'after-export', payload: { data: string | Blob | File }): void;
   /** Editor destroyed */
   (e: 'destroy'): void;
+  /** Image data changed (for v-model:image) */
+  (e: 'update:image', value: string | undefined): void;
+  /** Transform applied */
+  (e: 'transform', payload: { type: string; [key: string]: unknown }): void;
 }>();
 
 // Container element ref
 const containerRef = ref<HTMLDivElement>();
+
+// Compute merged options from props
+const mergedOptions = computed(() => {
+  const toolbarConfig = props.toolbarDisabled ? false : {
+    ...(typeof props.options?.toolbar === 'object' ? props.options.toolbar : {}),
+    ...(props.theme && { theme: props.theme }),
+    ...(props.primaryColor && { primaryColor: props.primaryColor }),
+    ...(props.disabledTools && { disabledTools: props.disabledTools }),
+    ...(props.defaultTool && { defaultTool: props.defaultTool }),
+  };
+
+  return {
+    ...props.options,
+    ...(props.historyLimit !== undefined && { historyLimit: props.historyLimit }),
+    ...(props.backgroundColor !== undefined && { backgroundColor: props.backgroundColor }),
+    ...(props.responsive !== undefined && { responsive: props.responsive }),
+    toolbar: toolbarConfig,
+  };
+});
 
 // Initialize useImageEditor composable
 const {
@@ -103,8 +151,56 @@ const {
   width: props.width,
   height: props.height,
   plugins: props.plugins,
-  options: props.options,
+  options: mergedOptions.value,
 });
+
+// Initialize toolbar composable
+const {
+  theme: toolbarTheme,
+  primaryColor: toolbarPrimaryColor,
+  disabledTools: toolbarDisabledTools,
+  setTheme,
+  setPrimaryColor,
+  setDisabledTools,
+  toggleTool,
+  enableTool,
+  disableTool,
+} = useEditorToolbar(editor, {
+  theme: props.theme || (props.options?.toolbar && typeof props.options.toolbar === 'object' ? props.options.toolbar.theme : undefined) || 'dark',
+  primaryColor: props.primaryColor || (props.options?.toolbar && typeof props.options.toolbar === 'object' ? props.options.toolbar.primaryColor : undefined),
+  disabledTools: props.disabledTools || (props.options?.toolbar && typeof props.options.toolbar === 'object' ? props.options.toolbar.disabledTools : undefined),
+});
+
+// Initialize transform composable
+const {
+  rotate,
+  rotateLeft,
+  rotateRight,
+  rotate180,
+  flipHorizontal,
+  flipVertical,
+  crop,
+  resize,
+  scale,
+  fit,
+  reset,
+  clear,
+} = useEditorTransform(editor);
+
+// Initialize export composable
+const {
+  toPNG,
+  toJPEG,
+  toWebP,
+  toBase64,
+  toBlob,
+  download,
+  copyToClipboard,
+  getImageInfo,
+} = useEditorExport(editor);
+
+// Provide editor instance for child components
+provide(EditorInjectionKey, editor);
 
 // Setup event forwarding
 const {
@@ -149,6 +245,28 @@ watch(
   }
 );
 
+// Watch for toolbar props changes
+watch(
+  () => props.theme,
+  (newTheme) => {
+    if (newTheme) setTheme(newTheme);
+  }
+);
+
+watch(
+  () => props.primaryColor,
+  (newColor) => {
+    if (newColor) setPrimaryColor(newColor);
+  }
+);
+
+watch(
+  () => props.disabledTools,
+  (newTools) => {
+    if (newTools) setDisabledTools(newTools);
+  }
+);
+
 // Cleanup on unmount
 onUnmounted(() => {
   destroy();
@@ -159,6 +277,7 @@ onUnmounted(() => {
  * Requirements: 9.4
  */
 defineExpose({
+  // ============ Core State ============
   /** Editor instance */
   editor,
   /** Whether editor is ready */
@@ -177,6 +296,8 @@ defineExpose({
   width: editorWidth,
   /** Canvas height */
   height: editorHeight,
+  
+  // ============ Core Methods ============
   /** Load image */
   loadImage,
   /** Export image */
@@ -187,17 +308,108 @@ defineExpose({
   redo,
   /** Set current tool */
   setTool,
+  
+  // ============ Toolbar Control ============
+  /** Current toolbar theme */
+  toolbarTheme,
+  /** Current toolbar primary color */
+  toolbarPrimaryColor,
+  /** Current disabled tools */
+  toolbarDisabledTools,
+  /** Set toolbar theme */
+  setTheme,
+  /** Set toolbar primary color */
+  setPrimaryColor,
+  /** Set disabled tools */
+  setDisabledTools,
+  /** Toggle tool enabled state */
+  toggleTool,
+  /** Enable a tool */
+  enableTool,
+  /** Disable a tool */
+  disableTool,
+  
+  // ============ Transform Methods ============
+  /** Rotate image by degrees */
+  rotate,
+  /** Rotate 90° left */
+  rotateLeft,
+  /** Rotate 90° right */
+  rotateRight,
+  /** Rotate 180° */
+  rotate180,
+  /** Flip horizontally */
+  flipHorizontal,
+  /** Flip vertically */
+  flipVertical,
+  /** Crop to region */
+  crop,
+  /** Resize image */
+  resize,
+  /** Scale by factor */
+  scale,
+  /** Fit to dimensions */
+  fit,
+  /** Reset to original */
+  reset,
+  /** Clear canvas */
+  clear,
+  
+  // ============ Export Methods ============
+  /** Export to PNG */
+  toPNG,
+  /** Export to JPEG */
+  toJPEG,
+  /** Export to WebP */
+  toWebP,
+  /** Export to base64 */
+  toBase64,
+  /** Export to Blob */
+  toBlob,
+  /** Download image */
+  download,
+  /** Copy to clipboard */
+  copyToClipboard,
+  /** Get image info */
+  getImageInfo,
 });
 </script>
 
 <template>
   <div ref="containerRef" class="image-editor-container">
-    <slot name="loading" v-if="isLoading">
+    <!-- Default slot for custom content -->
+    <slot :editor="editor" :isReady="isReady" :isLoading="isLoading" :error="error" />
+    
+    <!-- Loading slot -->
+    <slot name="loading" v-if="isLoading" :isLoading="isLoading">
       <div class="image-editor-loading">Loading...</div>
     </slot>
+    
+    <!-- Error slot -->
     <slot name="error" v-if="error" :error="error">
       <div class="image-editor-error">{{ error.message }}</div>
     </slot>
+    
+    <!-- Toolbar slot - for custom toolbar -->
+    <slot 
+      name="toolbar" 
+      :currentTool="currentTool" 
+      :canUndo="canUndo" 
+      :canRedo="canRedo" 
+      :setTool="setTool" 
+      :undo="undo" 
+      :redo="redo"
+      :isReady="isReady"
+    />
+    
+    <!-- Actions slot - for custom action buttons -->
+    <slot 
+      name="actions" 
+      :exportImage="exportImage" 
+      :download="download"
+      :copyToClipboard="copyToClipboard"
+      :isReady="isReady"
+    />
   </div>
 </template>
 

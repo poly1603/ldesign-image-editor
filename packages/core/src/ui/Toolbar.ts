@@ -48,6 +48,8 @@ export interface ToolbarOptions {
   enableExportDialog?: boolean;
   /** Enable watermark in export */
   enableWatermark?: boolean;
+  /** Default tool to select when image is loaded */
+  defaultTool?: ToolName;
 }
 
 const defaultOptions: ToolbarOptions & { zoom: boolean; tools: boolean; history: boolean; export: boolean; theme: 'light' | 'dark' | 'auto'; autoHide: boolean } = {
@@ -1404,6 +1406,11 @@ export class Toolbar {
           this.savePureImage();
         }
         this.saveOriginalImage();
+        
+        // Select default tool if specified
+        if (this.options.defaultTool) {
+          this.selectTool(this.options.defaultTool);
+        }
       }, 50);
     });
   }
