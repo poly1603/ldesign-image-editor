@@ -1,19 +1,19 @@
-var zt = Object.defineProperty;
-var Dt = (r, t, e) => t in r ? zt(r, t, { enumerable: !0, configurable: !0, writable: !0, value: e }) : r[t] = e;
-var c = (r, t, e) => Dt(r, typeof t != "symbol" ? t + "" : t, e);
-const st = {
+var At = Object.defineProperty;
+var Ft = (r, t, e) => t in r ? At(r, t, { enumerable: !0, configurable: !0, writable: !0, value: e }) : r[t] = e;
+var c = (r, t, e) => Ft(r, typeof t != "symbol" ? t + "" : t, e);
+const ct = {
   width: 800,
   height: 600,
   backgroundColor: "transparent",
   historyLimit: 50,
   responsive: !0,
   deviceType: "auto"
-}, Ne = {
+}, ci = {
   blockSize: 10,
   intensity: 100,
   mode: "free",
   brushSize: 20
-}, We = {
+}, hi = {
   fontSize: 16,
   fontFamily: "Arial",
   color: "#000000",
@@ -22,7 +22,7 @@ const st = {
   underline: !1,
   align: "left",
   lineHeight: 1.2
-}, Ye = {
+}, di = {
   brightness: 0,
   contrast: 0,
   saturation: 0,
@@ -30,7 +30,7 @@ const st = {
   grayscale: 0,
   sepia: 0,
   invert: 0
-}, Lt = {
+}, Ot = {
   format: "png",
   quality: 0.92,
   width: 0,
@@ -43,7 +43,7 @@ const st = {
   maxFileSize: 0,
   // 0 means no limit
   addTimestamp: !1
-}, Xe = {
+}, pi = {
   /** Editor is ready */
   READY: "ready",
   /** Error occurred */
@@ -60,7 +60,7 @@ const st = {
   AFTER_EXPORT: "after-export",
   /** Editor destroyed */
   DESTROY: "destroy"
-}, Ue = {
+}, ui = {
   /** Plugin installed */
   INSTALLED: "plugin-installed",
   /** Plugin activated */
@@ -69,7 +69,7 @@ const st = {
   DEACTIVATED: "plugin-deactivated",
   /** Plugin error */
   ERROR: "plugin-error"
-}, Ve = {
+}, gi = {
   /** Pointer down */
   POINTER_DOWN: "pointer-down",
   /** Pointer move */
@@ -83,115 +83,193 @@ const st = {
   /** Canvas resized */
   RESIZE: "resize"
 };
-function Pt(r) {
+function Ht(r) {
   return typeof r == "string" ? document.querySelector(r) : r;
 }
-function Rt(r, t) {
+function Nt(r, t) {
   const e = document.createElement("canvas");
   return e.width = r, e.height = t, e;
 }
-function Bt(r) {
+function qt(r) {
   const t = r.getContext("2d");
   if (!t)
     throw new Error("Failed to get 2D context from canvas");
   return t;
 }
-function _t(r) {
+function Wt(r) {
   return r.getBoundingClientRect();
 }
-function Ge(r, t) {
-  const e = _t(t);
+function fi(r, t) {
+  const e = Wt(t);
   return {
     x: r.clientX - e.left,
     y: r.clientY - e.top
   };
 }
-function $t(r, t, e) {
+function Ut(r, t, e) {
   r.width = t, r.height = e;
 }
-function rt(r, t, e) {
+function ht(r, t, e) {
   r.clearRect(0, 0, t, e);
 }
-function At(r, t, e, i) {
+function Yt(r, t, e, i) {
   r.fillStyle = i, r.fillRect(0, 0, t, e);
 }
-function Ot(r, t) {
+function Xt(r, t) {
   Object.assign(r.style, t);
 }
-function Ft(r) {
+function Vt(r) {
   var t;
   (t = r.parentNode) == null || t.removeChild(r);
 }
-function je(r) {
+function vi(r) {
   const t = r.getBoundingClientRect();
   return t.top >= 0 && t.left >= 0 && t.bottom <= window.innerHeight && t.right <= window.innerWidth;
 }
-function Ht(r) {
-  return new Promise((t, e) => {
-    if (r instanceof HTMLImageElement) {
-      r.complete ? t(r) : (r.onload = () => t(r), r.onerror = () => e(new Error("Failed to load image")));
+const Gt = 3e4;
+function jt(r, t = {}) {
+  const { timeout: e = Gt, crossOrigin: i = "anonymous", signal: a } = t;
+  return new Promise((n, s) => {
+    if (a != null && a.aborted) {
+      s(new DOMException("Image loading aborted", "AbortError"));
       return;
     }
-    const i = new Image();
-    i.crossOrigin = "anonymous", i.onload = () => t(i), i.onerror = () => e(new Error(`Failed to load image: ${r}`)), i.src = r;
+    if (r instanceof HTMLImageElement) {
+      r.complete && r.naturalWidth > 0 ? n(r) : r.complete && r.naturalWidth === 0 ? s(new Error("Failed to load image: invalid image element")) : (r.onload = () => n(r), r.onerror = () => s(new Error("Failed to load image")));
+      return;
+    }
+    if (!r || typeof r != "string") {
+      s(new Error("Invalid image source: must be a non-empty string or HTMLImageElement"));
+      return;
+    }
+    const o = new Image();
+    let l = null, h = !1;
+    const d = () => {
+      l && (clearTimeout(l), l = null), o.onload = null, o.onerror = null;
+    }, p = (u) => {
+      h || (h = !0, d(), u ? s(u) : n(o));
+    };
+    a && a.addEventListener("abort", () => {
+      p(new DOMException("Image loading aborted", "AbortError"));
+    }, { once: !0 }), e > 0 && (l = setTimeout(() => {
+      p(new Error(`Image loading timed out after ${e}ms: ${r}`));
+    }, e)), i !== null && (o.crossOrigin = i), o.onload = () => p(), o.onerror = () => p(new Error(`Failed to load image: ${r}`)), o.src = r;
   });
 }
-function nt(r) {
+function dt(r) {
   return {
     width: r.naturalWidth || r.width,
     height: r.naturalHeight || r.height
   };
 }
-function ot(r, t, e, i) {
+function pt(r, t, e, i) {
+  if (r <= 0 || t <= 0)
+    throw new Error(`Invalid source dimensions: ${r}x${t}. Both must be positive.`);
+  if (e <= 0 || i <= 0)
+    throw new Error(`Invalid max dimensions: ${e}x${i}. Both must be positive.`);
   const a = Math.min(e / r, i / t);
   return {
     width: Math.round(r * a),
     height: Math.round(t * a)
   };
 }
-function lt(r, t, e = 0, i = 0, a, s) {
-  a !== void 0 && s !== void 0 ? r.drawImage(t, e, i, a, s) : r.drawImage(t, e, i);
+function mi(r, t, e, i) {
+  if (r <= 0 || t <= 0 || e <= 0 || i <= 0)
+    return { width: Math.max(1, r), height: Math.max(1, t) };
+  const a = Math.min(e / r, i / t);
+  return {
+    width: Math.max(1, Math.round(r * a)),
+    height: Math.max(1, Math.round(t * a))
+  };
 }
-function qt(r, t = 0, e = 0, i, a) {
-  const s = i ?? r.canvas.width, n = a ?? r.canvas.height;
-  return r.getImageData(t, e, s, n);
+function ut(r, t, e = 0, i = 0, a, n) {
+  a !== void 0 && n !== void 0 ? r.drawImage(t, e, i, a, n) : r.drawImage(t, e, i);
 }
-function Nt(r, t, e = 0, i = 0) {
+function Zt(r, t = 0, e = 0, i, a) {
+  const n = i ?? r.canvas.width, s = a ?? r.canvas.height;
+  if (n <= 0 || s <= 0)
+    throw new Error(`Invalid dimensions for getImageData: ${n}x${s}. Both must be positive.`);
+  const o = Math.max(0, Math.min(t, r.canvas.width - 1)), l = Math.max(0, Math.min(e, r.canvas.height - 1)), h = Math.min(n, r.canvas.width - o), d = Math.min(s, r.canvas.height - l);
+  if (h <= 0 || d <= 0)
+    throw new Error("Region is outside canvas bounds");
+  return r.getImageData(o, l, h, d);
+}
+function Kt(r, t, e = 0, i = 0) {
   r.putImageData(t, e, i);
 }
-function vt(r) {
+function St(r) {
   return new ImageData(
     new Uint8ClampedArray(r.data),
     r.width,
     r.height
   );
 }
-function Ze(r, t) {
+function xi(r, t) {
   return new ImageData(r, t);
 }
 function q(r, t = "png", e = 0.92) {
   const i = `image/${t}`;
   return r.toDataURL(i, e);
 }
-function H(r, t = "png", e = 0.92) {
+function N(r, t = "png", e = 0.92) {
   return new Promise((i, a) => {
-    const s = `image/${t}`;
+    const n = `image/${t}`;
     r.toBlob(
-      (n) => {
-        n ? i(n) : a(new Error("Failed to convert canvas to blob"));
+      (s) => {
+        s ? i(s) : a(new Error("Failed to convert canvas to blob"));
       },
-      s,
+      n,
       e
     );
   });
 }
-function Ke(r, t, e) {
+function yi(r, t, e) {
+  if (t <= 0 || e <= 0)
+    throw new Error(`Invalid dimensions for scaled canvas: ${t}x${e}. Both must be positive.`);
   const i = document.createElement("canvas");
-  i.width = t, i.height = e;
+  i.width = Math.round(t), i.height = Math.round(e);
   const a = i.getContext("2d");
-  return a && a.drawImage(r, 0, 0, t, e), i;
+  if (!a)
+    throw new Error("Failed to get 2D context for scaled canvas");
+  return a.imageSmoothingEnabled = !0, a.imageSmoothingQuality = "high", a.drawImage(r, 0, 0, i.width, i.height), i;
 }
-function F(r, t, e) {
+function bi(r, t, e, i, a) {
+  if (i <= 0 || a <= 0)
+    throw new Error(`Invalid crop dimensions: ${i}x${a}. Both must be positive.`);
+  const n = document.createElement("canvas");
+  n.width = Math.round(i), n.height = Math.round(a);
+  const s = n.getContext("2d");
+  if (!s)
+    throw new Error("Failed to get 2D context for cropped canvas");
+  return s.drawImage(
+    r,
+    t,
+    e,
+    i,
+    a,
+    0,
+    0,
+    i,
+    a
+  ), n;
+}
+function wi(r, t) {
+  const e = t * Math.PI / 180, i = Math.abs(Math.sin(e)), a = Math.abs(Math.cos(e)), n = r.width, s = r.height, o = Math.round(n * a + s * i), l = Math.round(n * i + s * a), h = document.createElement("canvas");
+  h.width = o, h.height = l;
+  const d = h.getContext("2d");
+  if (!d)
+    throw new Error("Failed to get 2D context for rotated canvas");
+  return d.translate(o / 2, l / 2), d.rotate(e), d.drawImage(r, -n / 2, -s / 2), h;
+}
+function Ci(r, t) {
+  const e = document.createElement("canvas");
+  e.width = r.width, e.height = r.height;
+  const i = e.getContext("2d");
+  if (!i)
+    throw new Error("Failed to get 2D context for flipped canvas");
+  return t === "horizontal" ? (i.translate(e.width, 0), i.scale(-1, 1)) : (i.translate(0, e.height), i.scale(1, -1)), i.drawImage(r, 0, 0), e;
+}
+function H(r, t, e) {
   const i = t.getBoundingClientRect();
   if ("touches" in r) {
     const a = r.touches[0] || r.changedTouches[0];
@@ -213,42 +291,42 @@ function F(r, t, e) {
     pointerId: 0
   };
 }
-function Wt(r, t) {
+function Jt(r, t) {
   const e = r.clientX - t.clientX, i = r.clientY - t.clientY;
   return Math.sqrt(e * e + i * i);
 }
-function Yt(r, t) {
+function Qt(r, t) {
   return {
     x: (r.clientX + t.clientX) / 2,
     y: (r.clientY + t.clientY) / 2
   };
 }
-function Je(r, t, e) {
-  const i = r[0], a = r[1], s = Wt(i, a), n = t.getBoundingClientRect(), o = Yt(i, a);
+function Si(r, t, e) {
+  const i = r[0], a = r[1], n = Jt(i, a), s = t.getBoundingClientRect(), o = Qt(i, a);
   return {
     type: "pinch",
-    scale: s / e,
+    scale: n / e,
     center: {
-      x: o.x - n.left,
-      y: o.y - n.top
+      x: o.x - s.left,
+      y: o.y - s.top
     }
   };
 }
-function Qe(r, t) {
+function Mi(r, t) {
   return {
     type: "pan",
     deltaX: r,
     deltaY: t
   };
 }
-function ti(r, t) {
+function ki(r, t) {
   let e = 0;
   return (...i) => {
     const a = Date.now();
     a - e >= t && (e = a, r(...i));
   };
 }
-function ei(r, t) {
+function Ii(r, t) {
   let e = null;
   return (...i) => {
     e && clearTimeout(e), e = setTimeout(() => {
@@ -256,22 +334,22 @@ function ei(r, t) {
     }, t);
   };
 }
-function ii(r) {
+function Ti(r) {
   r.preventDefault();
 }
-function ai(r) {
+function Ei(r) {
   r.stopPropagation();
 }
-function si(r, t, e, i) {
+function Di(r, t, e, i) {
   return r.addEventListener(t, e, i), () => {
     r.removeEventListener(t, e, i);
   };
 }
-function Xt() {
+function te() {
   return typeof window > "u" ? !1 : "ontouchstart" in window || navigator.maxTouchPoints > 0 || // @ts-expect-error - msMaxTouchPoints is IE specific
   navigator.msMaxTouchPoints > 0;
 }
-function Ut() {
+function ee() {
   if (typeof navigator > "u")
     return !1;
   const r = navigator.userAgent.toLowerCase();
@@ -279,22 +357,22 @@ function Ut() {
     r
   );
 }
-function ri() {
+function zi() {
   return typeof navigator > "u" ? !1 : /iphone|ipad|ipod/i.test(navigator.userAgent.toLowerCase());
 }
-function ni() {
+function Li() {
   return typeof navigator > "u" ? !1 : /android/i.test(navigator.userAgent.toLowerCase());
 }
-function Vt() {
-  return Ut() || Xt() ? "mobile" : "pc";
+function ie() {
+  return ee() || te() ? "mobile" : "pc";
 }
-function xt(r) {
-  return r === "auto" ? Vt() : r;
+function Mt(r) {
+  return r === "auto" ? ie() : r;
 }
-function oi() {
+function Pi() {
   return typeof window > "u" ? 1 : window.devicePixelRatio || 1;
 }
-function mt() {
+function kt() {
   let r = !1;
   try {
     const t = {
@@ -308,187 +386,553 @@ function mt() {
   }
   return r;
 }
-function li() {
-  return mt() ? { passive: !0 } : !1;
+function Ri() {
+  return kt() ? { passive: !0 } : !1;
 }
-function yt() {
-  return mt() ? { passive: !1 } : !1;
+function It() {
+  return kt() ? { passive: !1 } : !1;
 }
-function ci() {
+function _i() {
   return typeof window > "u" ? !1 : "PointerEvent" in window;
 }
-function hi() {
+function Bi() {
   return typeof window > "u" ? { width: 0, height: 0 } : {
     width: window.innerWidth,
     height: window.innerHeight
   };
 }
-function tt(r) {
+function at(r) {
   return r === "jpg" ? "jpeg" : r;
 }
-function bt(r) {
+function Tt(r) {
   return r === "jpeg" ? "jpg" : r;
 }
-function wt(r) {
-  return `image/${tt(r)}`;
+function rt(r) {
+  return `image/${at(r)}`;
 }
-function Ct(r) {
+function Et(r) {
   return r === "png" || r === "webp" || r === "gif";
 }
-function St(r) {
-  const t = tt(r);
+function Dt(r) {
+  const t = at(r);
   return t === "jpeg" || t === "webp";
 }
-function Gt(r, t) {
+function ae(r, t) {
   let e = r;
   const i = t.width && t.height && (t.width !== r.width || t.height !== r.height) || t.width && !t.height || t.height && !t.width;
-  let a = r.width, s = r.height;
+  let a = r.width, n = r.height;
   if (t.width && t.height)
-    a = t.width, s = t.height;
+    a = t.width, n = t.height;
   else if (t.width && !t.height) {
     const o = t.width / r.width;
-    a = t.width, s = Math.round(r.height * o);
+    a = t.width, n = Math.round(r.height * o);
   } else if (t.height && !t.width) {
     const o = t.height / r.height;
-    a = Math.round(r.width * o), s = t.height;
+    a = Math.round(r.width * o), n = t.height;
   }
-  const n = !Ct(t.format) || t.preserveTransparency === !1;
-  if (i || n) {
-    e = document.createElement("canvas"), e.width = a, e.height = s;
+  const s = !Et(t.format) || t.preserveTransparency === !1;
+  if (i || s) {
+    e = document.createElement("canvas"), e.width = a, e.height = n;
     const o = e.getContext("2d");
-    o && (n && (o.fillStyle = t.backgroundColor || "#ffffff", o.fillRect(0, 0, a, s)), o.drawImage(r, 0, 0, a, s));
+    o && (s && (o.fillStyle = t.backgroundColor || "#ffffff", o.fillRect(0, 0, a, n)), o.drawImage(r, 0, 0, a, n));
   }
   return e;
 }
-function jt(r, t, e) {
-  const i = bt(t), a = e ? `-${Date.now()}` : "";
+function re(r, t, e) {
+  const i = Tt(t), a = e ? `-${Date.now()}` : "";
   return `${r}${a}.${i}`;
 }
-async function et(r, t) {
+async function nt(r, t) {
   const e = {
-    ...Lt,
+    ...Ot,
     ...t
-  }, i = tt(e.format), a = Gt(r, e);
-  let s = e.quality;
-  if (e.maxFileSize && St(e.format)) {
-    let n = await H(a, i, s);
-    for (; n.size > e.maxFileSize && s > 0.1; )
-      s -= 0.1, n = await H(a, i, s);
+  }, i = at(e.format), a = ae(r, e);
+  let n = e.quality;
+  if (e.maxFileSize && Dt(e.format)) {
+    let s = await N(a, i, n);
+    for (; s.size > e.maxFileSize && n > 0.1; )
+      n -= 0.1, s = await N(a, i, n);
   }
   switch (e.type) {
     case "base64":
-      return q(a, i, s);
+      return q(a, i, n);
     case "blob":
-      return H(a, i, s);
+      return N(a, i, n);
     case "file": {
-      const n = await H(a, i, s), o = jt(e.fileName || "image", e.format, e.addTimestamp ?? !1);
-      return new File([n], o, { type: wt(e.format) });
+      const s = await N(a, i, n), o = re(e.fileName || "image", e.format, e.addTimestamp ?? !1);
+      return new File([s], o, { type: rt(e.format) });
     }
     case "arraybuffer":
-      return (await H(a, i, s)).arrayBuffer();
+      return (await N(a, i, n)).arrayBuffer();
     default:
-      return q(a, i, s);
+      return q(a, i, n);
   }
 }
-function Zt(r) {
+function ne(r) {
   return q(r, "png", 1);
 }
-function Kt(r, t = 0.92) {
+function se(r, t = 0.92) {
   const e = document.createElement("canvas");
   e.width = r.width, e.height = r.height;
   const i = e.getContext("2d");
   return i && (i.fillStyle = "#ffffff", i.fillRect(0, 0, r.width, r.height), i.drawImage(r, 0, 0)), q(e, "jpeg", t);
 }
-function Jt(r, t = 0.92) {
+function oe(r, t = 0.92) {
   return q(r, "webp", t);
 }
-async function Qt(r, t, e) {
+async function le(r, t, e) {
   const i = {
     format: "png",
     quality: 0.92,
     ...e,
     type: "base64"
-  }, a = await et(r, i), s = bt(i.format || "png"), n = i.addTimestamp ? `-${Date.now()}` : "", o = t ? `${t}${n}.${s}` : `image${n}.${s}`, l = document.createElement("a");
+  }, a = await nt(r, i), n = Tt(i.format || "png"), s = i.addTimestamp ? `-${Date.now()}` : "", o = t ? `${t}${s}.${n}` : `image${s}.${n}`, l = document.createElement("a");
   l.href = a, l.download = o, document.body.appendChild(l), l.click(), document.body.removeChild(l);
 }
-async function te(r) {
-  try {
-    const t = await H(r, "png", 1);
-    await navigator.clipboard.write([
-      new ClipboardItem({ "image/png": t })
-    ]);
-  } catch {
-    const e = q(r, "png", 1);
-    await navigator.clipboard.writeText(e);
-  }
+function zt() {
+  return typeof navigator < "u" && "clipboard" in navigator && typeof navigator.clipboard.write == "function";
 }
-async function ee(r, t) {
-  return (await et(r, { ...t, type: "blob" })).size;
+async function ce(r) {
+  var t;
+  if (typeof window < "u" && !window.isSecureContext)
+    throw new Error("Clipboard API requires a secure context (HTTPS)");
+  if (zt())
+    try {
+      const e = await N(r, "png", 1);
+      await navigator.clipboard.write([
+        new ClipboardItem({ "image/png": e })
+      ]);
+      return;
+    } catch (e) {
+      if (e instanceof DOMException && e.name === "NotAllowedError")
+        throw new Error("Clipboard access denied. Please allow clipboard permissions.");
+    }
+  if (typeof navigator < "u" && ((t = navigator.clipboard) != null && t.writeText))
+    try {
+      const e = q(r, "png", 1);
+      await navigator.clipboard.writeText(e);
+      return;
+    } catch {
+      throw new Error("Failed to copy image to clipboard. Please try again or use the download option.");
+    }
+  throw new Error("Clipboard API is not supported in this browser");
 }
-function ie(r) {
+async function he(r, t) {
+  return (await nt(r, { ...t, type: "blob" })).size;
+}
+function de(r) {
   return r < 1024 ? `${r} B` : r < 1024 * 1024 ? `${(r / 1024).toFixed(1)} KB` : `${(r / (1024 * 1024)).toFixed(2)} MB`;
 }
-function ae(r) {
-  return {
-    width: r.width,
-    height: r.height,
-    aspectRatio: r.width / r.height,
-    megapixels: r.width * r.height / 1e6
+function pe(r) {
+  const t = r.width, e = r.height, i = e > 0 ? t / e : 1;
+  let a;
+  return Math.abs(i - 1) < 0.01 ? a = "square" : i > 1 ? a = "landscape" : a = "portrait", {
+    width: t,
+    height: e,
+    aspectRatio: i,
+    megapixels: t * e / 1e6,
+    orientation: a
   };
+}
+function Lt(r) {
+  if (typeof document > "u") return !1;
+  const t = document.createElement("canvas");
+  t.width = 1, t.height = 1;
+  const e = rt(r);
+  return t.toDataURL(e).startsWith(`data:${e}`);
+}
+function ue() {
+  return ["png", "jpeg", "webp", "bmp", "gif"].filter(Lt);
+}
+function ge(r) {
+  const t = r.split(",");
+  if (t.length !== 2)
+    throw new Error("Invalid data URL format");
+  const e = t[0].match(/:(.*?);/);
+  if (!e)
+    throw new Error("Could not extract MIME type from data URL");
+  const i = e[1], a = atob(t[1]), n = new ArrayBuffer(a.length), s = new Uint8Array(n);
+  for (let o = 0; o < a.length; o++)
+    s[o] = a.charCodeAt(o);
+  return new Blob([n], { type: i });
+}
+function fe(r) {
+  return new Promise((t, e) => {
+    const i = new FileReader();
+    i.onload = () => t(i.result), i.onerror = () => e(new Error("Failed to convert blob to data URL")), i.readAsDataURL(r);
+  });
 }
 const Y = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  copyImageToClipboard: te,
-  downloadImage: Qt,
-  estimateFileSize: ee,
-  exportImage: et,
-  exportToJPEG: Kt,
-  exportToPNG: Zt,
-  exportToWebP: Jt,
-  formatFileSize: ie,
-  getImageInfo: ae,
-  getMimeType: wt,
-  supportsQuality: St,
-  supportsTransparency: Ct
+  blobToDataUrl: fe,
+  copyImageToClipboard: ce,
+  dataUrlToBlob: ge,
+  downloadImage: le,
+  estimateFileSize: he,
+  exportImage: nt,
+  exportToJPEG: se,
+  exportToPNG: ne,
+  exportToWebP: oe,
+  formatFileSize: de,
+  getImageInfo: pe,
+  getMimeType: rt,
+  getSupportedFormats: ue,
+  isClipboardSupported: zt,
+  isFormatSupported: Lt,
+  supportsQuality: Dt,
+  supportsTransparency: Et
 }, Symbol.toStringTag, { value: "Module" }));
-function se(r = {}) {
+function ve(r = {}) {
   const {
     width: t = 800,
     height: e = 600,
     text: i = "点击上传或拖放图片",
     subText: a = "支持 PNG、JPG、GIF 等格式",
-    theme: s = "dark"
-  } = r, n = document.createElement("canvas");
-  n.width = t, n.height = e;
-  const o = n.getContext("2d");
+    theme: n = "dark"
+  } = r, s = document.createElement("canvas");
+  s.width = t, s.height = e;
+  const o = s.getContext("2d");
   if (!o) return "";
-  const l = s === "dark", h = l ? "rgba(255,255,255,0.15)" : "rgba(0,0,0,0.12)", d = l ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.35)", p = l ? "rgba(255,255,255,0.7)" : "rgba(0,0,0,0.65)", f = l ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.4)";
+  const l = n === "dark", h = l ? "rgba(255,255,255,0.15)" : "rgba(0,0,0,0.12)", d = l ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.35)", p = l ? "rgba(255,255,255,0.7)" : "rgba(0,0,0,0.65)", u = l ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.4)";
   o.clearRect(0, 0, t, e);
-  const v = Math.max(20, Math.min(t, e) * 0.05), u = 8, g = v, x = v, S = t - v * 2, C = e - v * 2;
-  o.strokeStyle = h, o.lineWidth = 1, o.setLineDash([4, 3]), o.beginPath(), o.moveTo(g + u, x), o.lineTo(g + S - u, x), o.quadraticCurveTo(g + S, x, g + S, x + u), o.lineTo(g + S, x + C - u), o.quadraticCurveTo(g + S, x + C, g + S - u, x + C), o.lineTo(g + u, x + C), o.quadraticCurveTo(g, x + C, g, x + C - u), o.lineTo(g, x + u), o.quadraticCurveTo(g, x, g + u, x), o.closePath(), o.stroke(), o.setLineDash([]);
-  const M = t / 2, T = e / 2;
+  const v = Math.max(20, Math.min(t, e) * 0.05), g = 8, f = v, m = v, S = t - v * 2, C = e - v * 2;
+  o.strokeStyle = h, o.lineWidth = 1, o.setLineDash([4, 3]), o.beginPath(), o.moveTo(f + g, m), o.lineTo(f + S - g, m), o.quadraticCurveTo(f + S, m, f + S, m + g), o.lineTo(f + S, m + C - g), o.quadraticCurveTo(f + S, m + C, f + S - g, m + C), o.lineTo(f + g, m + C), o.quadraticCurveTo(f, m + C, f, m + C - g), o.lineTo(f, m + g), o.quadraticCurveTo(f, m, f + g, m), o.closePath(), o.stroke(), o.setLineDash([]);
+  const k = t / 2, I = e / 2;
   o.strokeStyle = d, o.lineWidth = 2, o.lineCap = "round", o.lineJoin = "round";
-  const I = 48, E = 36, k = M - I / 2, m = T - 45, y = 5;
-  return o.beginPath(), o.moveTo(k + y, m), o.lineTo(k + I - y, m), o.quadraticCurveTo(k + I, m, k + I, m + y), o.lineTo(k + I, m + E - y), o.quadraticCurveTo(k + I, m + E, k + I - y, m + E), o.lineTo(k + y, m + E), o.quadraticCurveTo(k, m + E, k, m + E - y), o.lineTo(k, m + y), o.quadraticCurveTo(k, m, k + y, m), o.stroke(), o.beginPath(), o.moveTo(k + 8, m + E - 8), o.lineTo(k + 18, m + 12), o.lineTo(k + 26, m + E - 12), o.lineTo(k + 34, m + 14), o.lineTo(k + I - 8, m + E - 8), o.stroke(), o.beginPath(), o.arc(k + I - 12, m + 11, 5, 0, Math.PI * 2), o.stroke(), o.fillStyle = p, o.font = '600 14px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', o.textAlign = "center", o.textBaseline = "middle", o.fillText(i, M, T + 12), a && (o.fillStyle = f, o.font = '400 12px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', o.fillText(a, M, T + 34)), n.toDataURL("image/png");
+  const T = 48, E = 36, M = k - T / 2, x = I - 45, y = 5;
+  return o.beginPath(), o.moveTo(M + y, x), o.lineTo(M + T - y, x), o.quadraticCurveTo(M + T, x, M + T, x + y), o.lineTo(M + T, x + E - y), o.quadraticCurveTo(M + T, x + E, M + T - y, x + E), o.lineTo(M + y, x + E), o.quadraticCurveTo(M, x + E, M, x + E - y), o.lineTo(M, x + y), o.quadraticCurveTo(M, x, M + y, x), o.stroke(), o.beginPath(), o.moveTo(M + 8, x + E - 8), o.lineTo(M + 18, x + 12), o.lineTo(M + 26, x + E - 12), o.lineTo(M + 34, x + 14), o.lineTo(M + T - 8, x + E - 8), o.stroke(), o.beginPath(), o.arc(M + T - 12, x + 11, 5, 0, Math.PI * 2), o.stroke(), o.fillStyle = p, o.font = '600 14px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', o.textAlign = "center", o.textBaseline = "middle", o.fillText(i, k, I + 12), a && (o.fillStyle = u, o.font = '400 12px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', o.fillText(a, k, I + 34)), s.toDataURL("image/png");
 }
-class re {
+function R(r, t, e) {
+  return Math.max(t, Math.min(e, r));
+}
+function me(r, t, e) {
+  return r + (t - r) * R(e, 0, 1);
+}
+function xe(r, t, e) {
+  return r === t ? 0 : R((e - r) / (t - r), 0, 1);
+}
+function $i(r, t, e, i, a) {
+  const n = xe(t, e, r);
+  return me(i, a, n);
+}
+function Ai(r, t) {
+  const e = t.x - r.x, i = t.y - r.y;
+  return Math.sqrt(e * e + i * i);
+}
+function ye(r, t) {
+  const e = t.x - r.x, i = t.y - r.y;
+  return e * e + i * i;
+}
+function be(r, t) {
+  return Math.atan2(t.y - r.y, t.x - r.x);
+}
+function Fi(r, t) {
+  return we(be(r, t));
+}
+function Oi(r) {
+  return r * Math.PI / 180;
+}
+function we(r) {
+  return r * 180 / Math.PI;
+}
+function Hi(r) {
+  return (r % 360 + 360) % 360;
+}
+function Ni(r, t) {
+  return {
+    x: (r.x + t.x) / 2,
+    y: (r.y + t.y) / 2
+  };
+}
+function qi(r, t, e) {
+  const i = Math.cos(e), a = Math.sin(e), n = r.x - t.x, s = r.y - t.y;
+  return {
+    x: t.x + n * i - s * a,
+    y: t.y + n * a + s * i
+  };
+}
+function Wi(r, t) {
+  return r.x >= t.x && r.x <= t.x + t.width && r.y >= t.y && r.y <= t.y + t.height;
+}
+function Ui(r, t, e) {
+  return ye(r, t) <= e * e;
+}
+function Yi(r, t) {
+  return !(r.x + r.width < t.x || t.x + t.width < r.x || r.y + r.height < t.y || t.y + t.height < r.y);
+}
+function Xi(r, t) {
+  const e = Math.max(r.x, t.x), i = Math.max(r.y, t.y), a = Math.min(r.x + r.width, t.x + t.width) - e, n = Math.min(r.y + r.height, t.y + t.height) - i;
+  return a <= 0 || n <= 0 ? null : { x: e, y: i, width: a, height: n };
+}
+function Vi(r, t) {
+  const e = r.x + r.width / 2, i = r.y + r.height / 2, a = r.width * t, n = r.height * t;
+  return {
+    x: e - a / 2,
+    y: i - n / 2,
+    width: a,
+    height: n
+  };
+}
+function Gi(r, t = 0) {
+  const e = Math.pow(10, t);
+  return Math.round(r * e) / e;
+}
+function Ce(r, t) {
+  return r + Math.random() * (t - r);
+}
+function ji(r, t) {
+  return Math.floor(Ce(r, t + 1));
+}
+function Zi(r) {
+  const t = R(r, 0, 1);
+  return t * t * (3 - 2 * t);
+}
+function Ki(r) {
+  const t = R(r, 0, 1);
+  return t * t * t * (t * (t * 6 - 15) + 10);
+}
+function Se(r) {
+  const t = r.replace(/^#/, "");
+  let e, i, a;
+  if (t.length === 3)
+    e = parseInt(t[0] + t[0], 16), i = parseInt(t[1] + t[1], 16), a = parseInt(t[2] + t[2], 16);
+  else if (t.length === 6)
+    e = parseInt(t.slice(0, 2), 16), i = parseInt(t.slice(2, 4), 16), a = parseInt(t.slice(4, 6), 16);
+  else
+    return null;
+  return isNaN(e) || isNaN(i) || isNaN(a) ? null : { r: e, g: i, b: a };
+}
+function gt(r) {
+  const t = r.replace(/^#/, "");
+  let e, i, a, n = 255;
+  if (t.length === 4)
+    e = parseInt(t[0] + t[0], 16), i = parseInt(t[1] + t[1], 16), a = parseInt(t[2] + t[2], 16), n = parseInt(t[3] + t[3], 16);
+  else if (t.length === 8)
+    e = parseInt(t.slice(0, 2), 16), i = parseInt(t.slice(2, 4), 16), a = parseInt(t.slice(4, 6), 16), n = parseInt(t.slice(6, 8), 16);
+  else {
+    const s = Se(r);
+    return s ? { ...s, a: 1 } : null;
+  }
+  return isNaN(e) || isNaN(i) || isNaN(a) || isNaN(n) ? null : { r: e, g: i, b: a, a: n / 255 };
+}
+function Ji(r) {
+  const t = R(Math.round(r.r), 0, 255), e = R(Math.round(r.g), 0, 255), i = R(Math.round(r.b), 0, 255);
+  return "#" + [t, e, i].map((a) => a.toString(16).padStart(2, "0")).join("");
+}
+function Qi(r) {
+  const t = R(Math.round(r.r), 0, 255), e = R(Math.round(r.g), 0, 255), i = R(Math.round(r.b), 0, 255), a = R(Math.round(r.a * 255), 0, 255);
+  return "#" + [t, e, i, a].map((n) => n.toString(16).padStart(2, "0")).join("");
+}
+function st(r) {
+  const t = r.r / 255, e = r.g / 255, i = r.b / 255, a = Math.max(t, e, i), n = Math.min(t, e, i), s = (a + n) / 2;
+  let o = 0, l = 0;
+  if (a !== n) {
+    const h = a - n;
+    switch (l = s > 0.5 ? h / (2 - a - n) : h / (a + n), a) {
+      case t:
+        o = ((e - i) / h + (e < i ? 6 : 0)) / 6;
+        break;
+      case e:
+        o = ((i - t) / h + 2) / 6;
+        break;
+      case i:
+        o = ((t - e) / h + 4) / 6;
+        break;
+    }
+  }
+  return {
+    h: Math.round(o * 360),
+    s: Math.round(l * 100),
+    l: Math.round(s * 100)
+  };
+}
+function j(r) {
+  const t = r.h / 360, e = r.s / 100, i = r.l / 100;
+  let a, n, s;
+  if (e === 0)
+    a = n = s = i;
+  else {
+    const o = (d, p, u) => (u < 0 && (u += 1), u > 1 && (u -= 1), u < 0.16666666666666666 ? d + (p - d) * 6 * u : u < 0.5 ? p : u < 0.6666666666666666 ? d + (p - d) * (0.6666666666666666 - u) * 6 : d), l = i < 0.5 ? i * (1 + e) : i + e - i * e, h = 2 * i - l;
+    a = o(h, l, t + 1 / 3), n = o(h, l, t), s = o(h, l, t - 1 / 3);
+  }
+  return {
+    r: Math.round(a * 255),
+    g: Math.round(n * 255),
+    b: Math.round(s * 255)
+  };
+}
+function ta(r) {
+  const t = r.r / 255, e = r.g / 255, i = r.b / 255, a = Math.max(t, e, i), n = Math.min(t, e, i), s = a - n;
+  let o = 0;
+  const l = a === 0 ? 0 : s / a, h = a;
+  if (a !== n)
+    switch (a) {
+      case t:
+        o = ((e - i) / s + (e < i ? 6 : 0)) / 6;
+        break;
+      case e:
+        o = ((i - t) / s + 2) / 6;
+        break;
+      case i:
+        o = ((t - e) / s + 4) / 6;
+        break;
+    }
+  return {
+    h: Math.round(o * 360),
+    s: Math.round(l * 100),
+    v: Math.round(h * 100)
+  };
+}
+function ea(r) {
+  const t = r.h / 360, e = r.s / 100, i = r.v / 100, a = Math.floor(t * 6), n = t * 6 - a, s = i * (1 - e), o = i * (1 - n * e), l = i * (1 - (1 - n) * e);
+  let h, d, p;
+  switch (a % 6) {
+    case 0:
+      h = i, d = l, p = s;
+      break;
+    case 1:
+      h = o, d = i, p = s;
+      break;
+    case 2:
+      h = s, d = i, p = l;
+      break;
+    case 3:
+      h = s, d = o, p = i;
+      break;
+    case 4:
+      h = l, d = s, p = i;
+      break;
+    case 5:
+      h = i, d = s, p = o;
+      break;
+    default:
+      h = 0, d = 0, p = 0;
+  }
+  return {
+    r: Math.round(h * 255),
+    g: Math.round(d * 255),
+    b: Math.round(p * 255)
+  };
+}
+function ia(r) {
+  const t = r.trim().toLowerCase();
+  if (t.startsWith("#"))
+    return gt(t);
+  const e = t.match(/^rgba?\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*(?:,\s*([\d.]+))?\s*\)$/);
+  if (e)
+    return {
+      r: parseInt(e[1], 10),
+      g: parseInt(e[2], 10),
+      b: parseInt(e[3], 10),
+      a: e[4] !== void 0 ? parseFloat(e[4]) : 1
+    };
+  const i = t.match(/^hsla?\s*\(\s*(\d+)\s*,\s*(\d+)%?\s*,\s*(\d+)%?\s*(?:,\s*([\d.]+))?\s*\)$/);
+  if (i)
+    return {
+      ...j({
+        h: parseInt(i[1], 10),
+        s: parseInt(i[2], 10),
+        l: parseInt(i[3], 10)
+      }),
+      a: i[4] !== void 0 ? parseFloat(i[4]) : 1
+    };
+  const a = {
+    white: "#ffffff",
+    black: "#000000",
+    red: "#ff0000",
+    green: "#00ff00",
+    blue: "#0000ff",
+    yellow: "#ffff00",
+    cyan: "#00ffff",
+    magenta: "#ff00ff",
+    orange: "#ffa500",
+    purple: "#800080",
+    pink: "#ffc0cb",
+    gray: "#808080",
+    grey: "#808080",
+    transparent: "#00000000"
+  };
+  return a[t] ? gt(a[t]) : null;
+}
+function aa(r) {
+  return r.a === 1 ? `rgb(${Math.round(r.r)}, ${Math.round(r.g)}, ${Math.round(r.b)})` : `rgba(${Math.round(r.r)}, ${Math.round(r.g)}, ${Math.round(r.b)}, ${r.a})`;
+}
+function ra(r, t, e = 0.5) {
+  const i = R(e, 0, 1);
+  return {
+    r: Math.round(r.r * (1 - i) + t.r * i),
+    g: Math.round(r.g * (1 - i) + t.g * i),
+    b: Math.round(r.b * (1 - i) + t.b * i),
+    a: r.a * (1 - i) + t.a * i
+  };
+}
+function Me(r, t) {
+  const e = st(r);
+  return e.l = R(e.l + t * 100, 0, 100), { ...j(e), a: r.a };
+}
+function na(r, t) {
+  return Me(r, -t);
+}
+function ke(r, t) {
+  const e = st(r);
+  return e.s = R(e.s + t * 100, 0, 100), { ...j(e), a: r.a };
+}
+function sa(r, t) {
+  return ke(r, -t);
+}
+function oa(r) {
+  const t = st(r);
+  return t.h = (t.h + 180) % 360, { ...j(t), a: r.a };
+}
+function et(r) {
+  const t = [r.r, r.g, r.b].map((e) => (e = e / 255, e <= 0.03928 ? e / 12.92 : Math.pow((e + 0.055) / 1.055, 2.4)));
+  return 0.2126 * t[0] + 0.7152 * t[1] + 0.0722 * t[2];
+}
+function la(r, t) {
+  const e = et(r), i = et(t), a = Math.max(e, i), n = Math.min(e, i);
+  return (a + 0.05) / (n + 0.05);
+}
+function Ie(r) {
+  return et(r) > 0.5;
+}
+function ca(r) {
+  return Ie(r) ? "black" : "white";
+}
+function ha(r) {
+  const t = Math.round(0.299 * r.r + 0.587 * r.g + 0.114 * r.b);
+  return { r: t, g: t, b: t, a: r.a };
+}
+function da(r) {
+  return {
+    r: 255 - r.r,
+    g: 255 - r.g,
+    b: 255 - r.b,
+    a: r.a
+  };
+}
+class Te {
   constructor() {
     c(this, "listeners", /* @__PURE__ */ new Map());
+    /** Whether to pause event emission */
+    c(this, "paused", !1);
+    /** Queue of events to emit when unpaused */
+    c(this, "eventQueue", []);
   }
   /**
    * Subscribe to an event
    * @param event - Event name
    * @param handler - Event handler function
-   * @param options - Listener options
+   * @param options - Listener options (including priority)
    */
   on(t, e, i) {
     const a = t;
     this.listeners.has(a) || this.listeners.set(a, /* @__PURE__ */ new Set());
-    const s = {
+    const n = {
       handler: e,
-      once: (i == null ? void 0 : i.once) ?? !1
+      once: (i == null ? void 0 : i.once) ?? !1,
+      priority: (i == null ? void 0 : i.priority) ?? 0
     };
-    this.listeners.get(a).add(s);
+    this.listeners.get(a).add(n);
   }
   /**
    * Subscribe to an event once (auto-unsubscribe after first trigger)
@@ -506,9 +950,9 @@ class re {
   off(t, e) {
     const i = t, a = this.listeners.get(i);
     if (a) {
-      for (const s of a)
-        if (s.handler === e) {
-          a.delete(s);
+      for (const n of a)
+        if (n.handler === e) {
+          a.delete(n);
           break;
         }
       a.size === 0 && this.listeners.delete(i);
@@ -520,15 +964,64 @@ class re {
    * @param data - Event data
    */
   emit(t, e) {
+    const i = t;
+    if (this.paused) {
+      this.eventQueue.push({ event: i, data: e });
+      return;
+    }
+    this.emitInternal(i, e);
+  }
+  /**
+   * Internal emit logic
+   */
+  emitInternal(t, e) {
+    const i = this.listeners.get(t);
+    if (!i)
+      return;
+    const a = Array.from(i).sort((n, s) => s.priority - n.priority);
+    for (const n of a)
+      try {
+        n.handler(e), n.once && i.delete(n);
+      } catch (s) {
+        console.error(`Error in event handler for "${t}":`, s);
+      }
+    i.size === 0 && this.listeners.delete(t);
+  }
+  /**
+   * Emit an event asynchronously (handlers run in parallel)
+   * @param event - Event name
+   * @param data - Event data
+   * @returns Promise that resolves when all handlers complete
+   */
+  async emitAsync(t, e) {
     const i = t, a = this.listeners.get(i);
     if (!a)
       return;
-    const s = Array.from(a);
-    for (const n of s)
+    const s = Array.from(a).sort((o, l) => l.priority - o.priority).map(async (o) => {
       try {
-        n.handler(e), n.once && a.delete(n);
+        await o.handler(e), o.once && a.delete(o);
+      } catch (l) {
+        console.error(`Error in async event handler for "${i}":`, l);
+      }
+    });
+    await Promise.all(s), a.size === 0 && this.listeners.delete(i);
+  }
+  /**
+   * Emit an event and wait for each handler sequentially
+   * @param event - Event name
+   * @param data - Event data
+   * @returns Promise that resolves when all handlers complete
+   */
+  async emitSequential(t, e) {
+    const i = t, a = this.listeners.get(i);
+    if (!a)
+      return;
+    const n = Array.from(a).sort((s, o) => o.priority - s.priority);
+    for (const s of n)
+      try {
+        await s.handler(e), s.once && a.delete(s);
       } catch (o) {
-        console.error(`Error in event handler for "${i}":`, o);
+        console.error(`Error in sequential event handler for "${i}":`, o);
       }
     a.size === 0 && this.listeners.delete(i);
   }
@@ -558,13 +1051,49 @@ class re {
     t !== void 0 ? this.listeners.delete(t) : this.listeners.clear();
   }
   /**
+   * Pause event emission (events will be queued)
+   */
+  pause() {
+    this.paused = !0;
+  }
+  /**
+   * Resume event emission (queued events will be emitted)
+   */
+  resume() {
+    this.paused = !1;
+    const t = [...this.eventQueue];
+    this.eventQueue = [];
+    for (const { event: e, data: i } of t)
+      this.emitInternal(e, i);
+  }
+  /**
+   * Check if event emission is paused
+   * @returns True if paused
+   */
+  isPaused() {
+    return this.paused;
+  }
+  /**
+   * Clear the event queue without emitting
+   */
+  clearQueue() {
+    this.eventQueue = [];
+  }
+  /**
+   * Get all registered event names
+   * @returns Array of event names
+   */
+  getEventNames() {
+    return Array.from(this.listeners.keys());
+  }
+  /**
    * Destroy the event manager and clean up all resources
    */
   destroy() {
-    this.listeners.clear();
+    this.listeners.clear(), this.eventQueue = [], this.paused = !1;
   }
 }
-class ne {
+class Ee {
   /**
    * Create a new ConfigManager instance
    * @param userConfig - User provided configuration
@@ -572,7 +1101,7 @@ class ne {
   constructor(t) {
     c(this, "config");
     c(this, "listeners", /* @__PURE__ */ new Set());
-    this.config = this.mergeConfig(st, t);
+    this.config = this.mergeConfig(ct, t);
   }
   /**
    * Deep merge two configuration objects
@@ -586,8 +1115,8 @@ class ne {
       return { ...t };
     const i = { ...t };
     for (const a of Object.keys(e)) {
-      const s = e[a];
-      s !== void 0 && (i[a] = s);
+      const n = e[a];
+      n !== void 0 && (i[a] = n);
     }
     return i;
   }
@@ -628,7 +1157,7 @@ class ne {
    * @param userConfig - Optional user config to apply after reset
    */
   reset(t) {
-    this.config = this.mergeConfig(st, t), this.notifyListeners();
+    this.config = this.mergeConfig(ct, t), this.notifyListeners();
   }
   /**
    * Subscribe to configuration changes
@@ -659,10 +1188,10 @@ class ne {
     this.listeners.clear();
   }
 }
-function oe() {
+function ft() {
   return `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
 }
-class le {
+class De {
   /**
    * Create a new HistoryManager instance
    * @param limit - Maximum number of history states (default: 50)
@@ -676,6 +1205,12 @@ class le {
     c(this, "limit");
     /** Listeners for history changes */
     c(this, "listeners", /* @__PURE__ */ new Set());
+    /**
+     * Start a batch operation (groups multiple operations as one undo step)
+     * @returns Batch ID
+     */
+    c(this, "batchId", null);
+    c(this, "batchStartIndex", -1);
     this.limit = Math.max(1, t);
   }
   /**
@@ -687,7 +1222,7 @@ class le {
     this.currentIndex < this.states.length - 1 && (this.states = this.states.slice(0, this.currentIndex + 1));
     const e = {
       ...t,
-      id: oe(),
+      id: ft(),
       timestamp: Date.now()
     };
     for (this.states.push(e), this.currentIndex = this.states.length - 1; this.states.length > this.limit; )
@@ -768,13 +1303,110 @@ class le {
       }
   }
   /**
+   * Get history information
+   * @returns Object containing history stats
+   */
+  getHistoryInfo() {
+    let t = 0;
+    for (const e of this.states)
+      t += e.imageData.data.length;
+    return {
+      totalStates: this.states.length,
+      currentIndex: this.currentIndex,
+      undoCount: this.currentIndex,
+      redoCount: this.states.length - 1 - this.currentIndex,
+      limit: this.limit,
+      memoryEstimate: t
+    };
+  }
+  /**
+   * Get state at specific index
+   * @param index - Index of state to get
+   * @returns State at index or null if invalid
+   */
+  getStateAt(t) {
+    return t < 0 || t >= this.states.length ? null : this.states[t];
+  }
+  /**
+   * Go to specific state by index
+   * @param index - Target state index
+   * @returns State at index or null if invalid
+   */
+  goToState(t) {
+    return t < 0 || t >= this.states.length ? null : (this.currentIndex = t, this.notifyListeners(), this.states[this.currentIndex]);
+  }
+  /**
+   * Get all states (useful for debugging/display)
+   * @returns Array of history states
+   */
+  getAllStates() {
+    return [...this.states];
+  }
+  /**
+   * Check if a specific state is the current state
+   * @param id - State ID to check
+   * @returns True if state is current
+   */
+  isCurrentState(t) {
+    const e = this.getCurrentState();
+    return (e == null ? void 0 : e.id) === t;
+  }
+  startBatch() {
+    if (this.batchId)
+      throw new Error("Batch operation already in progress");
+    return this.batchId = ft(), this.batchStartIndex = this.currentIndex, this.batchId;
+  }
+  /**
+   * End a batch operation (combines all operations since startBatch into one)
+   * @param batchId - Batch ID from startBatch
+   * @param description - Description for the combined operation
+   */
+  endBatch(t, e) {
+    if (this.batchId !== t)
+      throw new Error("Invalid batch ID");
+    if (this.currentIndex > this.batchStartIndex) {
+      const i = Math.max(0, this.batchStartIndex);
+      if (this.currentIndex > i + 1) {
+        const a = this.currentIndex - i - 1;
+        this.states.splice(i + 1, a), this.currentIndex = i + 1;
+      }
+      e && this.states[this.currentIndex] && (this.states[this.currentIndex].description = e);
+    }
+    this.batchId = null, this.batchStartIndex = -1, this.notifyListeners();
+  }
+  /**
+   * Cancel a batch operation (discards all operations since startBatch)
+   * @param batchId - Batch ID from startBatch
+   */
+  cancelBatch(t) {
+    if (this.batchId !== t)
+      throw new Error("Invalid batch ID");
+    this.currentIndex > this.batchStartIndex && this.batchStartIndex >= 0 && (this.states = this.states.slice(0, this.batchStartIndex + 1), this.currentIndex = this.batchStartIndex), this.batchId = null, this.batchStartIndex = -1, this.notifyListeners();
+  }
+  /**
+   * Check if a batch operation is in progress
+   * @returns True if batch is active
+   */
+  isBatchActive() {
+    return this.batchId !== null;
+  }
+  /**
+   * Set the history limit
+   * @param limit - New limit (minimum 1)
+   */
+  setLimit(t) {
+    for (this.limit = Math.max(1, t); this.states.length > this.limit; )
+      this.states.shift(), this.currentIndex = Math.max(0, this.currentIndex - 1);
+    this.notifyListeners();
+  }
+  /**
    * Destroy the history manager and clean up resources
    */
   destroy() {
-    this.clear(), this.listeners.clear();
+    this.batchId = null, this.batchStartIndex = -1, this.clear(), this.listeners.clear();
   }
 }
-class ce {
+class ze {
   constructor() {
     /** Registered plugins map */
     c(this, "plugins", /* @__PURE__ */ new Map());
@@ -926,11 +1558,11 @@ class ce {
     this.plugins.clear(), this.listeners.clear(), this.context = null;
   }
 }
-function ct(r) {
+function vt(r) {
   const t = [];
   return r.ctrl && t.push("ctrl"), r.alt && t.push("alt"), r.shift && t.push("shift"), t.push(r.key.toLowerCase()), t.join("+");
 }
-class di {
+class pa {
   constructor(t = document) {
     c(this, "shortcuts", /* @__PURE__ */ new Map());
     c(this, "groups", /* @__PURE__ */ new Map());
@@ -970,7 +1602,7 @@ class di {
    * @returns Unregister function
    */
   register(t, e) {
-    const i = ct(t);
+    const i = vt(t);
     this.shortcuts.has(i) && console.warn(`Keyboard shortcut "${i}" is already registered. Overwriting.`);
     const a = {
       ...t,
@@ -1037,7 +1669,7 @@ class di {
     const e = t.target;
     if ((e.tagName === "INPUT" || e.tagName === "TEXTAREA" || e.isContentEditable) && t.key !== "Escape")
       return;
-    const i = ct({
+    const i = vt({
       key: t.key,
       ctrl: t.ctrlKey || t.metaKey,
       // Support both Ctrl and Cmd (Mac)
@@ -1073,7 +1705,7 @@ class di {
     this.detach(), this.shortcuts.clear(), this.groups.clear();
   }
 }
-function pi(r) {
+function ua(r) {
   const t = [];
   return r.undo && t.push({
     key: "z",
@@ -1146,7 +1778,7 @@ function pi(r) {
     description: "Save / Export"
   }), t;
 }
-class he {
+class Le {
   /**
    * Create a new Canvas instance
    * @param container - Container element
@@ -1179,7 +1811,7 @@ class he {
     c(this, "handleResize", () => {
       this.handleContainerResize();
     });
-    this._container = t, this._responsive = e.responsive, this._backgroundColor = e.backgroundColor, this._canvas = Rt(e.width, e.height), this._ctx = Bt(this._canvas), Ot(this._canvas, {
+    this._container = t, this._responsive = e.responsive, this._backgroundColor = e.backgroundColor, this._canvas = Nt(e.width, e.height), this._ctx = qt(this._canvas), Xt(this._canvas, {
       display: "block",
       maxWidth: "100%",
       maxHeight: "100%"
@@ -1231,7 +1863,7 @@ class he {
    * Fill canvas with background color
    */
   fillBackground() {
-    this._backgroundColor === "transparent" ? rt(this._ctx, this.width, this.height) : At(this._ctx, this.width, this.height, this._backgroundColor);
+    this._backgroundColor === "transparent" ? ht(this._ctx, this.width, this.height) : Yt(this._ctx, this.width, this.height, this._backgroundColor);
   }
   /**
    * Setup responsive behavior
@@ -1257,16 +1889,16 @@ class he {
     const t = this._container.getBoundingClientRect(), e = t.width, i = t.height;
     if (e === 0 || i === 0)
       return;
-    const { width: a, height: s } = nt(this._originalImage), n = this.width, o = this.height, { width: l, height: h } = ot(
+    const { width: a, height: n } = dt(this._originalImage), s = this.width, o = this.height, { width: l, height: h } = pt(
       a,
-      s,
+      n,
       e,
       i
     );
-    (l !== n || h !== o) && (this.resize(l, h, !0), this.notifyResizeListeners({
+    (l !== s || h !== o) && (this.resize(l, h, !0), this.notifyResizeListeners({
       width: l,
       height: h,
-      previousWidth: n,
+      previousWidth: s,
       previousHeight: o
     }));
   }
@@ -1277,20 +1909,20 @@ class he {
    * @returns Promise with image dimensions
    */
   async loadImage(t) {
-    const e = await Ht(t);
+    const e = await jt(t);
     this._originalImage = e;
-    const { width: i, height: a } = nt(e);
-    let s = i, n = a;
+    const { width: i, height: a } = dt(e);
+    let n = i, s = a;
     if (this._responsive) {
-      const o = this._container.getBoundingClientRect(), l = o.width || i, h = o.height || a, d = ot(
+      const o = this._container.getBoundingClientRect(), l = o.width || i, h = o.height || a, d = pt(
         i,
         a,
         l,
         h
       );
-      s = d.width, n = d.height;
+      n = d.width, s = d.height;
     }
-    return this.resize(s, n, !1), lt(this._ctx, e, 0, 0, s, n), this._originalImageData = this.getImageData(), { width: s, height: n };
+    return this.resize(n, s, !1), ut(this._ctx, e, 0, 0, n, s), this._originalImageData = this.getImageData(), { width: n, height: s };
   }
   /**
    * Resize the canvas
@@ -1299,7 +1931,7 @@ class he {
    * @param preserveContent - Whether to preserve current content
    */
   resize(t, e, i = !1) {
-    $t(this._canvas, t, e), this.fillBackground(), i && this._originalImage && lt(this._ctx, this._originalImage, 0, 0, t, e);
+    Ut(this._canvas, t, e), this.fillBackground(), i && this._originalImage && ut(this._ctx, this._originalImage, 0, 0, t, e);
   }
   /**
    * Get image data from canvas
@@ -1308,36 +1940,51 @@ class he {
    * @param width - Width (defaults to canvas width)
    * @param height - Height (defaults to canvas height)
    * @returns ImageData
+   * @throws Error if canvas is destroyed or dimensions are invalid
    */
   getImageData(t = 0, e = 0, i, a) {
-    return qt(this._ctx, t, e, i ?? this.width, a ?? this.height);
+    if (this._destroyed)
+      throw new Error("Cannot get image data from destroyed canvas");
+    const n = i ?? this.width, s = a ?? this.height;
+    if (n <= 0 || s <= 0)
+      throw new Error(`Invalid dimensions for getImageData: ${n}x${s}`);
+    return Zt(this._ctx, t, e, n, s);
   }
   /**
    * Put image data to canvas
    * @param imageData - ImageData to put
    * @param x - X coordinate
    * @param y - Y coordinate
+   * @throws Error if canvas is destroyed
    */
   putImageData(t, e = 0, i = 0) {
-    Nt(this._ctx, t, e, i);
+    if (this._destroyed)
+      throw new Error("Cannot put image data to destroyed canvas");
+    Kt(this._ctx, t, e, i);
   }
   /**
    * Get original image data (for reset)
    * @returns Original ImageData or null
    */
   getOriginalImageData() {
-    return this._originalImageData ? vt(this._originalImageData) : null;
+    return this._originalImageData ? St(this._originalImageData) : null;
   }
   /**
    * Clear the canvas
+   * @throws Error if canvas is destroyed
    */
   clear() {
-    rt(this._ctx, this.width, this.height), this.fillBackground();
+    if (this._destroyed)
+      throw new Error("Cannot clear destroyed canvas");
+    ht(this._ctx, this.width, this.height), this.fillBackground();
   }
   /**
    * Reset canvas to original image
+   * @throws Error if canvas is destroyed
    */
   reset() {
+    if (this._destroyed)
+      throw new Error("Cannot reset destroyed canvas");
     this._originalImageData && (this.clear(), this.putImageData(this._originalImageData));
   }
   /**
@@ -1346,6 +1993,73 @@ class he {
    */
   setBackgroundColor(t) {
     this._backgroundColor = t;
+  }
+  /**
+   * Rotate the canvas by specified degrees
+   * @param degrees - Rotation angle (90, 180, 270, or any value)
+   * @throws Error if canvas is destroyed
+   */
+  rotate(t) {
+    if (this._destroyed)
+      throw new Error("Cannot rotate destroyed canvas");
+    const e = t * Math.PI / 180, i = Math.abs(Math.sin(e)), a = Math.abs(Math.cos(e)), n = this.width, s = this.height, o = Math.round(n * a + s * i), l = Math.round(n * i + s * a), h = this.getImageData(), d = document.createElement("canvas");
+    d.width = n, d.height = s;
+    const p = d.getContext("2d");
+    p && (p.putImageData(h, 0, 0), this._canvas.width = o, this._canvas.height = l, this.fillBackground(), this._ctx.save(), this._ctx.translate(o / 2, l / 2), this._ctx.rotate(e), this._ctx.drawImage(d, -n / 2, -s / 2), this._ctx.restore(), this._originalImage && (this._originalImageData = this.getImageData()));
+  }
+  /**
+   * Flip the canvas horizontally or vertically
+   * @param direction - 'horizontal' or 'vertical'
+   * @throws Error if canvas is destroyed
+   */
+  flip(t) {
+    if (this._destroyed)
+      throw new Error("Cannot flip destroyed canvas");
+    const e = this.getImageData(), i = document.createElement("canvas");
+    i.width = this.width, i.height = this.height;
+    const a = i.getContext("2d");
+    a && (a.putImageData(e, 0, 0), this.clear(), this._ctx.save(), t === "horizontal" ? (this._ctx.translate(this.width, 0), this._ctx.scale(-1, 1)) : (this._ctx.translate(0, this.height), this._ctx.scale(1, -1)), this._ctx.drawImage(i, 0, 0), this._ctx.restore(), this._originalImage && (this._originalImageData = this.getImageData()));
+  }
+  /**
+   * Apply crop to the canvas
+   * @param x - Crop region X
+   * @param y - Crop region Y
+   * @param width - Crop width
+   * @param height - Crop height
+   * @throws Error if canvas is destroyed or dimensions are invalid
+   */
+  crop(t, e, i, a) {
+    if (this._destroyed)
+      throw new Error("Cannot crop destroyed canvas");
+    if (i <= 0 || a <= 0)
+      throw new Error(`Invalid crop dimensions: ${i}x${a}`);
+    const n = Math.max(0, Math.min(t, this.width - 1)), s = Math.max(0, Math.min(e, this.height - 1)), o = Math.min(i, this.width - n), l = Math.min(a, this.height - s);
+    if (o <= 0 || l <= 0)
+      throw new Error("Crop region is outside canvas bounds");
+    const h = this._ctx.getImageData(n, s, o, l);
+    this._canvas.width = o, this._canvas.height = l, this.fillBackground(), this._ctx.putImageData(h, 0, 0), this._originalImageData = this.getImageData();
+  }
+  /**
+   * Scale the canvas to new dimensions
+   * @param width - New width
+   * @param height - New height
+   * @param maintainAspectRatio - Whether to maintain aspect ratio (default: false)
+   * @throws Error if canvas is destroyed or dimensions are invalid
+   */
+  scale(t, e, i = !1) {
+    if (this._destroyed)
+      throw new Error("Cannot scale destroyed canvas");
+    if (t <= 0 || e <= 0)
+      throw new Error(`Invalid scale dimensions: ${t}x${e}`);
+    let a = Math.round(t), n = Math.round(e);
+    if (i) {
+      const h = Math.min(t / this.width, e / this.height);
+      a = Math.round(this.width * h), n = Math.round(this.height * h);
+    }
+    const s = this.getImageData(), o = document.createElement("canvas");
+    o.width = this.width, o.height = this.height;
+    const l = o.getContext("2d");
+    l && (l.putImageData(s, 0, 0), this._canvas.width = a, this._canvas.height = n, this.fillBackground(), this._ctx.imageSmoothingEnabled = !0, this._ctx.imageSmoothingQuality = "high", this._ctx.drawImage(o, 0, 0, a, n), this._originalImageData = this.getImageData());
   }
   /**
    * Subscribe to resize events
@@ -1373,7 +2087,7 @@ class he {
    * Requirements: 1.5 - Clean up canvas resources
    */
   destroy() {
-    this._destroyed || (this._destroyed = !0, this._resizeObserver && (this._resizeObserver.disconnect(), this._resizeObserver = null), window.removeEventListener("resize", this.handleResize), this._resizeListeners.clear(), Ft(this._canvas), this._originalImage = null, this._originalImageData = null);
+    this._destroyed || (this._destroyed = !0, this._resizeObserver && (this._resizeObserver.disconnect(), this._resizeObserver = null), window.removeEventListener("resize", this.handleResize), this._resizeListeners.clear(), Vt(this._canvas), this._originalImage = null, this._originalImageData = null);
   }
 }
 const b = (r, t = 20) => `
@@ -1641,7 +2355,7 @@ const b = (r, t = 20) => `
     <circle cx="19" cy="12" r="1"/>
     <circle cx="5" cy="12" r="1"/>
   `)
-}, de = `
+}, Pe = `
 /* Default (Dark theme) variables */
 .ie-editor-wrapper {
   --ie-bg: #1e1e1e;
@@ -3093,18 +3807,18 @@ const b = (r, t = 20) => `
   .ie-crop-handle-w { margin-top: -10px; left: -10px; }
 }
 `;
-function kt() {
+function Pt() {
   if (typeof document > "u") return;
   const r = "ie-toolbar-styles";
   if (document.getElementById(r)) return;
   const t = document.createElement("style");
-  t.id = r, t.textContent = de, document.head.appendChild(t);
+  t.id = r, t.textContent = Pe, document.head.appendChild(t);
 }
-let pe = 0;
-function ht() {
-  return `shape_${Date.now()}_${++pe}`;
+let Re = 0;
+function mt() {
+  return `shape_${Date.now()}_${++Re}`;
 }
-class ue {
+class _e {
   constructor() {
     c(this, "shapes", []);
     c(this, "selectedShapeId", null);
@@ -3112,7 +3826,7 @@ class ue {
   }
   /** Create a new shape */
   createShape(t, e) {
-    const i = ht(), a = { id: i, type: t, style: e, selected: !1 };
+    const i = mt(), a = { id: i, type: t, style: e, selected: !1 };
     switch (t) {
       case "pen":
         this.shapes.push({ ...a, type: "pen", points: [] });
@@ -3171,9 +3885,9 @@ class ue {
   /** Find shape at point */
   findShapeAtPoint(t, e, i = 5) {
     for (let a = this.shapes.length - 1; a >= 0; a--) {
-      const s = this.shapes[a];
-      if (this.isPointInShape(s, t, e, i))
-        return s;
+      const n = this.shapes[a];
+      if (this.isPointInShape(n, t, e, i))
+        return n;
     }
     return null;
   }
@@ -3181,88 +3895,88 @@ class ue {
   isPointInShape(t, e, i, a) {
     switch (t.type) {
       case "rect": {
-        const s = t;
-        return e >= s.x - a && e <= s.x + s.width + a && i >= s.y - a && i <= s.y + s.height + a;
+        const n = t;
+        return e >= n.x - a && e <= n.x + n.width + a && i >= n.y - a && i <= n.y + n.height + a;
       }
       case "circle": {
-        const s = t, n = (e - s.cx) / (s.rx + a), o = (i - s.cy) / (s.ry + a);
-        return n * n + o * o <= 1;
+        const n = t, s = (e - n.cx) / (n.rx + a), o = (i - n.cy) / (n.ry + a);
+        return s * s + o * o <= 1;
       }
       case "arrow":
       case "line": {
-        const s = t;
-        return this.pointToLineDistance(e, i, s.start.x, s.start.y, s.end.x, s.end.y) <= a + s.style.strokeWidth;
+        const n = t;
+        return this.pointToLineDistance(e, i, n.start.x, n.start.y, n.end.x, n.end.y) <= a + n.style.strokeWidth;
       }
       case "triangle": {
-        const s = t;
-        for (let n = 0; n < 3; n++) {
-          const o = s.points[n], l = s.points[(n + 1) % 3];
-          if (this.pointToLineDistance(e, i, o.x, o.y, l.x, l.y) <= a + s.style.strokeWidth) return !0;
+        const n = t;
+        for (let s = 0; s < 3; s++) {
+          const o = n.points[s], l = n.points[(s + 1) % 3];
+          if (this.pointToLineDistance(e, i, o.x, o.y, l.x, l.y) <= a + n.style.strokeWidth) return !0;
         }
         return !1;
       }
       case "pen": {
-        const s = t;
-        for (let n = 1; n < s.points.length; n++)
-          if (this.pointToLineDistance(e, i, s.points[n - 1].x, s.points[n - 1].y, s.points[n].x, s.points[n].y) <= a + s.style.strokeWidth) return !0;
+        const n = t;
+        for (let s = 1; s < n.points.length; s++)
+          if (this.pointToLineDistance(e, i, n.points[s - 1].x, n.points[s - 1].y, n.points[s].x, n.points[s].y) <= a + n.style.strokeWidth) return !0;
         return !1;
       }
       case "text": {
-        const s = t, n = s.text.length * s.fontSize * 0.6, o = s.fontSize * 1.2;
-        return e >= s.x - a && e <= s.x + n + a && i >= s.y - o - a && i <= s.y + a;
+        const n = t, s = n.text.length * n.fontSize * 0.6, o = n.fontSize * 1.2;
+        return e >= n.x - a && e <= n.x + s + a && i >= n.y - o - a && i <= n.y + a;
       }
     }
     return !1;
   }
   /** Calculate distance from point to line segment */
-  pointToLineDistance(t, e, i, a, s, n) {
-    const o = s - i, l = n - a, h = o * o + l * l;
+  pointToLineDistance(t, e, i, a, n, s) {
+    const o = n - i, l = s - a, h = o * o + l * l;
     if (h === 0)
       return Math.sqrt((t - i) ** 2 + (e - a) ** 2);
     let d = ((t - i) * o + (e - a) * l) / h;
     d = Math.max(0, Math.min(1, d));
-    const p = i + d * o, f = a + d * l;
-    return Math.sqrt((t - p) ** 2 + (e - f) ** 2);
+    const p = i + d * o, u = a + d * l;
+    return Math.sqrt((t - p) ** 2 + (e - u) ** 2);
   }
   /** Move shape by delta */
   moveShape(t, e, i) {
-    const a = this.shapes.find((s) => s.id === t);
+    const a = this.shapes.find((n) => n.id === t);
     if (a) {
       switch (a.type) {
         case "rect": {
-          const s = a;
-          s.x += e, s.y += i;
+          const n = a;
+          n.x += e, n.y += i;
           break;
         }
         case "circle": {
-          const s = a;
-          s.cx += e, s.cy += i;
+          const n = a;
+          n.cx += e, n.cy += i;
           break;
         }
         case "arrow": {
-          const s = a;
-          s.start.x += e, s.start.y += i, s.end.x += e, s.end.y += i;
+          const n = a;
+          n.start.x += e, n.start.y += i, n.end.x += e, n.end.y += i;
           break;
         }
         case "pen": {
-          a.points.forEach((n) => {
-            n.x += e, n.y += i;
+          a.points.forEach((s) => {
+            s.x += e, s.y += i;
           });
           break;
         }
         case "text": {
-          const s = a;
-          s.x += e, s.y += i;
+          const n = a;
+          n.x += e, n.y += i;
           break;
         }
         case "line": {
-          const s = a;
-          s.start.x += e, s.start.y += i, s.end.x += e, s.end.y += i;
+          const n = a;
+          n.start.x += e, n.start.y += i, n.end.x += e, n.end.y += i;
           break;
         }
         case "triangle": {
-          a.points.forEach((n) => {
-            n.x += e, n.y += i;
+          a.points.forEach((s) => {
+            s.x += e, s.y += i;
           });
           break;
         }
@@ -3311,10 +4025,10 @@ class ue {
   }
   /** Duplicate a shape */
   duplicateShape(t, e = { x: 20, y: 20 }) {
-    const i = this.shapes.find((n) => n.id === t);
+    const i = this.shapes.find((s) => s.id === t);
     if (!i) return null;
-    const a = ht(), s = JSON.parse(JSON.stringify(i));
-    return s.id = a, s.selected = !1, this.offsetShape(s, e.x, e.y), this.shapes.push(s), this.notifyChange(), a;
+    const a = mt(), n = JSON.parse(JSON.stringify(i));
+    return n.id = a, n.selected = !1, this.offsetShape(n, e.x, e.y), this.shapes.push(n), this.notifyChange(), a;
   }
   /** Offset shape position */
   offsetShape(t, e, i) {
@@ -3377,8 +4091,8 @@ class ue {
       case "arrow": {
         const i = e;
         t.beginPath(), t.moveTo(i.start.x, i.start.y), t.lineTo(i.end.x, i.end.y), t.stroke();
-        const a = Math.max(10, i.style.strokeWidth * 4), s = Math.atan2(i.end.y - i.start.y, i.end.x - i.start.x);
-        t.beginPath(), t.moveTo(i.end.x, i.end.y), t.lineTo(i.end.x - a * Math.cos(s - Math.PI / 6), i.end.y - a * Math.sin(s - Math.PI / 6)), t.moveTo(i.end.x, i.end.y), t.lineTo(i.end.x - a * Math.cos(s + Math.PI / 6), i.end.y - a * Math.sin(s + Math.PI / 6)), t.stroke();
+        const a = Math.max(10, i.style.strokeWidth * 4), n = Math.atan2(i.end.y - i.start.y, i.end.x - i.start.x);
+        t.beginPath(), t.moveTo(i.end.x, i.end.y), t.lineTo(i.end.x - a * Math.cos(n - Math.PI / 6), i.end.y - a * Math.sin(n - Math.PI / 6)), t.moveTo(i.end.x, i.end.y), t.lineTo(i.end.x - a * Math.cos(n + Math.PI / 6), i.end.y - a * Math.sin(n + Math.PI / 6)), t.stroke();
         break;
       }
       case "pen": {
@@ -3432,62 +4146,62 @@ class ue {
         return { x: e.cx - e.rx, y: e.cy - e.ry, width: e.rx * 2, height: e.ry * 2 };
       }
       case "arrow": {
-        const e = t, i = Math.min(e.start.x, e.end.x), a = Math.min(e.start.y, e.end.y), s = Math.max(e.start.x, e.end.x), n = Math.max(e.start.y, e.end.y);
-        return { x: i, y: a, width: s - i, height: n - a };
+        const e = t, i = Math.min(e.start.x, e.end.x), a = Math.min(e.start.y, e.end.y), n = Math.max(e.start.x, e.end.x), s = Math.max(e.start.y, e.end.y);
+        return { x: i, y: a, width: n - i, height: s - a };
       }
       case "pen": {
         const e = t;
         if (e.points.length === 0) return null;
-        let i = e.points[0].x, a = e.points[0].x, s = e.points[0].y, n = e.points[0].y;
+        let i = e.points[0].x, a = e.points[0].x, n = e.points[0].y, s = e.points[0].y;
         for (const o of e.points)
-          i = Math.min(i, o.x), a = Math.max(a, o.x), s = Math.min(s, o.y), n = Math.max(n, o.y);
-        return { x: i, y: s, width: a - i, height: n - s };
+          i = Math.min(i, o.x), a = Math.max(a, o.x), n = Math.min(n, o.y), s = Math.max(s, o.y);
+        return { x: i, y: n, width: a - i, height: s - n };
       }
       case "text": {
         const e = t, i = e.text.length * e.fontSize * 0.6, a = e.fontSize * 1.2;
         return { x: e.x, y: e.y - a, width: i, height: a };
       }
       case "line": {
-        const e = t, i = Math.min(e.start.x, e.end.x), a = Math.min(e.start.y, e.end.y), s = Math.max(e.start.x, e.end.x), n = Math.max(e.start.y, e.end.y);
-        return { x: i, y: a, width: s - i || 1, height: n - a || 1 };
+        const e = t, i = Math.min(e.start.x, e.end.x), a = Math.min(e.start.y, e.end.y), n = Math.max(e.start.x, e.end.x), s = Math.max(e.start.y, e.end.y);
+        return { x: i, y: a, width: n - i || 1, height: s - a || 1 };
       }
       case "triangle": {
-        const e = t, i = e.points.map((h) => h.x), a = e.points.map((h) => h.y), s = Math.min(...i), n = Math.min(...a), o = Math.max(...i), l = Math.max(...a);
-        return { x: s, y: n, width: o - s, height: l - n };
+        const e = t, i = e.points.map((h) => h.x), a = e.points.map((h) => h.y), n = Math.min(...i), s = Math.min(...a), o = Math.max(...i), l = Math.max(...a);
+        return { x: n, y: s, width: o - n, height: l - s };
       }
     }
     return null;
   }
   /** Resize shape by scale factor */
-  resizeShape(t, e, i, a, s) {
-    const n = this.shapes.find((o) => o.id === t);
-    if (n) {
-      switch (n.type) {
+  resizeShape(t, e, i, a, n) {
+    const s = this.shapes.find((o) => o.id === t);
+    if (s) {
+      switch (s.type) {
         case "rect": {
-          const o = n, l = a + (o.x - a) * e, h = s + (o.y - s) * i;
+          const o = s, l = a + (o.x - a) * e, h = n + (o.y - n) * i;
           o.x = l, o.y = h, o.width *= e, o.height *= i;
           break;
         }
         case "circle": {
-          const o = n;
-          o.cx = a + (o.cx - a) * e, o.cy = s + (o.cy - s) * i, o.rx *= e, o.ry *= i;
+          const o = s;
+          o.cx = a + (o.cx - a) * e, o.cy = n + (o.cy - n) * i, o.rx *= e, o.ry *= i;
           break;
         }
         case "arrow":
         case "line": {
-          const o = n;
-          o.start.x = a + (o.start.x - a) * e, o.start.y = s + (o.start.y - s) * i, o.end.x = a + (o.end.x - a) * e, o.end.y = s + (o.end.y - s) * i;
+          const o = s;
+          o.start.x = a + (o.start.x - a) * e, o.start.y = n + (o.start.y - n) * i, o.end.x = a + (o.end.x - a) * e, o.end.y = n + (o.end.y - n) * i;
           break;
         }
         case "pen": {
-          n.points.forEach((l) => {
-            l.x = a + (l.x - a) * e, l.y = s + (l.y - s) * i;
+          s.points.forEach((l) => {
+            l.x = a + (l.x - a) * e, l.y = n + (l.y - n) * i;
           });
           break;
         }
         case "triangle": {
-          n.points.forEach((l) => {
-            l.x = a + (l.x - a) * e, l.y = s + (l.y - s) * i;
+          s.points.forEach((l) => {
+            l.x = a + (l.x - a) * e, l.y = n + (l.y - n) * i;
           });
           break;
         }
@@ -3499,20 +4213,20 @@ class ue {
   getControlPoints(t) {
     const e = this.getShapeBounds(t);
     if (!e) return [];
-    const { x: i, y: a, width: s, height: n } = e;
+    const { x: i, y: a, width: n, height: s } = e;
     return [
       { x: i, y: a, type: "nw" },
-      { x: i + s / 2, y: a, type: "n" },
-      { x: i + s, y: a, type: "ne" },
-      { x: i + s, y: a + n / 2, type: "e" },
-      { x: i + s, y: a + n, type: "se" },
-      { x: i + s / 2, y: a + n, type: "s" },
-      { x: i, y: a + n, type: "sw" },
-      { x: i, y: a + n / 2, type: "w" }
+      { x: i + n / 2, y: a, type: "n" },
+      { x: i + n, y: a, type: "ne" },
+      { x: i + n, y: a + s / 2, type: "e" },
+      { x: i + n, y: a + s, type: "se" },
+      { x: i + n / 2, y: a + s, type: "s" },
+      { x: i, y: a + s, type: "sw" },
+      { x: i, y: a + s / 2, type: "w" }
     ];
   }
 }
-const ge = {
+const Be = {
   zoom: !0,
   tools: !0,
   history: !0,
@@ -3520,7 +4234,7 @@ const ge = {
   theme: "dark",
   autoHide: !0
 };
-class fe {
+class $e {
   // Pure original image without any annotations (for eraser)
   constructor(t, e, i = {}) {
     c(this, "editor");
@@ -3591,7 +4305,7 @@ class fe {
       const e = t.target;
       !this.inlineTextInput.contains(e) && !((i = this.textStyleBar) != null && i.contains(e)) && this.confirmInlineText();
     });
-    this.editor = t, this.options = { ...ge, ...i }, this.shapeManager = new ue(), this.shapeManager.setOnChange(() => this.renderAll()), kt(), this.wrapper = document.createElement("div"), this.wrapper.className = "ie-editor-wrapper", this.applyTheme(this.options.theme || "dark"), this.options.primaryColor && this.applyPrimaryColor(this.options.primaryColor), this.canvasContainer = document.createElement("div"), this.canvasContainer.className = "ie-canvas-container", this.viewport = document.createElement("div"), this.viewport.className = "ie-canvas-viewport";
+    this.editor = t, this.options = { ...Be, ...i }, this.shapeManager = new _e(), this.shapeManager.setOnChange(() => this.renderAll()), Pt(), this.wrapper = document.createElement("div"), this.wrapper.className = "ie-editor-wrapper", this.applyTheme(this.options.theme || "dark"), this.options.primaryColor && this.applyPrimaryColor(this.options.primaryColor), this.canvasContainer = document.createElement("div"), this.canvasContainer.className = "ie-canvas-container", this.viewport = document.createElement("div"), this.viewport.className = "ie-canvas-viewport";
     const a = t.canvas;
     a.parentElement && a.parentElement.removeChild(a), this.viewport.appendChild(a), this.canvasContainer.appendChild(this.viewport), this.zoomBadge = document.createElement("div"), this.zoomBadge.className = "ie-zoom-badge", this.zoomBadge.textContent = "100%", this.canvasContainer.appendChild(this.zoomBadge), this.wrapper.appendChild(this.canvasContainer), this.toolbar = this.createToolbar(), this.wrapper.appendChild(this.toolbar), e.appendChild(this.wrapper), this.setupEvents(), this.setupEditorEvents(), this.options.autoHide && this.setToolbarVisible(!1);
   }
@@ -3602,10 +4316,10 @@ class fe {
     i.className = "ie-toolbar-group ie-zoom-group";
     const a = this.createButton("zoomOut", w.zoomOut, () => this.zoomOut());
     e.includes("zoomOut") && (a.style.display = "none"), i.appendChild(a), this.zoomText = document.createElement("span"), this.zoomText.className = "ie-zoom-text", this.zoomText.textContent = "100%", i.appendChild(this.zoomText);
-    const s = this.createButton("zoomIn", w.zoomIn, () => this.zoomIn());
-    e.includes("zoomIn") && (s.style.display = "none"), i.appendChild(s);
-    const n = this.createButton("reset", w.reset, () => this.resetView());
-    e.includes("reset") && (n.style.display = "none"), i.appendChild(n), this.groups.set("zoom", i), t.appendChild(i), this.dividers.push(this.createDivider()), t.appendChild(this.dividers[this.dividers.length - 1]);
+    const n = this.createButton("zoomIn", w.zoomIn, () => this.zoomIn());
+    e.includes("zoomIn") && (n.style.display = "none"), i.appendChild(n);
+    const s = this.createButton("reset", w.reset, () => this.resetView());
+    e.includes("reset") && (s.style.display = "none"), i.appendChild(s), this.groups.set("zoom", i), t.appendChild(i), this.dividers.push(this.createDivider()), t.appendChild(this.dividers[this.dividers.length - 1]);
     const o = this.createGroup();
     o.className = "ie-toolbar-group ie-tool-group";
     const l = this.createButton("move", w.move, () => this.selectTool(null), !0);
@@ -3616,40 +4330,40 @@ class fe {
     e.includes("rect") && (d.style.display = "none"), o.appendChild(d);
     const p = this.createButton("circle", w.circle, () => this.selectTool("circle"));
     e.includes("circle") && (p.style.display = "none"), o.appendChild(p);
-    const f = this.createButton("arrow", w.arrow, () => this.selectTool("arrow"));
-    e.includes("arrow") && (f.style.display = "none"), o.appendChild(f);
+    const u = this.createButton("arrow", w.arrow, () => this.selectTool("arrow"));
+    e.includes("arrow") && (u.style.display = "none"), o.appendChild(u);
     const v = this.createButton("line", w.line, () => this.selectTool("line"));
     e.includes("line") && (v.style.display = "none"), o.appendChild(v);
-    const u = this.createButton("triangle", w.triangle, () => this.selectTool("triangle"));
-    e.includes("triangle") && (u.style.display = "none"), o.appendChild(u);
-    const g = this.createButton("text", w.type, () => this.selectTool("text"));
-    e.includes("text") && (g.style.display = "none"), o.appendChild(g);
-    const x = this.createButton("mosaic", w.mosaic, () => this.selectTool("mosaic"));
-    e.includes("mosaic") && (x.style.display = "none"), o.appendChild(x);
+    const g = this.createButton("triangle", w.triangle, () => this.selectTool("triangle"));
+    e.includes("triangle") && (g.style.display = "none"), o.appendChild(g);
+    const f = this.createButton("text", w.type, () => this.selectTool("text"));
+    e.includes("text") && (f.style.display = "none"), o.appendChild(f);
+    const m = this.createButton("mosaic", w.mosaic, () => this.selectTool("mosaic"));
+    e.includes("mosaic") && (m.style.display = "none"), o.appendChild(m);
     const S = this.createButton("eraser", w.eraser, () => this.selectTool("eraser"));
     e.includes("eraser") && (S.style.display = "none"), o.appendChild(S), this.groups.set("tool", o), t.appendChild(o);
     const C = this.createGroup();
     C.className = "ie-toolbar-group ie-advanced-group";
-    const M = this.createButton("crop", w.crop, () => this.toggleCropTool());
-    e.includes("crop") && (M.style.display = "none"), C.appendChild(M);
-    const T = this.createButton("filter", w.filter, () => this.toggleFilterPanel());
-    e.includes("filter") && (T.style.display = "none"), C.appendChild(T), this.groups.set("advanced", C), t.appendChild(C), this.dividers.push(this.createDivider()), t.appendChild(this.dividers[this.dividers.length - 1]), this.createDrawPanel(t), this.createMosaicPanel(t), this.createTextPanel(t), this.createEraserPanel(t), this.createFilterPanel(t);
-    const I = this.createGroup();
-    I.className = "ie-toolbar-group ie-history-group";
+    const k = this.createButton("crop", w.crop, () => this.toggleCropTool());
+    e.includes("crop") && (k.style.display = "none"), C.appendChild(k);
+    const I = this.createButton("filter", w.filter, () => this.toggleFilterPanel());
+    e.includes("filter") && (I.style.display = "none"), C.appendChild(I), this.groups.set("advanced", C), t.appendChild(C), this.dividers.push(this.createDivider()), t.appendChild(this.dividers[this.dividers.length - 1]), this.createDrawPanel(t), this.createMosaicPanel(t), this.createTextPanel(t), this.createEraserPanel(t), this.createFilterPanel(t);
+    const T = this.createGroup();
+    T.className = "ie-toolbar-group ie-history-group";
     const E = this.createButton("undo", w.undo, () => this.editor.undo(), !1, !0);
-    e.includes("undo") && (E.style.display = "none"), I.appendChild(E);
-    const k = this.createButton("redo", w.redo, () => this.editor.redo(), !1, !0);
-    e.includes("redo") && (k.style.display = "none"), I.appendChild(k), this.groups.set("history", I), t.appendChild(I), this.dividers.push(this.createDivider()), t.appendChild(this.dividers[this.dividers.length - 1]);
-    const m = document.createElement("div");
-    m.className = "ie-toolbar-group ie-crop-action-group", m.style.display = "none";
+    e.includes("undo") && (E.style.display = "none"), T.appendChild(E);
+    const M = this.createButton("redo", w.redo, () => this.editor.redo(), !1, !0);
+    e.includes("redo") && (M.style.display = "none"), T.appendChild(M), this.groups.set("history", T), t.appendChild(T), this.dividers.push(this.createDivider()), t.appendChild(this.dividers[this.dividers.length - 1]);
+    const x = document.createElement("div");
+    x.className = "ie-toolbar-group ie-crop-action-group", x.style.display = "none";
     const y = document.createElement("button");
-    y.className = "ie-btn ie-crop-toolbar-btn ie-crop-toolbar-cancel", y.innerHTML = `${w.close}<span>取消</span>`, y.onclick = () => this.toggleCropTool(), m.appendChild(y);
+    y.className = "ie-btn ie-crop-toolbar-btn ie-crop-toolbar-cancel", y.innerHTML = `${w.close}<span>取消</span>`, y.onclick = () => this.toggleCropTool(), x.appendChild(y);
     const L = document.createElement("button");
-    L.className = "ie-btn ie-crop-toolbar-btn ie-crop-toolbar-confirm", L.innerHTML = `${w.check}<span>确认裁剪</span>`, L.onclick = () => this.applyCrop(), m.appendChild(L), this.groups.set("cropAction", m), t.appendChild(m), this.buttons.set("cropActionGroup", y), this.dividers.push(this.createDivider()), t.appendChild(this.dividers[this.dividers.length - 1]);
-    const z = this.createButton("export", w.download, () => this.exportImage());
-    z.classList.add("ie-btn-export");
+    L.className = "ie-btn ie-crop-toolbar-btn ie-crop-toolbar-confirm", L.innerHTML = `${w.check}<span>确认裁剪</span>`, L.onclick = () => this.applyCrop(), x.appendChild(L), this.groups.set("cropAction", x), t.appendChild(x), this.buttons.set("cropActionGroup", y), this.dividers.push(this.createDivider()), t.appendChild(this.dividers[this.dividers.length - 1]);
+    const D = this.createButton("export", w.download, () => this.exportImage());
+    D.classList.add("ie-btn-export");
     const B = document.createElement("span");
-    return B.textContent = "导出", z.appendChild(B), e.includes("export") && (z.style.display = "none"), t.appendChild(z), this.updateDividerVisibility(e), t;
+    return B.textContent = "导出", D.appendChild(B), e.includes("export") && (D.style.display = "none"), t.appendChild(D), this.updateDividerVisibility(e), t;
   }
   createGroup() {
     const t = document.createElement("div");
@@ -3659,15 +4373,15 @@ class fe {
     const t = document.createElement("div");
     return t.className = "ie-toolbar-divider", t;
   }
-  createButton(t, e, i, a = !1, s = !1) {
-    const n = document.createElement("button");
-    n.className = "ie-btn" + (a ? " active" : ""), n.innerHTML = e, n.onclick = i;
+  createButton(t, e, i, a = !1, n = !1) {
+    const s = document.createElement("button");
+    s.className = "ie-btn" + (a ? " active" : ""), s.innerHTML = e, s.onclick = i;
     const o = this.getTooltipInfo(t), l = document.createElement("div");
     return l.className = "ie-tooltip", l.innerHTML = `
       <div class="ie-tooltip-title">${o.title}</div>
       ${o.desc ? `<div class="ie-tooltip-desc">${o.desc}</div>` : ""}
       ${o.shortcut ? `<div class="ie-tooltip-shortcut">${o.shortcut}</div>` : ""}
-    `, n.appendChild(l), s && (n.disabled = !0), this.buttons.set(t, n), n;
+    `, s.appendChild(l), n && (s.disabled = !0), this.buttons.set(t, s), s;
   }
   getTooltipInfo(t) {
     return {
@@ -3693,7 +4407,7 @@ class fe {
   }
   /** Create drawing tools panel (shared by pen, rect, circle, arrow) */
   createDrawPanel(t) {
-    var i, a, s;
+    var i, a, n;
     const e = document.createElement("div");
     e.className = "ie-panel", e.style.display = "none", e.innerHTML = `
       <div class="ie-panel-title">绘图设置</div>
@@ -3716,8 +4430,8 @@ class fe {
       this.strokeWidth = Math.max(1, this.strokeWidth - 1), this.updateDrawPanelUI();
     }), (a = e.querySelector('[data-action="stroke-inc"]')) == null || a.addEventListener("click", () => {
       this.strokeWidth = Math.min(20, this.strokeWidth + 1), this.updateDrawPanelUI();
-    }), (s = e.querySelector('[data-input="stroke-color"]')) == null || s.addEventListener("input", (n) => {
-      this.strokeColor = n.target.value, this.updateDrawPanelUI();
+    }), (n = e.querySelector('[data-input="stroke-color"]')) == null || n.addEventListener("input", (s) => {
+      this.strokeColor = s.target.value, this.updateDrawPanelUI();
     }), t.appendChild(e), this.panels.set("draw", e);
   }
   updateDrawPanelUI() {
@@ -3742,17 +4456,17 @@ class fe {
         <input type="range" class="ie-range-slider" min="3" max="30" value="${this.mosaicSize}" data-slider="mosaic-block">
         <span class="ie-panel-value" data-value="mosaic-block">${this.mosaicSize}</span>
       </div>
-    `, (i = e.querySelector('[data-slider="mosaic-brush"]')) == null || i.addEventListener("input", (s) => {
-      this.strokeWidth = parseInt(s.target.value), this.updateMosaicPanelUI();
-    }), (a = e.querySelector('[data-slider="mosaic-block"]')) == null || a.addEventListener("input", (s) => {
-      this.mosaicSize = parseInt(s.target.value), this.updateMosaicPanelUI();
+    `, (i = e.querySelector('[data-slider="mosaic-brush"]')) == null || i.addEventListener("input", (n) => {
+      this.strokeWidth = parseInt(n.target.value), this.updateMosaicPanelUI();
+    }), (a = e.querySelector('[data-slider="mosaic-block"]')) == null || a.addEventListener("input", (n) => {
+      this.mosaicSize = parseInt(n.target.value), this.updateMosaicPanelUI();
     }), t.appendChild(e), this.panels.set("mosaic", e);
   }
   updateMosaicPanelUI() {
     const t = this.panels.get("mosaic");
     if (!t) return;
-    const e = t.querySelector('[data-value="mosaic-brush"]'), i = t.querySelector('[data-value="mosaic-block"]'), a = t.querySelector('[data-slider="mosaic-brush"]'), s = t.querySelector('[data-slider="mosaic-block"]');
-    e && (e.textContent = String(this.strokeWidth * 3)), i && (i.textContent = String(this.mosaicSize)), a && (a.value = String(this.strokeWidth)), s && (s.value = String(this.mosaicSize)), this.updateBrushCursorSize();
+    const e = t.querySelector('[data-value="mosaic-brush"]'), i = t.querySelector('[data-value="mosaic-block"]'), a = t.querySelector('[data-slider="mosaic-brush"]'), n = t.querySelector('[data-slider="mosaic-block"]');
+    e && (e.textContent = String(this.strokeWidth * 3)), i && (i.textContent = String(this.mosaicSize)), a && (a.value = String(this.strokeWidth)), n && (n.value = String(this.mosaicSize)), this.updateBrushCursorSize();
   }
   createTextPanel(t) {
     const e = document.createElement("div");
@@ -3836,14 +4550,14 @@ class fe {
         <button class="ie-btn-apply" data-action="apply-filter">应用</button>
         <button class="ie-btn-reset" data-action="reset-filter">重置</button>
       </div>
-    `, e.querySelectorAll("[data-preset]").forEach((s) => {
-      s.addEventListener("click", (n) => {
-        const o = n.target.getAttribute("data-preset") || "none";
-        this.applyFilterPreset(o), e.querySelectorAll("[data-preset]").forEach((l) => l.classList.remove("active")), n.target.classList.add("active");
+    `, e.querySelectorAll("[data-preset]").forEach((n) => {
+      n.addEventListener("click", (s) => {
+        const o = s.target.getAttribute("data-preset") || "none";
+        this.applyFilterPreset(o), e.querySelectorAll("[data-preset]").forEach((l) => l.classList.remove("active")), s.target.classList.add("active");
       });
-    }), e.querySelectorAll("[data-filter]").forEach((s) => {
-      s.addEventListener("input", (n) => {
-        const o = n.target.getAttribute("data-filter"), l = n.target.value, h = e.querySelector(`[data-value="${o}"]`);
+    }), e.querySelectorAll("[data-filter]").forEach((n) => {
+      n.addEventListener("input", (s) => {
+        const o = s.target.getAttribute("data-filter"), l = s.target.value, h = e.querySelector(`[data-value="${o}"]`);
         h && (h.textContent = l), this.previewFilter(), e.querySelectorAll("[data-preset]").forEach((d) => d.classList.remove("active"));
       });
     }), (i = e.querySelector('[data-action="apply-filter"]')) == null || i.addEventListener("click", () => {
@@ -3853,26 +4567,26 @@ class fe {
     }), t.appendChild(e), this.panels.set("filter", e);
   }
   getFilterValues() {
-    var e, i, a, s;
+    var e, i, a, n;
     const t = this.panels.get("filter");
     return t ? {
       brightness: parseInt(((e = t.querySelector('[data-filter="brightness"]')) == null ? void 0 : e.value) || "0"),
       contrast: parseInt(((i = t.querySelector('[data-filter="contrast"]')) == null ? void 0 : i.value) || "0"),
       saturation: parseInt(((a = t.querySelector('[data-filter="saturation"]')) == null ? void 0 : a.value) || "0"),
-      blur: parseInt(((s = t.querySelector('[data-filter="blur"]')) == null ? void 0 : s.value) || "0")
+      blur: parseInt(((n = t.querySelector('[data-filter="blur"]')) == null ? void 0 : n.value) || "0")
     } : { brightness: 0, contrast: 0, saturation: 0, blur: 0 };
   }
   previewFilter() {
-    const { brightness: t, contrast: e, saturation: i, blur: a } = this.getFilterValues(), s = this.editor.ctx, n = this.editor.canvas;
-    if (!s || !n || !this.originalImageData) return;
-    s.putImageData(this.originalImageData, 0, 0);
+    const { brightness: t, contrast: e, saturation: i, blur: a } = this.getFilterValues(), n = this.editor.ctx, s = this.editor.canvas;
+    if (!n || !s || !this.originalImageData) return;
+    n.putImageData(this.originalImageData, 0, 0);
     const o = [
       `brightness(${100 + t}%)`,
       `contrast(${100 + e}%)`,
       `saturate(${100 + i}%)`,
       a > 0 ? `blur(${a}px)` : ""
     ].filter(Boolean).join(" ");
-    s.filter = o || "none", s.drawImage(n, 0, 0), s.filter = "none";
+    n.filter = o || "none", n.drawImage(s, 0, 0), n.filter = "none";
   }
   applyFilter() {
     var t, e;
@@ -3883,8 +4597,8 @@ class fe {
     const t = this.panels.get("filter");
     t && (t.querySelectorAll("[data-filter]").forEach((a) => {
       a.value = "0";
-      const s = a.getAttribute("data-filter"), n = t.querySelector(`[data-value="${s}"]`);
-      n && (n.textContent = "0");
+      const n = a.getAttribute("data-filter"), s = t.querySelector(`[data-value="${n}"]`);
+      s && (s.textContent = "0");
     }), t.querySelectorAll("[data-preset]").forEach((a) => a.classList.remove("active")), (e = t.querySelector('[data-preset="none"]')) == null || e.classList.add("active"), this.originalImageData && ((i = this.editor.ctx) == null || i.putImageData(this.originalImageData, 0, 0)));
   }
   /** Apply filter preset */
@@ -3894,7 +4608,7 @@ class fe {
     const i = this.editor.ctx, a = this.editor.canvas;
     if (!i || !a || !this.originalImageData) return;
     i.putImageData(this.originalImageData, 0, 0);
-    const s = {
+    const n = {
       none: { brightness: 0, contrast: 0, saturation: 0, blur: 0 },
       grayscale: { brightness: 0, contrast: 0, saturation: -100, blur: 0 },
       sepia: { brightness: 0, contrast: 0, saturation: -30, blur: 0, css: "sepia(80%)" },
@@ -3903,33 +4617,33 @@ class fe {
       cool: { brightness: 0, contrast: 10, saturation: -10, blur: 0, css: "hue-rotate(180deg) saturate(50%)" },
       vivid: { brightness: 10, contrast: 30, saturation: 50, blur: 0 },
       vintage: { brightness: -10, contrast: 20, saturation: -20, blur: 0, css: "sepia(40%)" }
-    }, n = s[t] || s.none, o = e.querySelector('[data-filter="brightness"]'), l = e.querySelector('[data-filter="contrast"]'), h = e.querySelector('[data-filter="saturation"]'), d = e.querySelector('[data-filter="blur"]');
+    }, s = n[t] || n.none, o = e.querySelector('[data-filter="brightness"]'), l = e.querySelector('[data-filter="contrast"]'), h = e.querySelector('[data-filter="saturation"]'), d = e.querySelector('[data-filter="blur"]');
     if (o) {
-      o.value = String(n.brightness);
-      const f = e.querySelector('[data-value="brightness"]');
-      f && (f.textContent = String(n.brightness));
+      o.value = String(s.brightness);
+      const u = e.querySelector('[data-value="brightness"]');
+      u && (u.textContent = String(s.brightness));
     }
     if (l) {
-      l.value = String(n.contrast);
-      const f = e.querySelector('[data-value="contrast"]');
-      f && (f.textContent = String(n.contrast));
+      l.value = String(s.contrast);
+      const u = e.querySelector('[data-value="contrast"]');
+      u && (u.textContent = String(s.contrast));
     }
     if (h) {
-      h.value = String(n.saturation);
-      const f = e.querySelector('[data-value="saturation"]');
-      f && (f.textContent = String(n.saturation));
+      h.value = String(s.saturation);
+      const u = e.querySelector('[data-value="saturation"]');
+      u && (u.textContent = String(s.saturation));
     }
     if (d) {
-      d.value = String(n.blur);
-      const f = e.querySelector('[data-value="blur"]');
-      f && (f.textContent = String(n.blur));
+      d.value = String(s.blur);
+      const u = e.querySelector('[data-value="blur"]');
+      u && (u.textContent = String(s.blur));
     }
     const p = [
-      `brightness(${100 + n.brightness}%)`,
-      `contrast(${100 + n.contrast}%)`,
-      `saturate(${100 + n.saturation}%)`,
-      n.blur > 0 ? `blur(${n.blur}px)` : "",
-      n.css || ""
+      `brightness(${100 + s.brightness}%)`,
+      `contrast(${100 + s.contrast}%)`,
+      `saturate(${100 + s.saturation}%)`,
+      s.blur > 0 ? `blur(${s.blur}px)` : "",
+      s.css || ""
     ].filter(Boolean).join(" ");
     i.filter = p || "none", i.drawImage(a, 0, 0), i.filter = "none";
   }
@@ -3973,8 +4687,8 @@ class fe {
       else if (this.isDraggingShape) {
         const i = this.shapeManager.getSelectedShape();
         if (i) {
-          const a = e.x - this.dragStartPoint.x, s = e.y - this.dragStartPoint.y;
-          this.shapeManager.moveShape(i.id, a, s), this.dragStartPoint = e;
+          const a = e.x - this.dragStartPoint.x, n = e.y - this.dragStartPoint.y;
+          this.shapeManager.moveShape(i.id, a, n), this.dragStartPoint = e;
         }
       } else if (this.isPanning)
         this.translateX += t.clientX - this.lastPanPoint.x, this.translateY += t.clientY - this.lastPanPoint.y, this.lastPanPoint = { x: t.clientX, y: t.clientY }, this.updateTransform();
@@ -3994,12 +4708,12 @@ class fe {
       const e = this.clientToCanvasCoords(t.clientX, t.clientY);
       this.showInlineTextInput(t.clientX, t.clientY, e);
     }), document.addEventListener("keydown", (t) => {
-      var e, i, a, s;
+      var e, i, a, n;
       if (t.key === "Delete" || t.key === "Backspace") {
         if (this.isAddingText || ((e = document.activeElement) == null ? void 0 : e.tagName) === "INPUT" || ((i = document.activeElement) == null ? void 0 : i.tagName) === "TEXTAREA")
           return;
-        const n = this.shapeManager.getSelectedShape();
-        n && (t.preventDefault(), this.shapeManager.deleteShape(n.id), (s = (a = this.editor).saveToHistory) == null || s.call(a, "delete shape"));
+        const s = this.shapeManager.getSelectedShape();
+        s && (t.preventDefault(), this.shapeManager.deleteShape(s.id), (n = (a = this.editor).saveToHistory) == null || n.call(a, "delete shape"));
       }
     }), this.canvasContainer.addEventListener("touchstart", (t) => {
       if (this.hasRealImage && t.touches.length === 2) {
@@ -4016,14 +4730,14 @@ class fe {
     }, { passive: !1 }), this.canvasContainer.addEventListener("touchmove", (t) => {
       if (this.hasRealImage && t.touches.length === 2 && this.touchStartDistance > 0) {
         t.preventDefault();
-        const e = t.touches[0], i = t.touches[1], s = Math.hypot(
+        const e = t.touches[0], i = t.touches[1], n = Math.hypot(
           i.clientX - e.clientX,
           i.clientY - e.clientY
-        ) / this.touchStartDistance, n = Math.max(0.1, Math.min(5, this.touchStartScale * s)), o = {
+        ) / this.touchStartDistance, s = Math.max(0.1, Math.min(5, this.touchStartScale * n)), o = {
           x: (e.clientX + i.clientX) / 2,
           y: (e.clientY + i.clientY) / 2
         };
-        this.setScale(n, o.x, o.y), this.isTouchPanning && (this.translateX += o.x - this.lastTouchCenter.x, this.translateY += o.y - this.lastTouchCenter.y, this.updateTransform()), this.lastTouchCenter = o;
+        this.setScale(s, o.x, o.y), this.isTouchPanning && (this.translateX += o.x - this.lastTouchCenter.x, this.translateY += o.y - this.lastTouchCenter.y, this.updateTransform()), this.lastTouchCenter = o;
       }
     }, { passive: !1 }), this.canvasContainer.addEventListener("touchend", (t) => {
       t.touches.length < 2 && (this.touchStartDistance = 0, this.isTouchPanning = !1);
@@ -4057,9 +4771,9 @@ class fe {
       const e = this.canvasContainer.getBoundingClientRect();
       (t.clientX <= e.left || t.clientX >= e.right || t.clientY <= e.top || t.clientY >= e.bottom) && ((i = this.dropZone) == null || i.classList.remove("active"));
     }), this.canvasContainer.addEventListener("drop", (t) => {
-      var i, a, s;
+      var i, a, n;
       t.preventDefault(), t.stopPropagation(), (i = this.dropZone) == null || i.classList.remove("active");
-      const e = (s = (a = t.dataTransfer) == null ? void 0 : a.files) == null ? void 0 : s[0];
+      const e = (n = (a = t.dataTransfer) == null ? void 0 : a.files) == null ? void 0 : n[0];
       e != null && e.type.startsWith("image/") && this.loadImageFile(e);
     });
   }
@@ -4069,8 +4783,8 @@ class fe {
   loadImageFile(t) {
     const e = new FileReader();
     e.onload = (i) => {
-      var s;
-      const a = (s = i.target) == null ? void 0 : s.result;
+      var n;
+      const a = (n = i.target) == null ? void 0 : n.result;
       a && this.editor.loadImage(a);
     }, e.readAsDataURL(t);
   }
@@ -4161,7 +4875,7 @@ class fe {
   }
   /** Convert client coordinates to canvas coordinates */
   clientToCanvasCoords(t, e) {
-    const i = this.canvasContainer.getBoundingClientRect(), a = this.editor.canvas, s = i.width / 2, n = i.height / 2, o = (t - i.left - s - this.translateX) / this.scale + a.width / 2, l = (e - i.top - n - this.translateY) / this.scale + a.height / 2;
+    const i = this.canvasContainer.getBoundingClientRect(), a = this.editor.canvas, n = i.width / 2, s = i.height / 2, o = (t - i.left - n - this.translateX) / this.scale + a.width / 2, l = (e - i.top - s - this.translateY) / this.scale + a.height / 2;
     return { x: o, y: l };
   }
   // ============ Mosaic Tool Methods ============
@@ -4169,41 +4883,41 @@ class fe {
   applyMosaicAt(t, e) {
     const i = this.editor.ctx, a = this.editor.canvas;
     if (!i || !a) return;
-    const s = i.getImageData(0, 0, a.width, a.height), n = this.strokeWidth * 3;
-    this.applyMosaicCircle(s, t, e, n, this.mosaicSize), i.putImageData(s, 0, 0);
+    const n = i.getImageData(0, 0, a.width, a.height), s = this.strokeWidth * 3;
+    this.applyMosaicCircle(n, t, e, s, this.mosaicSize), i.putImageData(n, 0, 0);
   }
   /** Interpolate mosaic stroke */
   interpolateMosaic(t, e, i, a) {
-    const s = this.editor.ctx, n = this.editor.canvas;
-    if (!s || !n) return;
-    const o = this.strokeWidth * 3, l = Math.sqrt((i - t) ** 2 + (a - e) ** 2), h = o / 2, d = Math.max(1, Math.ceil(l / h)), p = s.getImageData(0, 0, n.width, n.height);
-    for (let f = 0; f <= d; f++) {
-      const v = f / d, u = t + (i - t) * v, g = e + (a - e) * v;
-      this.applyMosaicCircle(p, u, g, o, this.mosaicSize);
+    const n = this.editor.ctx, s = this.editor.canvas;
+    if (!n || !s) return;
+    const o = this.strokeWidth * 3, l = Math.sqrt((i - t) ** 2 + (a - e) ** 2), h = o / 2, d = Math.max(1, Math.ceil(l / h)), p = n.getImageData(0, 0, s.width, s.height);
+    for (let u = 0; u <= d; u++) {
+      const v = u / d, g = t + (i - t) * v, f = e + (a - e) * v;
+      this.applyMosaicCircle(p, g, f, o, this.mosaicSize);
     }
-    s.putImageData(p, 0, 0);
+    n.putImageData(p, 0, 0);
   }
   /** Apply mosaic effect in a circular region */
-  applyMosaicCircle(t, e, i, a, s) {
-    const { width: n, height: o, data: l } = t, h = Math.max(0, Math.floor(e - a)), d = Math.min(n - 1, Math.ceil(e + a)), p = Math.max(0, Math.floor(i - a)), f = Math.min(o - 1, Math.ceil(i + a));
-    for (let v = p; v <= f; v += s)
-      for (let u = h; u <= d; u += s) {
-        const g = u + s / 2, x = v + s / 2;
-        if (Math.sqrt((g - e) ** 2 + (x - i) ** 2) > a) continue;
-        let C = 0, M = 0, T = 0, I = 0;
-        const E = Math.min(u + s, d + 1), k = Math.min(v + s, f + 1);
-        for (let m = v; m < k; m++)
-          for (let y = u; y < E; y++) {
-            const L = (m * n + y) * 4;
-            C += l[L], M += l[L + 1], T += l[L + 2], I++;
+  applyMosaicCircle(t, e, i, a, n) {
+    const { width: s, height: o, data: l } = t, h = Math.max(0, Math.floor(e - a)), d = Math.min(s - 1, Math.ceil(e + a)), p = Math.max(0, Math.floor(i - a)), u = Math.min(o - 1, Math.ceil(i + a));
+    for (let v = p; v <= u; v += n)
+      for (let g = h; g <= d; g += n) {
+        const f = g + n / 2, m = v + n / 2;
+        if (Math.sqrt((f - e) ** 2 + (m - i) ** 2) > a) continue;
+        let C = 0, k = 0, I = 0, T = 0;
+        const E = Math.min(g + n, d + 1), M = Math.min(v + n, u + 1);
+        for (let x = v; x < M; x++)
+          for (let y = g; y < E; y++) {
+            const L = (x * s + y) * 4;
+            C += l[L], k += l[L + 1], I += l[L + 2], T++;
           }
-        if (I > 0) {
-          C = Math.round(C / I), M = Math.round(M / I), T = Math.round(T / I);
-          for (let m = v; m < k; m++)
-            for (let y = u; y < E; y++)
-              if (Math.sqrt((y - e) ** 2 + (m - i) ** 2) <= a) {
-                const z = (m * n + y) * 4;
-                l[z] = C, l[z + 1] = M, l[z + 2] = T;
+        if (T > 0) {
+          C = Math.round(C / T), k = Math.round(k / T), I = Math.round(I / T);
+          for (let x = v; x < M; x++)
+            for (let y = g; y < E; y++)
+              if (Math.sqrt((y - e) ** 2 + (x - i) ** 2) <= a) {
+                const D = (x * s + y) * 4;
+                l[D] = C, l[D + 1] = k, l[D + 2] = I;
               }
         }
       }
@@ -4247,8 +4961,8 @@ class fe {
   /** Update brush cursor position */
   updateBrushCursorPosition(t, e) {
     if (!this.brushCursor) return;
-    const i = this.canvasContainer.getBoundingClientRect(), a = t - i.left, s = e - i.top;
-    this.brushCursor.style.left = `${a}px`, this.brushCursor.style.top = `${s}px`;
+    const i = this.canvasContainer.getBoundingClientRect(), a = t - i.left, n = e - i.top;
+    this.brushCursor.style.left = `${a}px`, this.brushCursor.style.top = `${n}px`;
   }
   selectTool(t) {
     if (t === this.currentTool) {
@@ -4266,8 +4980,8 @@ class fe {
   /** Show inline text input at click position */
   showInlineTextInput(t, e, i) {
     this.isAddingText = !0, this.inlineTextInput = document.createElement("div"), this.inlineTextInput.className = "ie-inline-text-container";
-    const a = this.canvasContainer.getBoundingClientRect(), s = t - a.left, n = e - a.top;
-    this.inlineTextInput.style.left = `${s}px`, this.inlineTextInput.style.top = `${n}px`;
+    const a = this.canvasContainer.getBoundingClientRect(), n = t - a.left, s = e - a.top;
+    this.inlineTextInput.style.left = `${n}px`, this.inlineTextInput.style.top = `${s}px`;
     const o = document.createElement("div");
     o.className = "ie-inline-text-input", o.contentEditable = "true", o.style.fontSize = `${this.textSize * this.scale}px`, o.style.color = this.textColor, o.setAttribute("data-placeholder", "输入文字..."), this.inlineTextInput.appendChild(o), this.canvasContainer.appendChild(this.inlineTextInput), this.createTextStyleBar(), o.focus(), this.inlineTextInput.__canvasPos = i, o.addEventListener("keydown", (l) => {
       l.key === "Escape" ? this.cancelInlineText() : l.key === "Enter" && !l.shiftKey && (l.preventDefault(), this.confirmInlineText());
@@ -4279,7 +4993,7 @@ class fe {
   }
   /** Create floating text style bar */
   createTextStyleBar() {
-    var e, i, a, s, n, o, l;
+    var e, i, a, n, s, o, l;
     this.textStyleBar && this.textStyleBar.remove(), this.textStyleBar = document.createElement("div"), this.textStyleBar.className = "ie-text-style-bar", this.textStyleBar.innerHTML = `
       <select class="ie-style-select" data-input="font" title="字体">
         <option value="sans-serif">默认</option>
@@ -4313,10 +5027,10 @@ class fe {
     }), (a = this.textStyleBar.querySelector('[data-action="bold"]')) == null || a.addEventListener("click", (h) => {
       var d;
       h.stopPropagation(), this.textBold = !this.textBold, (d = h.target.closest(".ie-style-btn")) == null || d.classList.toggle("active", this.textBold), this.updateTextUI();
-    }), (s = this.textStyleBar.querySelector('[data-action="italic"]')) == null || s.addEventListener("click", (h) => {
+    }), (n = this.textStyleBar.querySelector('[data-action="italic"]')) == null || n.addEventListener("click", (h) => {
       var d;
       h.stopPropagation(), this.textItalic = !this.textItalic, (d = h.target.closest(".ie-style-btn")) == null || d.classList.toggle("active", this.textItalic), this.updateTextUI();
-    }), (n = this.textStyleBar.querySelector('[data-action="underline"]')) == null || n.addEventListener("click", (h) => {
+    }), (s = this.textStyleBar.querySelector('[data-action="underline"]')) == null || s.addEventListener("click", (h) => {
       var d;
       h.stopPropagation(), this.textUnderline = !this.textUnderline, (d = h.target.closest(".ie-style-btn")) == null || d.classList.toggle("active", this.textUnderline), this.updateTextUI();
     }), (o = this.textStyleBar.querySelector('[data-input="color"]')) == null || o.addEventListener("input", (h) => {
@@ -4350,7 +5064,7 @@ class fe {
   }
   /** Confirm and add text to canvas */
   confirmInlineText() {
-    var a, s, n;
+    var a, n, s;
     if (!this.inlineTextInput) return;
     const t = this.inlineTextInput.querySelector(".ie-inline-text-input"), e = ((a = t == null ? void 0 : t.textContent) == null ? void 0 : a.trim()) || "", i = this.inlineTextInput.__canvasPos;
     if (document.removeEventListener("pointerdown", this.handleOutsideClick), e && i) {
@@ -4362,7 +5076,7 @@ class fe {
           const d = o.measureText(e);
           o.strokeStyle = this.textColor, o.lineWidth = Math.max(1, this.textSize / 15), o.beginPath(), o.moveTo(i.x, i.y + this.textSize + 2), o.lineTo(i.x + d.width, i.y + this.textSize + 2), o.stroke();
         }
-        o.restore(), this.saveOriginalImage(), (n = (s = this.editor).saveToHistory) == null || n.call(s, "add text");
+        o.restore(), this.saveOriginalImage(), (s = (n = this.editor).saveToHistory) == null || s.call(n, "add text");
       }
     }
     this.inlineTextInput && (this.inlineTextInput.remove(), this.inlineTextInput = null), this.textStyleBar && (this.textStyleBar.remove(), this.textStyleBar = null), this.isAddingText = !1;
@@ -4380,13 +5094,13 @@ class fe {
     if (this.cropOverlay) return;
     const t = this.editor.canvas;
     this.cropOverlay = document.createElement("div"), this.cropOverlay.className = "ie-crop-overlay";
-    const e = 0.1, i = t.width * (1 - e * 2), a = t.height * (1 - e * 2), s = t.width * e, n = t.height * e;
+    const e = 0.1, i = t.width * (1 - e * 2), a = t.height * (1 - e * 2), n = t.width * e, s = t.height * e;
     this.cropOverlay.innerHTML = `
       <div class="ie-crop-mask ie-crop-mask-top"></div>
       <div class="ie-crop-mask ie-crop-mask-left"></div>
       <div class="ie-crop-mask ie-crop-mask-right"></div>
       <div class="ie-crop-mask ie-crop-mask-bottom"></div>
-      <div class="ie-crop-box" style="left:${s}px;top:${n}px;width:${i}px;height:${a}px;">
+      <div class="ie-crop-box" style="left:${n}px;top:${s}px;width:${i}px;height:${a}px;">
         <div class="ie-crop-grid">
           <div class="ie-crop-grid-h"></div>
           <div class="ie-crop-grid-h"></div>
@@ -4413,32 +5127,32 @@ class fe {
   }
   /** Setup crop overlay events */
   setupCropEvents() {
-    var p, f;
+    var p, u;
     if (!this.cropOverlay) return;
     const t = this.cropOverlay.querySelector(".ie-crop-box");
-    let e = !1, i = !1, a = "", s = 0, n = 0, o = 0, l = 0, h = 0, d = 0;
+    let e = !1, i = !1, a = "", n = 0, s = 0, o = 0, l = 0, h = 0, d = 0;
     t.addEventListener("pointerdown", (v) => {
-      v.target.classList.contains("ie-crop-handle") || (v.stopPropagation(), e = !0, s = v.clientX, n = v.clientY, o = t.offsetLeft, l = t.offsetTop, t.setPointerCapture(v.pointerId));
+      v.target.classList.contains("ie-crop-handle") || (v.stopPropagation(), e = !0, n = v.clientX, s = v.clientY, o = t.offsetLeft, l = t.offsetTop, t.setPointerCapture(v.pointerId));
     }), this.cropOverlay.querySelectorAll(".ie-crop-handle").forEach((v) => {
-      v.addEventListener("pointerdown", (u) => {
-        u.stopPropagation(), i = !0, a = u.target.getAttribute("data-handle") || "", s = u.clientX, n = u.clientY, o = t.offsetLeft, l = t.offsetTop, h = t.offsetWidth, d = t.offsetHeight, v.setPointerCapture(u.pointerId);
+      v.addEventListener("pointerdown", (g) => {
+        g.stopPropagation(), i = !0, a = g.target.getAttribute("data-handle") || "", n = g.clientX, s = g.clientY, o = t.offsetLeft, l = t.offsetTop, h = t.offsetWidth, d = t.offsetHeight, v.setPointerCapture(g.pointerId);
       });
     }), this.cropOverlay.addEventListener("pointermove", (v) => {
       if (!e && !i) return;
-      const u = (v.clientX - s) / this.scale, g = (v.clientY - n) / this.scale, x = this.editor.canvas;
+      const g = (v.clientX - n) / this.scale, f = (v.clientY - s) / this.scale, m = this.editor.canvas;
       if (e) {
-        let S = o + u, C = l + g;
-        S = Math.max(0, Math.min(S, x.width - t.offsetWidth)), C = Math.max(0, Math.min(C, x.height - t.offsetHeight)), t.style.left = `${S}px`, t.style.top = `${C}px`;
+        let S = o + g, C = l + f;
+        S = Math.max(0, Math.min(S, m.width - t.offsetWidth)), C = Math.max(0, Math.min(C, m.height - t.offsetHeight)), t.style.left = `${S}px`, t.style.top = `${C}px`;
       } else if (i) {
-        let S = o, C = l, M = h, T = d;
-        a.includes("e") && (M = Math.max(50, h + u)), a.includes("w") && (M = Math.max(50, h - u), S = o + u), a.includes("s") && (T = Math.max(50, d + g)), a.includes("n") && (T = Math.max(50, d - g), C = l + g), S < 0 && (M += S, S = 0), C < 0 && (T += C, C = 0), S + M > x.width && (M = x.width - S), C + T > x.height && (T = x.height - C), t.style.left = `${S}px`, t.style.top = `${C}px`, t.style.width = `${M}px`, t.style.height = `${T}px`;
+        let S = o, C = l, k = h, I = d;
+        a.includes("e") && (k = Math.max(50, h + g)), a.includes("w") && (k = Math.max(50, h - g), S = o + g), a.includes("s") && (I = Math.max(50, d + f)), a.includes("n") && (I = Math.max(50, d - f), C = l + f), S < 0 && (k += S, S = 0), C < 0 && (I += C, C = 0), S + k > m.width && (k = m.width - S), C + I > m.height && (I = m.height - C), t.style.left = `${S}px`, t.style.top = `${C}px`, t.style.width = `${k}px`, t.style.height = `${I}px`;
       }
       this.updateCropMask();
     }), this.cropOverlay.addEventListener("pointerup", () => {
       e = !1, i = !1, a = "";
     }), (p = this.cropOverlay.querySelector('[data-action="cancel"]')) == null || p.addEventListener("click", () => {
       this.toggleCropTool();
-    }), (f = this.cropOverlay.querySelector('[data-action="apply"]')) == null || f.addEventListener("click", () => {
+    }), (u = this.cropOverlay.querySelector('[data-action="apply"]')) == null || u.addEventListener("click", () => {
       this.applyCrop();
     }), this.updateCropMask();
   }
@@ -4447,8 +5161,8 @@ class fe {
     if (!this.cropOverlay) return;
     const t = this.cropOverlay.querySelector(".ie-crop-box");
     if (!t) return;
-    const e = this.editor.canvas, i = t.offsetLeft, a = t.offsetTop, s = t.offsetWidth, n = t.offsetHeight, o = this.cropOverlay.querySelector(".ie-crop-mask-top"), l = this.cropOverlay.querySelector(".ie-crop-mask-left"), h = this.cropOverlay.querySelector(".ie-crop-mask-right"), d = this.cropOverlay.querySelector(".ie-crop-mask-bottom");
-    o && (o.style.cssText = `left:0;top:0;width:${e.width}px;height:${a}px;`), l && (l.style.cssText = `left:0;top:${a}px;width:${i}px;height:${n}px;`), h && (h.style.cssText = `left:${i + s}px;top:${a}px;width:${e.width - i - s}px;height:${n}px;`), d && (d.style.cssText = `left:0;top:${a + n}px;width:${e.width}px;height:${e.height - a - n}px;`);
+    const e = this.editor.canvas, i = t.offsetLeft, a = t.offsetTop, n = t.offsetWidth, s = t.offsetHeight, o = this.cropOverlay.querySelector(".ie-crop-mask-top"), l = this.cropOverlay.querySelector(".ie-crop-mask-left"), h = this.cropOverlay.querySelector(".ie-crop-mask-right"), d = this.cropOverlay.querySelector(".ie-crop-mask-bottom");
+    o && (o.style.cssText = `left:0;top:0;width:${e.width}px;height:${a}px;`), l && (l.style.cssText = `left:0;top:${a}px;width:${i}px;height:${s}px;`), h && (h.style.cssText = `left:${i + n}px;top:${a}px;width:${e.width - i - n}px;height:${s}px;`), d && (d.style.cssText = `left:0;top:${a + s}px;width:${e.width}px;height:${e.height - a - s}px;`);
   }
   /** Apply crop to canvas */
   applyCrop() {
@@ -4456,11 +5170,11 @@ class fe {
     if (!this.cropOverlay) return;
     const t = this.cropOverlay.querySelector(".ie-crop-box");
     if (!t) return;
-    const e = t.offsetLeft, i = t.offsetTop, a = t.offsetWidth, s = t.offsetHeight, n = this.editor.ctx, o = this.editor.canvas;
-    !n || !o || ((h = (l = this.editor).saveToHistory) == null || h.call(l, "before crop"), this.cropOverlay.style.transition = "opacity 0.25s ease-out", this.cropOverlay.style.opacity = "0", setTimeout(() => {
-      var f;
-      const d = n.getImageData(e, i, a, s);
-      o.width = a, o.height = s, n.putImageData(d, 0, 0), this.saveOriginalImage(), this.savePureImage(), this.cropOverlay && (this.cropOverlay.remove(), this.cropOverlay = null), this.isCropActive = !1, (f = this.buttons.get("crop")) == null || f.classList.remove("active");
+    const e = t.offsetLeft, i = t.offsetTop, a = t.offsetWidth, n = t.offsetHeight, s = this.editor.ctx, o = this.editor.canvas;
+    !s || !o || ((h = (l = this.editor).saveToHistory) == null || h.call(l, "before crop"), this.cropOverlay.style.transition = "opacity 0.25s ease-out", this.cropOverlay.style.opacity = "0", setTimeout(() => {
+      var u;
+      const d = s.getImageData(e, i, a, n);
+      o.width = a, o.height = n, s.putImageData(d, 0, 0), this.saveOriginalImage(), this.savePureImage(), this.cropOverlay && (this.cropOverlay.remove(), this.cropOverlay = null), this.isCropActive = !1, (u = this.buttons.get("crop")) == null || u.classList.remove("active");
       const p = this.groups.get("cropAction");
       p && (p.style.display = "none"), this.updateDividerVisibility(this.options.disabledTools || []), this.viewport.style.transition = "transform 0.3s ease-out", this.resetView(), setTimeout(() => {
         this.viewport.style.transition = "none";
@@ -4490,30 +5204,30 @@ class fe {
   }
   /** Restore original image pixels in a circular area */
   restoreOriginalPixels(t, e, i) {
-    const a = this.editor.ctx, s = this.editor.canvas, n = this.pureImageData;
-    if (!a || !s || !n) {
+    const a = this.editor.ctx, n = this.editor.canvas, s = this.pureImageData;
+    if (!a || !n || !s) {
       console.warn("[Eraser] Missing required data, skipping restore");
       return;
     }
-    const o = i * i, l = Math.max(0, Math.floor(t - i)), h = Math.min(s.width - 1, Math.ceil(t + i)), d = Math.max(0, Math.floor(e - i)), p = Math.min(s.height - 1, Math.ceil(e + i)), f = h - l + 1, v = p - d + 1;
-    if (f <= 0 || v <= 0) return;
-    const u = a.getImageData(l, d, f, v), g = u.data, x = n.data, S = n.width;
+    const o = i * i, l = Math.max(0, Math.floor(t - i)), h = Math.min(n.width - 1, Math.ceil(t + i)), d = Math.max(0, Math.floor(e - i)), p = Math.min(n.height - 1, Math.ceil(e + i)), u = h - l + 1, v = p - d + 1;
+    if (u <= 0 || v <= 0) return;
+    const g = a.getImageData(l, d, u, v), f = g.data, m = s.data, S = s.width;
     let C = 0;
-    for (let M = d; M <= p; M++)
-      for (let T = l; T <= h; T++) {
-        const I = T - t, E = M - e, k = I * I + E * E;
-        if (k <= o) {
-          const m = (M * S + T) * 4, y = ((M - d) * f + (T - l)) * 4;
-          (g[y] !== x[m] || g[y + 1] !== x[m + 1] || g[y + 2] !== x[m + 2] || g[y + 3] !== x[m + 3]) && C++;
-          const L = Math.sqrt(k), z = Math.min(1, (i - L) / 2);
-          z >= 1 ? (g[y] = x[m], g[y + 1] = x[m + 1], g[y + 2] = x[m + 2], g[y + 3] = x[m + 3]) : (g[y] = Math.round(g[y] * (1 - z) + x[m] * z), g[y + 1] = Math.round(g[y + 1] * (1 - z) + x[m + 1] * z), g[y + 2] = Math.round(g[y + 2] * (1 - z) + x[m + 2] * z), g[y + 3] = Math.round(g[y + 3] * (1 - z) + x[m + 3] * z));
+    for (let k = d; k <= p; k++)
+      for (let I = l; I <= h; I++) {
+        const T = I - t, E = k - e, M = T * T + E * E;
+        if (M <= o) {
+          const x = (k * S + I) * 4, y = ((k - d) * u + (I - l)) * 4;
+          (f[y] !== m[x] || f[y + 1] !== m[x + 1] || f[y + 2] !== m[x + 2] || f[y + 3] !== m[x + 3]) && C++;
+          const L = Math.sqrt(M), D = Math.min(1, (i - L) / 2);
+          D >= 1 ? (f[y] = m[x], f[y + 1] = m[x + 1], f[y + 2] = m[x + 2], f[y + 3] = m[x + 3]) : (f[y] = Math.round(f[y] * (1 - D) + m[x] * D), f[y + 1] = Math.round(f[y + 1] * (1 - D) + m[x + 1] * D), f[y + 2] = Math.round(f[y + 2] * (1 - D) + m[x + 2] * D), f[y + 3] = Math.round(f[y + 3] * (1 - D) + m[x + 3] * D));
         }
       }
-    C > 0 && console.log("[Eraser] Restoring", C, "different pixels"), a.putImageData(u, l, d);
+    C > 0 && console.log("[Eraser] Restoring", C, "different pixels"), a.putImageData(g, l, d);
   }
   /** Interpolate eraser stroke */
   interpolateEraser(t, e, i, a) {
-    const s = Math.sqrt((i - t) ** 2 + (a - e) ** 2), n = Math.max(1, this.eraserSize / 6), o = Math.max(1, Math.ceil(s / n));
+    const n = Math.sqrt((i - t) ** 2 + (a - e) ** 2), s = Math.max(1, this.eraserSize / 6), o = Math.max(1, Math.ceil(n / s));
     for (let l = 0; l <= o; l++) {
       const h = l / o, d = t + (i - t) * h, p = e + (a - e) * h;
       this.applyEraserAt(d, p);
@@ -4522,8 +5236,8 @@ class fe {
   // Zoom methods
   setScale(t, e, i) {
     if (t = Math.max(0.1, Math.min(5, t)), e !== void 0 && i !== void 0) {
-      const a = this.canvasContainer.getBoundingClientRect(), s = e - a.left - a.width / 2, n = i - a.top - a.height / 2, o = t - this.scale;
-      this.translateX -= s * o / this.scale, this.translateY -= n * o / this.scale;
+      const a = this.canvasContainer.getBoundingClientRect(), n = e - a.left - a.width / 2, s = i - a.top - a.height / 2, o = t - this.scale;
+      this.translateX -= n * o / this.scale, this.translateY -= s * o / this.scale;
     }
     this.scale = t, this.updateTransform();
   }
@@ -4561,8 +5275,8 @@ class fe {
    * Show advanced export dialog
    */
   async showExportDialog() {
-    var s;
-    const { ExportDialog: t, applyWatermark: e } = await Promise.resolve().then(() => Oe), a = await new t({
+    var n;
+    const { ExportDialog: t, applyWatermark: e } = await Promise.resolve().then(() => ni), a = await new t({
       width: this.editor.width,
       height: this.editor.height,
       format: "png",
@@ -4575,7 +5289,7 @@ class fe {
       try {
         if (a.action === "copy")
           return;
-        const n = {
+        const s = {
           format: a.format,
           quality: a.quality,
           width: a.width,
@@ -4584,24 +5298,24 @@ class fe {
           backgroundColor: a.backgroundColor,
           type: "base64"
         };
-        let o = await this.editor.export(n);
-        if ((s = a.watermark) != null && s.text) {
+        let o = await this.editor.export(s);
+        if ((n = a.watermark) != null && n.text) {
           const d = document.createElement("canvas");
           d.width = a.width, d.height = a.height;
           const p = d.getContext("2d");
           if (p) {
-            const f = new Image();
-            f.src = o, await new Promise((v) => {
-              f.onload = v;
-            }), p.drawImage(f, 0, 0), e(d, a.watermark), o = d.toDataURL(`image/${a.format}`, a.quality);
+            const u = new Image();
+            u.src = o, await new Promise((v) => {
+              u.onload = v;
+            }), p.drawImage(u, 0, 0), e(d, a.watermark), o = d.toDataURL(`image/${a.format}`, a.quality);
           }
         }
         const l = document.createElement("a");
         l.href = o;
         const h = a.format === "jpeg" ? "jpg" : a.format;
         l.download = `image-${Date.now()}.${h}`, l.click();
-      } catch (n) {
-        console.error("Export failed:", n);
+      } catch (s) {
+        console.error("Export failed:", s);
       }
   }
   /**
@@ -4617,8 +5331,8 @@ class fe {
         type: "base64"
       }), a = document.createElement("a");
       a.href = i;
-      const s = t === "jpeg" ? "jpg" : t;
-      a.download = `image-${Date.now()}.${s}`, a.click();
+      const n = t === "jpeg" ? "jpg" : t;
+      a.download = `image-${Date.now()}.${n}`, a.click();
     } catch (i) {
       console.error("Export failed:", i);
     }
@@ -4711,10 +5425,10 @@ class fe {
       }
       const d = e[h];
       return !d || d.length === 0 ? !1 : d.some((p) => !t.includes(p));
-    }, a = !t.includes("export"), s = i("zoom"), n = i("tool") || i("advanced");
-    this.dividers[0] && (this.dividers[0].style.display = s && n ? "" : "none");
+    }, a = !t.includes("export"), n = i("zoom"), s = i("tool") || i("advanced");
+    this.dividers[0] && (this.dividers[0].style.display = n && s ? "" : "none");
     const o = i("history");
-    this.dividers[1] && (this.dividers[1].style.display = n && o ? "" : "none");
+    this.dividers[1] && (this.dividers[1].style.display = s && o ? "" : "none");
     const l = i("cropAction");
     this.dividers[2] && (this.dividers[2].style.display = o && (l || a) ? "" : "none"), this.dividers[3] && (this.dividers[3].style.display = l && a ? "" : "none");
   }
@@ -4759,10 +5473,10 @@ class fe {
     const t = this.options.theme === "auto" ? window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light" : this.options.theme || "dark";
     let e = this.options.placeholderWidth, i = this.options.placeholderHeight;
     if (!e || !i) {
-      const s = this.canvasContainer.getBoundingClientRect();
-      e = Math.max(400, Math.round(s.width)), i = Math.max(300, Math.round(s.height));
+      const n = this.canvasContainer.getBoundingClientRect();
+      e = Math.max(400, Math.round(n.width)), i = Math.max(300, Math.round(n.height));
     }
-    const a = se({
+    const a = ve({
       width: e,
       height: i,
       text: this.options.placeholderText,
@@ -4786,7 +5500,7 @@ class fe {
     this.wrapper.remove(), this.panels.clear(), this.buttons.clear(), this.shapeManager.clear();
   }
 }
-const V = class V {
+const G = class G {
   /**
    * Create a new Editor instance
    * Requirements: 1.1, 1.3 - Initialize editor with container and config
@@ -4811,7 +5525,7 @@ const V = class V {
     c(this, "_destroyed", !1);
     /** Whether the editor is ready */
     c(this, "_ready", !1);
-    const e = Pt(t.container);
+    const e = Ht(t.container);
     if (!e)
       throw new Error("Container element not found");
     this._container = e;
@@ -4823,34 +5537,34 @@ const V = class V {
       responsive: t.responsive,
       deviceType: t.deviceType
     };
-    this._configManager = new ne(i), this._eventManager = new re();
+    this._configManager = new Ee(i), this._eventManager = new Te();
     const a = this._configManager.getConfig();
-    if (this._historyManager = new le(a.historyLimit), this._canvas = new he(this._container, a), this._pluginManager = new ce(), this._pluginManager.setContext(this.createPluginContext()), this._historyManager.onChange((n, o) => {
-      this._eventManager.emit("history-change", { canUndo: n, canRedo: o });
-    }), this._pluginManager.onChange((n, o) => {
-      this._eventManager.emit("tool-change", { tool: n || "", prevTool: o });
+    if (this._historyManager = new De(a.historyLimit), this._canvas = new Le(this._container, a), this._pluginManager = new ze(), this._pluginManager.setContext(this.createPluginContext()), this._historyManager.onChange((s, o) => {
+      this._eventManager.emit("history-change", { canUndo: s, canRedo: o });
+    }), this._pluginManager.onChange((s, o) => {
+      this._eventManager.emit("tool-change", { tool: s || "", prevTool: o });
     }), t.plugins)
-      for (const n of t.plugins)
-        this.use(n);
-    const s = t.toolbar;
-    if (s !== !1) {
-      kt();
-      const n = typeof s == "object" ? s : {};
-      this._toolbar = new fe(this, this._container, {
-        zoom: n.zoom !== !1,
-        tools: n.tools !== !1,
-        history: n.history !== !1,
-        export: n.export !== !1,
-        theme: n.theme || "dark",
-        primaryColor: n.primaryColor,
-        disabledTools: n.disabledTools,
-        autoHide: n.autoHide !== !1,
-        placeholderText: n.placeholderText,
-        placeholderSubText: n.placeholderSubText
+      for (const s of t.plugins)
+        this.use(s);
+    const n = t.toolbar;
+    if (n !== !1) {
+      Pt();
+      const s = typeof n == "object" ? n : {};
+      this._toolbar = new $e(this, this._container, {
+        zoom: s.zoom !== !1,
+        tools: s.tools !== !1,
+        history: s.history !== !1,
+        export: s.export !== !1,
+        theme: s.theme || "dark",
+        primaryColor: s.primaryColor,
+        disabledTools: s.disabledTools,
+        autoHide: s.autoHide !== !1,
+        placeholderText: s.placeholderText,
+        placeholderSubText: s.placeholderSubText
       });
     }
-    t.image ? this.loadImage(t.image).catch((n) => {
-      this._eventManager.emit("error", { error: n });
+    t.image ? this.loadImage(t.image).catch((s) => {
+      this._eventManager.emit("error", { error: s });
     }) : this._toolbar && this._toolbar.showPlaceholder();
   }
   /**
@@ -4932,7 +5646,7 @@ const V = class V {
       throw new Error("Editor is destroyed");
     try {
       const { width: i, height: a } = await this._canvas.loadImage(t);
-      this.saveState("init", "Initial state"), this._ready = !0, this._eventManager.emit("image-loaded", { width: i, height: a }), this._eventManager.emit("ready", { width: i, height: a }), e && this._toolbar && this._toolbar.onImageLoaded();
+      e && this._historyManager.clear(), this.saveState("init", "Initial state"), this._ready = !0, this._eventManager.emit("image-loaded", { width: i, height: a }), this._eventManager.emit("ready", { width: i, height: a }), e && this._toolbar && this._toolbar.onImageLoaded();
     } catch (i) {
       const a = i instanceof Error ? i : new Error(String(i));
       throw this._eventManager.emit("error", { error: a }), a;
@@ -4957,7 +5671,7 @@ const V = class V {
   setTool(t) {
     if (this._destroyed)
       throw new Error("Editor is destroyed");
-    if (!V.BUILTIN_TOOLS.includes(t))
+    if (!G.BUILTIN_TOOLS.includes(t))
       this._pluginManager.activate(t);
     else {
       const e = this._pluginManager.getActiveName();
@@ -5255,6 +5969,101 @@ const V = class V {
       throw new Error("Editor is destroyed");
     return (await Promise.resolve().then(() => Y)).estimateFileSize(this._canvas.canvas, t);
   }
+  // ============ Transform Methods ============
+  /**
+   * Rotate the image by specified degrees
+   * @param degrees - Rotation angle in degrees (90, 180, 270, or any value)
+   */
+  rotate(t) {
+    if (this._destroyed)
+      throw new Error("Editor is destroyed");
+    this._canvas.rotate(t), this.saveState("rotate", `Rotate ${t}°`), this._eventManager.emit("transform", { type: "rotate", degrees: t }), this._toolbar && this._toolbar.saveOriginalImage();
+  }
+  /**
+   * Rotate the image 90 degrees clockwise
+   */
+  rotateRight() {
+    this.rotate(90);
+  }
+  /**
+   * Rotate the image 90 degrees counter-clockwise
+   */
+  rotateLeft() {
+    this.rotate(-90);
+  }
+  /**
+   * Rotate the image 180 degrees
+   */
+  rotate180() {
+    this.rotate(180);
+  }
+  /**
+   * Flip the image horizontally (mirror)
+   */
+  flipHorizontal() {
+    if (this._destroyed)
+      throw new Error("Editor is destroyed");
+    this._canvas.flip("horizontal"), this.saveState("flip", "Flip horizontal"), this._eventManager.emit("transform", { type: "flip", direction: "horizontal" }), this._toolbar && this._toolbar.saveOriginalImage();
+  }
+  /**
+   * Flip the image vertically
+   */
+  flipVertical() {
+    if (this._destroyed)
+      throw new Error("Editor is destroyed");
+    this._canvas.flip("vertical"), this.saveState("flip", "Flip vertical"), this._eventManager.emit("transform", { type: "flip", direction: "vertical" }), this._toolbar && this._toolbar.saveOriginalImage();
+  }
+  /**
+   * Crop the image to specified region
+   * @param x - X coordinate of crop region
+   * @param y - Y coordinate of crop region
+   * @param width - Width of crop region
+   * @param height - Height of crop region
+   */
+  crop(t, e, i, a) {
+    if (this._destroyed)
+      throw new Error("Editor is destroyed");
+    this._canvas.crop(t, e, i, a), this.saveState("crop", `Crop to ${i}x${a}`), this._eventManager.emit("transform", { type: "crop", x: t, y: e, width: i, height: a }), this._toolbar && this._toolbar.saveOriginalImage();
+  }
+  /**
+   * Scale/resize the image to new dimensions
+   * @param width - New width
+   * @param height - New height
+   * @param maintainAspectRatio - Whether to maintain aspect ratio (default: false)
+   */
+  resize(t, e, i = !1) {
+    if (this._destroyed)
+      throw new Error("Editor is destroyed");
+    this._canvas.scale(t, e, i), this.saveState("resize", `Resize to ${this._canvas.width}x${this._canvas.height}`), this._eventManager.emit("transform", {
+      type: "resize",
+      width: this._canvas.width,
+      height: this._canvas.height
+    }), this._toolbar && this._toolbar.saveOriginalImage();
+  }
+  /**
+   * Scale the image by a factor
+   * @param factor - Scale factor (e.g., 0.5 for 50%, 2 for 200%)
+   */
+  scale(t) {
+    if (this._destroyed)
+      throw new Error("Editor is destroyed");
+    if (t <= 0)
+      throw new Error("Scale factor must be positive");
+    const e = Math.round(this._canvas.width * t), i = Math.round(this._canvas.height * t);
+    this.resize(e, i);
+  }
+  /**
+   * Fit the image to specified dimensions while maintaining aspect ratio
+   * @param maxWidth - Maximum width
+   * @param maxHeight - Maximum height
+   */
+  fit(t, e) {
+    if (this._destroyed)
+      throw new Error("Editor is destroyed");
+    const i = this._canvas.width / this._canvas.height, a = t / e;
+    let n, s;
+    i > a ? (n = t, s = Math.round(t / i)) : (s = e, n = Math.round(e * i)), this.resize(n, s);
+  }
   /**
    * Destroy the editor and clean up all resources
    * Requirements: 1.5 - Clean up all event listeners and canvas resources
@@ -5264,9 +6073,9 @@ const V = class V {
   }
 };
 /** Built-in tools that are not plugins */
-c(V, "BUILTIN_TOOLS", ["", "pen", "rect", "circle", "arrow", "line", "triangle", "mosaic", "eraser", "text", "crop", "filter"]);
-let dt = V;
-class it {
+c(G, "BUILTIN_TOOLS", ["", "pen", "rect", "circle", "arrow", "line", "triangle", "mosaic", "eraser", "text", "crop", "filter"]);
+let xt = G;
+class ot {
   constructor() {
     /** Toolbar icon (optional) */
     c(this, "icon");
@@ -5403,84 +6212,84 @@ class it {
   onConfigChange(t) {
   }
 }
-function pt(r, t, e, i, a, s, n) {
-  const o = r.data, l = r.width, h = r.height, d = Math.max(0, Math.floor(t)), p = Math.max(0, Math.floor(e)), f = Math.min(l, Math.ceil(t + i)), v = Math.min(h, Math.ceil(e + a)), u = Math.max(1, Math.floor(s)), g = Math.max(0, Math.min(100, n)) / 100;
-  for (let x = p; x < v; x += u)
-    for (let S = d; S < f; S += u) {
-      const C = Math.min(S + u, f), M = Math.min(x + u, v), T = C - S, I = M - x, E = T * I;
+function yt(r, t, e, i, a, n, s) {
+  const o = r.data, l = r.width, h = r.height, d = Math.max(0, Math.floor(t)), p = Math.max(0, Math.floor(e)), u = Math.min(l, Math.ceil(t + i)), v = Math.min(h, Math.ceil(e + a)), g = Math.max(1, Math.floor(n)), f = Math.max(0, Math.min(100, s)) / 100;
+  for (let m = p; m < v; m += g)
+    for (let S = d; S < u; S += g) {
+      const C = Math.min(S + g, u), k = Math.min(m + g, v), I = C - S, T = k - m, E = I * T;
       if (E === 0) continue;
-      let k = 0, m = 0, y = 0, L = 0;
-      for (let $ = x; $ < M; $++)
-        for (let A = S; A < C; A++) {
-          const D = ($ * l + A) * 4;
-          k += o[D], m += o[D + 1], y += o[D + 2], L += o[D + 3];
+      let M = 0, x = 0, y = 0, L = 0;
+      for (let A = m; A < k; A++)
+        for (let F = S; F < C; F++) {
+          const z = (A * l + F) * 4;
+          M += o[z], x += o[z + 1], y += o[z + 2], L += o[z + 3];
         }
-      const z = Math.round(k / E), B = Math.round(m / E), G = Math.round(y / E), j = Math.round(L / E);
-      for (let $ = x; $ < M; $++)
-        for (let A = S; A < C; A++) {
-          const D = ($ * l + A) * 4;
-          o[D] = Math.round(o[D] * (1 - g) + z * g), o[D + 1] = Math.round(o[D + 1] * (1 - g) + B * g), o[D + 2] = Math.round(o[D + 2] * (1 - g) + G * g), o[D + 3] = Math.round(o[D + 3] * (1 - g) + j * g);
+      const D = Math.round(M / E), B = Math.round(x / E), Z = Math.round(y / E), K = Math.round(L / E);
+      for (let A = m; A < k; A++)
+        for (let F = S; F < C; F++) {
+          const z = (A * l + F) * 4;
+          o[z] = Math.round(o[z] * (1 - f) + D * f), o[z + 1] = Math.round(o[z + 1] * (1 - f) + B * f), o[z + 2] = Math.round(o[z + 2] * (1 - f) + Z * f), o[z + 3] = Math.round(o[z + 3] * (1 - f) + K * f);
         }
     }
   return r;
 }
-function ui(r, t, e, i, a) {
+function ga(r, t, e, i, a) {
   if (t.length === 0) return r;
-  const s = e / 2;
-  for (const n of t)
-    Mt(
+  const n = e / 2;
+  for (const s of t)
+    Rt(
       r,
-      n.x,
-      n.y,
-      s,
+      s.x,
+      s.y,
+      n,
       i,
       a
     );
   return r;
 }
-function Mt(r, t, e, i, a, s) {
-  const n = r.data, o = r.width, l = r.height, h = Math.max(0, Math.floor(t - i)), d = Math.max(0, Math.floor(e - i)), p = Math.min(o, Math.ceil(t + i)), f = Math.min(l, Math.ceil(e + i)), v = Math.max(1, Math.floor(a)), u = Math.max(0, Math.min(100, s)) / 100, g = i * i;
-  for (let x = d; x < f; x += v)
+function Rt(r, t, e, i, a, n) {
+  const s = r.data, o = r.width, l = r.height, h = Math.max(0, Math.floor(t - i)), d = Math.max(0, Math.floor(e - i)), p = Math.min(o, Math.ceil(t + i)), u = Math.min(l, Math.ceil(e + i)), v = Math.max(1, Math.floor(a)), g = Math.max(0, Math.min(100, n)) / 100, f = i * i;
+  for (let m = d; m < u; m += v)
     for (let S = h; S < p; S += v) {
-      const C = Math.min(S + v, p), M = Math.min(x + v, f), T = S + v / 2, I = x + v / 2, E = T - t, k = I - e;
-      if (E * E + k * k > g) continue;
-      let m = 0, y = 0, L = 0, z = 0, B = 0;
-      for (let D = x; D < M; D++)
+      const C = Math.min(S + v, p), k = Math.min(m + v, u), I = S + v / 2, T = m + v / 2, E = I - t, M = T - e;
+      if (E * E + M * M > f) continue;
+      let x = 0, y = 0, L = 0, D = 0, B = 0;
+      for (let z = m; z < k; z++)
         for (let O = S; O < C; O++) {
-          const N = O - t, W = D - e;
-          if (N * N + W * W <= g) {
-            const R = (D * o + O) * 4;
-            m += n[R], y += n[R + 1], L += n[R + 2], z += n[R + 3], B++;
+          const W = O - t, U = z - e;
+          if (W * W + U * U <= f) {
+            const _ = (z * o + O) * 4;
+            x += s[_], y += s[_ + 1], L += s[_ + 2], D += s[_ + 3], B++;
           }
         }
       if (B === 0) continue;
-      const G = Math.round(m / B), j = Math.round(y / B), $ = Math.round(L / B), A = Math.round(z / B);
-      for (let D = x; D < M; D++)
+      const Z = Math.round(x / B), K = Math.round(y / B), A = Math.round(L / B), F = Math.round(D / B);
+      for (let z = m; z < k; z++)
         for (let O = S; O < C; O++) {
-          const N = O - t, W = D - e;
-          if (N * N + W * W <= g) {
-            const R = (D * o + O) * 4;
-            n[R] = Math.round(n[R] * (1 - u) + G * u), n[R + 1] = Math.round(n[R + 1] * (1 - u) + j * u), n[R + 2] = Math.round(n[R + 2] * (1 - u) + $ * u), n[R + 3] = Math.round(n[R + 3] * (1 - u) + A * u);
+          const W = O - t, U = z - e;
+          if (W * W + U * U <= f) {
+            const _ = (z * o + O) * 4;
+            s[_] = Math.round(s[_] * (1 - g) + Z * g), s[_ + 1] = Math.round(s[_ + 1] * (1 - g) + K * g), s[_ + 2] = Math.round(s[_ + 2] * (1 - g) + A * g), s[_ + 3] = Math.round(s[_ + 3] * (1 - g) + F * g);
           }
         }
     }
   return r;
 }
-function ve(r, t, e, i, a) {
-  const s = [], n = e - r, o = i - t, l = Math.sqrt(n * n + o * o);
+function Ae(r, t, e, i, a) {
+  const n = [], s = e - r, o = i - t, l = Math.sqrt(s * s + o * o);
   if (l < a)
-    return s.push({ x: e, y: i }), s;
+    return n.push({ x: e, y: i }), n;
   const h = Math.ceil(l / a);
   for (let d = 0; d <= h; d++) {
     const p = d / h;
-    s.push({
-      x: r + n * p,
+    n.push({
+      x: r + s * p,
       y: t + o * p
     });
   }
-  return s;
+  return n;
 }
-class gi extends it {
+class fa extends ot {
   constructor() {
     super(...arguments);
     c(this, "name", "mosaic");
@@ -5569,20 +6378,20 @@ class gi extends it {
    * Requirements: 3.3 - Touch event support
    */
   setupEventListeners(e) {
-    const i = xt("auto"), a = yt();
+    const i = Mt("auto"), a = It();
     if (i === "mobile") {
-      const s = this.handleTouchStart.bind(this), n = this.handleTouchMove.bind(this), o = this.handleTouchEnd.bind(this);
-      e.addEventListener("touchstart", s, a), e.addEventListener("touchmove", n, a), e.addEventListener("touchend", o), e.addEventListener("touchcancel", o), this.cleanupFunctions.push(
-        () => e.removeEventListener("touchstart", s),
-        () => e.removeEventListener("touchmove", n),
+      const n = this.handleTouchStart.bind(this), s = this.handleTouchMove.bind(this), o = this.handleTouchEnd.bind(this);
+      e.addEventListener("touchstart", n, a), e.addEventListener("touchmove", s, a), e.addEventListener("touchend", o), e.addEventListener("touchcancel", o), this.cleanupFunctions.push(
+        () => e.removeEventListener("touchstart", n),
+        () => e.removeEventListener("touchmove", s),
         () => e.removeEventListener("touchend", o),
         () => e.removeEventListener("touchcancel", o)
       );
     } else {
-      const s = this.handleMouseDown.bind(this), n = this.handleMouseMove.bind(this), o = this.handleMouseUp.bind(this);
-      e.addEventListener("mousedown", s), e.addEventListener("mousemove", n), e.addEventListener("mouseup", o), e.addEventListener("mouseleave", o), this.cleanupFunctions.push(
-        () => e.removeEventListener("mousedown", s),
-        () => e.removeEventListener("mousemove", n),
+      const n = this.handleMouseDown.bind(this), s = this.handleMouseMove.bind(this), o = this.handleMouseUp.bind(this);
+      e.addEventListener("mousedown", n), e.addEventListener("mousemove", s), e.addEventListener("mouseup", o), e.addEventListener("mouseleave", o), this.cleanupFunctions.push(
+        () => e.removeEventListener("mousedown", n),
+        () => e.removeEventListener("mousemove", s),
         () => e.removeEventListener("mouseup", o),
         () => e.removeEventListener("mouseleave", o)
       );
@@ -5615,7 +6424,7 @@ class gi extends it {
   handleMouseDown(e) {
     const i = this.getCanvas();
     if (!i) return;
-    const a = F(e, i, "start");
+    const a = H(e, i, "start");
     this.startDrawing(a.x, a.y);
   }
   /**
@@ -5625,7 +6434,7 @@ class gi extends it {
     if (!this.drawingState.isDrawing) return;
     const i = this.getCanvas();
     if (!i) return;
-    const a = F(e, i, "move");
+    const a = H(e, i, "move");
     this.continueDrawing(a.x, a.y);
   }
   /**
@@ -5642,7 +6451,7 @@ class gi extends it {
     e.preventDefault();
     const i = this.getCanvas();
     if (!i) return;
-    const a = F(e, i, "start");
+    const a = H(e, i, "start");
     this.startDrawing(a.x, a.y);
   }
   /**
@@ -5653,7 +6462,7 @@ class gi extends it {
     if (e.preventDefault(), !this.drawingState.isDrawing) return;
     const i = this.getCanvas();
     if (!i) return;
-    const a = F(e, i, "move");
+    const a = H(e, i, "move");
     this.continueDrawing(a.x, a.y);
   }
   /**
@@ -5674,7 +6483,7 @@ class gi extends it {
       startY: i,
       lastX: e,
       lastY: i,
-      originalImageData: vt(a)
+      originalImageData: St(a)
     }, this.config.mode === "free" && this.applyMosaicAtPoint(e, i));
   }
   /**
@@ -5683,15 +6492,15 @@ class gi extends it {
   continueDrawing(e, i) {
     if (this.drawingState.isDrawing)
       if (this.config.mode === "free") {
-        const a = ve(
+        const a = Ae(
           this.drawingState.lastX,
           this.drawingState.lastY,
           e,
           i,
           this.config.brushSize / 4
         );
-        for (const s of a)
-          this.applyMosaicAtPoint(s.x, s.y);
+        for (const n of a)
+          this.applyMosaicAtPoint(n.x, n.y);
         this.drawingState.lastX = e, this.drawingState.lastY = i;
       } else
         this.previewRectMosaic(e, i);
@@ -5712,58 +6521,58 @@ class gi extends it {
    * Requirements: 3.1, 3.5
    */
   applyMosaicAtPoint(e, i) {
-    const a = this.getContext(), s = this.getCanvas();
-    if (!a || !s) return;
-    const n = a.getImageData(0, 0, s.width, s.height);
-    Mt(
-      n,
+    const a = this.getContext(), n = this.getCanvas();
+    if (!a || !n) return;
+    const s = a.getImageData(0, 0, n.width, n.height);
+    Rt(
+      s,
       e,
       i,
       this.config.brushSize / 2,
       this.config.blockSize,
       this.config.intensity
-    ), a.putImageData(n, 0, 0);
+    ), a.putImageData(s, 0, 0);
   }
   /**
    * Preview rect mosaic (during drag)
    * Requirements: 3.5
    */
   previewRectMosaic(e, i) {
-    const a = this.getContext(), s = this.getCanvas();
-    if (!a || !s || !this.drawingState.originalImageData) return;
+    const a = this.getContext(), n = this.getCanvas();
+    if (!a || !n || !this.drawingState.originalImageData) return;
     a.putImageData(this.drawingState.originalImageData, 0, 0);
-    const n = a.getImageData(0, 0, s.width, s.height), o = Math.min(this.drawingState.startX, e), l = Math.min(this.drawingState.startY, i), h = Math.abs(e - this.drawingState.startX), d = Math.abs(i - this.drawingState.startY);
-    pt(
-      n,
+    const s = a.getImageData(0, 0, n.width, n.height), o = Math.min(this.drawingState.startX, e), l = Math.min(this.drawingState.startY, i), h = Math.abs(e - this.drawingState.startX), d = Math.abs(i - this.drawingState.startY);
+    yt(
+      s,
       o,
       l,
       h,
       d,
       this.config.blockSize,
       this.config.intensity
-    ), a.putImageData(n, 0, 0), this.drawingState.lastX = e, this.drawingState.lastY = i;
+    ), a.putImageData(s, 0, 0), this.drawingState.lastX = e, this.drawingState.lastY = i;
   }
   /**
    * Apply final rect mosaic
    * Requirements: 3.1, 3.5
    */
-  applyRectMosaic(e, i, a, s) {
-    const n = this.getContext(), o = this.getCanvas();
-    if (!n || !o || !this.drawingState.originalImageData) return;
-    n.putImageData(this.drawingState.originalImageData, 0, 0);
-    const l = n.getImageData(0, 0, o.width, o.height), h = Math.min(e, a), d = Math.min(i, s), p = Math.abs(a - e), f = Math.abs(s - i);
-    pt(
+  applyRectMosaic(e, i, a, n) {
+    const s = this.getContext(), o = this.getCanvas();
+    if (!s || !o || !this.drawingState.originalImageData) return;
+    s.putImageData(this.drawingState.originalImageData, 0, 0);
+    const l = s.getImageData(0, 0, o.width, o.height), h = Math.min(e, a), d = Math.min(i, n), p = Math.abs(a - e), u = Math.abs(n - i);
+    yt(
       l,
       h,
       d,
       p,
-      f,
+      u,
       this.config.blockSize,
       this.config.intensity
-    ), n.putImageData(l, 0, 0);
+    ), s.putImageData(l, 0, 0);
   }
 }
-const Tt = {
+const _t = {
   fontSize: 16,
   fontFamily: "Arial",
   color: "#000000",
@@ -5773,10 +6582,10 @@ const Tt = {
   align: "left",
   lineHeight: 1.2
 };
-function xe() {
+function Fe() {
   return `text_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
 }
-class me {
+class Oe {
   constructor() {
     /** Map of text layers by ID */
     c(this, "layers", /* @__PURE__ */ new Map());
@@ -5793,14 +6602,14 @@ class me {
    * @returns Created text layer
    */
   createLayer(t, e, i, a) {
-    const s = {
-      id: xe(),
+    const n = {
+      id: Fe(),
       text: t,
       x: e,
       y: i,
-      config: { ...Tt, ...a }
+      config: { ..._t, ...a }
     };
-    return this.layers.set(s.id, s), s;
+    return this.layers.set(n.id, n), n;
   }
   /**
    * Get a text layer by ID
@@ -5903,27 +6712,27 @@ class me {
     return this.layers.size;
   }
 }
-function It(r) {
+function Bt(r) {
   const t = [];
   return r.italic && t.push("italic"), r.bold && t.push("bold"), t.push(`${r.fontSize}px`), t.push(r.fontFamily), t.join(" ");
 }
-function ye(r, t, e) {
+function He(r, t, e) {
   const i = r.font;
-  r.font = It(e);
+  r.font = Bt(e);
   const a = t.split(`
-`), s = e.fontSize * e.lineHeight;
-  let n = 0;
+`), n = e.fontSize * e.lineHeight;
+  let s = 0;
   for (const o of a) {
     const l = r.measureText(o);
-    n = Math.max(n, l.width);
+    s = Math.max(s, l.width);
   }
   return r.font = i, {
-    width: n,
-    height: a.length * s
+    width: s,
+    height: a.length * n
   };
 }
-function Et(r, t) {
-  const e = ye(t, r.text, r.config);
+function $t(r, t) {
+  const e = He(t, r.text, r.config);
   let i = r.x;
   return r.config.align === "center" ? i -= e.width / 2 : r.config.align === "right" && (i -= e.width), {
     x: i,
@@ -5932,33 +6741,33 @@ function Et(r, t) {
     height: e.height
   };
 }
-function be(r, t, e, i, a = 5) {
-  const s = Et(e, i);
-  return r >= s.x - a && r <= s.x + s.width + a && t >= s.y - a && t <= s.y + s.height + a;
+function Ne(r, t, e, i, a = 5) {
+  const n = $t(e, i);
+  return r >= n.x - a && r <= n.x + n.width + a && t >= n.y - a && t <= n.y + n.height + a;
 }
-function ut(r, t, e, i) {
+function bt(r, t, e, i) {
   for (let a = e.length - 1; a >= 0; a--)
-    if (be(r, t, e[a], i))
+    if (Ne(r, t, e[a], i))
       return e[a];
 }
-function we(r, t, e = !1) {
-  const { text: i, x: a, y: s, config: n } = t;
-  r.save(), r.font = It(n), r.fillStyle = n.color, r.textAlign = n.align, r.textBaseline = "alphabetic";
+function qe(r, t, e = !1) {
+  const { text: i, x: a, y: n, config: s } = t;
+  r.save(), r.font = Bt(s), r.fillStyle = s.color, r.textAlign = s.align, r.textBaseline = "alphabetic";
   const o = i.split(`
-`), l = n.fontSize * n.lineHeight;
+`), l = s.fontSize * s.lineHeight;
   for (let h = 0; h < o.length; h++) {
-    const d = s + h * l;
-    r.fillText(o[h], a, d), n.underline && Ce(r, o[h], a, d, n);
+    const d = n + h * l;
+    r.fillText(o[h], a, d), s.underline && We(r, o[h], a, d, s);
   }
-  e && Se(r, t), r.restore();
+  e && Ue(r, t), r.restore();
 }
-function Ce(r, t, e, i, a) {
-  const s = r.measureText(t), n = i + a.fontSize * 0.1, o = Math.max(1, a.fontSize / 12);
+function We(r, t, e, i, a) {
+  const n = r.measureText(t), s = i + a.fontSize * 0.1, o = Math.max(1, a.fontSize / 12);
   let l = e;
-  a.align === "center" ? l = e - s.width / 2 : a.align === "right" && (l = e - s.width), r.strokeStyle = a.color, r.lineWidth = o, r.beginPath(), r.moveTo(l, n), r.lineTo(l + s.width, n), r.stroke();
+  a.align === "center" ? l = e - n.width / 2 : a.align === "right" && (l = e - n.width), r.strokeStyle = a.color, r.lineWidth = o, r.beginPath(), r.moveTo(l, s), r.lineTo(l + n.width, s), r.stroke();
 }
-function Se(r, t) {
-  const e = Et(t, r), i = 4;
+function Ue(r, t) {
+  const e = $t(t, r), i = 4;
   r.strokeStyle = "#0066ff", r.lineWidth = 1, r.setLineDash([4, 4]), r.strokeRect(
     e.x - i,
     e.y - i,
@@ -5967,32 +6776,32 @@ function Se(r, t) {
   ), r.setLineDash([]);
   const a = 6;
   r.fillStyle = "#0066ff";
-  const s = [
+  const n = [
     { x: e.x - i, y: e.y - i },
     { x: e.x + e.width + i, y: e.y - i },
     { x: e.x - i, y: e.y + e.height + i },
     { x: e.x + e.width + i, y: e.y + e.height + i }
   ];
-  for (const n of s)
+  for (const s of n)
     r.fillRect(
-      n.x - a / 2,
-      n.y - a / 2,
+      s.x - a / 2,
+      s.y - a / 2,
       a,
       a
     );
 }
-function gt(r, t, e) {
+function wt(r, t, e) {
   for (const i of t)
-    we(r, i, i.id === e);
+    qe(r, i, i.id === e);
 }
-class fi extends it {
+class va extends ot {
   constructor() {
     super(...arguments);
     c(this, "name", "text");
     c(this, "icon", "T");
     c(this, "title", "Text");
     /** Text layer manager */
-    c(this, "layerManager", new me());
+    c(this, "layerManager", new Oe());
     /** Base image data (without text layers) */
     c(this, "baseImageData", null);
     /** Drag state */
@@ -6012,7 +6821,7 @@ class fi extends it {
    * Requirements: 4.2, 4.3, 4.5, 4.6
    */
   getDefaultConfig() {
-    return { ...Tt };
+    return { ..._t };
   }
   /**
    * Add text at specified position
@@ -6024,8 +6833,8 @@ class fi extends it {
    */
   addText(e, i, a) {
     this.baseImageData || this.saveBaseImage();
-    const s = this.layerManager.createLayer(e, i, a, this.config);
-    return this.layerManager.selectLayer(s.id), this.renderLayers(), this.saveState(), s;
+    const n = this.layerManager.createLayer(e, i, a, this.config);
+    return this.layerManager.selectLayer(n.id), this.renderLayers(), this.saveState(), n;
   }
   /**
    * Update text content of a layer
@@ -6118,28 +6927,28 @@ class fi extends it {
     const e = this.getContext(), i = this.getCanvas();
     if (!e || !i) return;
     this.baseImageData && e.putImageData(this.baseImageData, 0, 0);
-    const a = this.layerManager.getAllLayers(), s = this.layerManager.getSelectedLayerId();
-    gt(e, a, s);
+    const a = this.layerManager.getAllLayers(), n = this.layerManager.getSelectedLayerId();
+    wt(e, a, n);
   }
   /**
    * Set up mouse and touch event listeners
    * Requirements: 4.4 - Touch event support for dragging
    */
   setupEventListeners(e) {
-    const i = xt("auto"), a = yt();
+    const i = Mt("auto"), a = It();
     if (i === "mobile") {
-      const s = this.handleTouchStart.bind(this), n = this.handleTouchMove.bind(this), o = this.handleTouchEnd.bind(this);
-      e.addEventListener("touchstart", s, a), e.addEventListener("touchmove", n, a), e.addEventListener("touchend", o), e.addEventListener("touchcancel", o), this.cleanupFunctions.push(
-        () => e.removeEventListener("touchstart", s),
-        () => e.removeEventListener("touchmove", n),
+      const n = this.handleTouchStart.bind(this), s = this.handleTouchMove.bind(this), o = this.handleTouchEnd.bind(this);
+      e.addEventListener("touchstart", n, a), e.addEventListener("touchmove", s, a), e.addEventListener("touchend", o), e.addEventListener("touchcancel", o), this.cleanupFunctions.push(
+        () => e.removeEventListener("touchstart", n),
+        () => e.removeEventListener("touchmove", s),
         () => e.removeEventListener("touchend", o),
         () => e.removeEventListener("touchcancel", o)
       );
     } else {
-      const s = this.handleMouseDown.bind(this), n = this.handleMouseMove.bind(this), o = this.handleMouseUp.bind(this), l = this.handleDoubleClick.bind(this);
-      e.addEventListener("mousedown", s), e.addEventListener("mousemove", n), e.addEventListener("mouseup", o), e.addEventListener("mouseleave", o), e.addEventListener("dblclick", l), this.cleanupFunctions.push(
-        () => e.removeEventListener("mousedown", s),
-        () => e.removeEventListener("mousemove", n),
+      const n = this.handleMouseDown.bind(this), s = this.handleMouseMove.bind(this), o = this.handleMouseUp.bind(this), l = this.handleDoubleClick.bind(this);
+      e.addEventListener("mousedown", n), e.addEventListener("mousemove", s), e.addEventListener("mouseup", o), e.addEventListener("mouseleave", o), e.addEventListener("dblclick", l), this.cleanupFunctions.push(
+        () => e.removeEventListener("mousedown", n),
+        () => e.removeEventListener("mousemove", s),
         () => e.removeEventListener("mouseup", o),
         () => e.removeEventListener("mouseleave", o),
         () => e.removeEventListener("dblclick", l)
@@ -6173,8 +6982,8 @@ class fi extends it {
   handleMouseDown(e) {
     const i = this.getCanvas(), a = this.getContext();
     if (!i || !a) return;
-    const s = F(e, i, "start");
-    this.startInteraction(s.x, s.y, a);
+    const n = H(e, i, "start");
+    this.startInteraction(n.x, n.y, a);
   }
   /**
    * Handle mouse move event
@@ -6183,7 +6992,7 @@ class fi extends it {
     if (!this.dragState.isDragging) return;
     const i = this.getCanvas();
     if (!i) return;
-    const a = F(e, i, "move");
+    const a = H(e, i, "move");
     this.continueDrag(a.x, a.y);
   }
   /**
@@ -6198,8 +7007,8 @@ class fi extends it {
   handleDoubleClick(e) {
     const i = this.getCanvas(), a = this.getContext();
     if (!i || !a) return;
-    const s = F(e, i, "start"), n = this.layerManager.getAllLayers();
-    ut(s.x, s.y, n, a) || this.addText("Double click to edit", s.x, s.y);
+    const n = H(e, i, "start"), s = this.layerManager.getAllLayers();
+    bt(n.x, n.y, s, a) || this.addText("Double click to edit", n.x, n.y);
   }
   /**
    * Handle touch start event
@@ -6208,8 +7017,8 @@ class fi extends it {
     e.preventDefault();
     const i = this.getCanvas(), a = this.getContext();
     if (!i || !a) return;
-    const s = F(e, i, "start");
-    this.startInteraction(s.x, s.y, a);
+    const n = H(e, i, "start");
+    this.startInteraction(n.x, n.y, a);
   }
   /**
    * Handle touch move event
@@ -6218,7 +7027,7 @@ class fi extends it {
     if (e.preventDefault(), !this.dragState.isDragging) return;
     const i = this.getCanvas();
     if (!i) return;
-    const a = F(e, i, "move");
+    const a = H(e, i, "move");
     this.continueDrag(a.x, a.y);
   }
   /**
@@ -6231,14 +7040,14 @@ class fi extends it {
    * Start interaction (select or drag)
    */
   startInteraction(e, i, a) {
-    const s = this.layerManager.getAllLayers(), n = ut(e, i, s, a);
-    n ? (this.layerManager.selectLayer(n.id), this.dragState = {
+    const n = this.layerManager.getAllLayers(), s = bt(e, i, n, a);
+    s ? (this.layerManager.selectLayer(s.id), this.dragState = {
       isDragging: !0,
-      layerId: n.id,
+      layerId: s.id,
       startX: e,
       startY: i,
-      offsetX: e - n.x,
-      offsetY: i - n.y
+      offsetX: e - s.x,
+      offsetY: i - s.y
     }, this.renderLayers()) : (this.layerManager.selectLayer(null), this.renderLayers());
   }
   /**
@@ -6247,8 +7056,8 @@ class fi extends it {
    */
   continueDrag(e, i) {
     if (!this.dragState.isDragging || !this.dragState.layerId) return;
-    const a = e - this.dragState.offsetX, s = i - this.dragState.offsetY;
-    this.layerManager.updatePosition(this.dragState.layerId, a, s), this.renderLayers();
+    const a = e - this.dragState.offsetX, n = i - this.dragState.offsetY;
+    this.layerManager.updatePosition(this.dragState.layerId, a, n), this.renderLayers();
   }
   /**
    * End drag operation
@@ -6266,7 +7075,7 @@ class fi extends it {
     if (!e || !i) return;
     this.baseImageData && e.putImageData(this.baseImageData, 0, 0);
     const a = this.layerManager.getAllLayers();
-    gt(e, a, null), this.baseImageData = e.getImageData(0, 0, i.width, i.height), this.layerManager.clearAll();
+    wt(e, a, null), this.baseImageData = e.getImageData(0, 0, i.width, i.height), this.layerManager.clearAll();
   }
   /**
    * Update base image (call after external canvas changes)
@@ -6275,99 +7084,99 @@ class fi extends it {
     this.saveBaseImage(), this.renderLayers();
   }
 }
-function ke(r, t) {
+function Ye(r, t) {
   if (t === 0) return;
   const e = r.data, i = t / 100 * 255;
   for (let a = 0; a < e.length; a += 4)
-    e[a] = Z(e[a] + i), e[a + 1] = Z(e[a + 1] + i), e[a + 2] = Z(e[a + 2] + i);
-}
-function Z(r) {
-  return Math.max(0, Math.min(255, Math.round(r)));
-}
-function Me(r, t) {
-  if (t === 0) return;
-  const e = r.data, i = 259 * (t + 255) / (255 * (259 - t));
-  for (let a = 0; a < e.length; a += 4)
-    e[a] = K(i * (e[a] - 128) + 128), e[a + 1] = K(i * (e[a + 1] - 128) + 128), e[a + 2] = K(i * (e[a + 2] - 128) + 128);
-}
-function K(r) {
-  return Math.max(0, Math.min(255, Math.round(r)));
-}
-function Te(r, t) {
-  if (t === 0) return;
-  const e = r.data, i = 1 + t / 100;
-  for (let a = 0; a < e.length; a += 4) {
-    const s = e[a], n = e[a + 1], o = e[a + 2], l = 0.2126 * s + 0.7152 * n + 0.0722 * o;
-    e[a] = J(l + (s - l) * i), e[a + 1] = J(l + (n - l) * i), e[a + 2] = J(l + (o - l) * i);
-  }
+    e[a] = J(e[a] + i), e[a + 1] = J(e[a + 1] + i), e[a + 2] = J(e[a + 2] + i);
 }
 function J(r) {
   return Math.max(0, Math.min(255, Math.round(r)));
 }
-function Ie(r, t) {
+function Xe(r, t) {
   if (t === 0) return;
-  const { width: e, height: i, data: a } = r, s = Math.round(t / 100 * 10);
-  if (s === 0) return;
-  const n = new Uint8ClampedArray(a), o = new Uint8ClampedArray(a.length);
-  Ee(n, o, e, i, s), ze(o, a, e, i, s);
+  const e = r.data, i = 259 * (t + 255) / (255 * (259 - t));
+  for (let a = 0; a < e.length; a += 4)
+    e[a] = Q(i * (e[a] - 128) + 128), e[a + 1] = Q(i * (e[a + 1] - 128) + 128), e[a + 2] = Q(i * (e[a + 2] - 128) + 128);
 }
-function Ee(r, t, e, i, a) {
-  const s = a * 2 + 1;
-  for (let n = 0; n < i; n++) {
+function Q(r) {
+  return Math.max(0, Math.min(255, Math.round(r)));
+}
+function Ve(r, t) {
+  if (t === 0) return;
+  const e = r.data, i = 1 + t / 100;
+  for (let a = 0; a < e.length; a += 4) {
+    const n = e[a], s = e[a + 1], o = e[a + 2], l = 0.2126 * n + 0.7152 * s + 0.0722 * o;
+    e[a] = tt(l + (n - l) * i), e[a + 1] = tt(l + (s - l) * i), e[a + 2] = tt(l + (o - l) * i);
+  }
+}
+function tt(r) {
+  return Math.max(0, Math.min(255, Math.round(r)));
+}
+function Ge(r, t) {
+  if (t === 0) return;
+  const { width: e, height: i, data: a } = r, n = Math.round(t / 100 * 10);
+  if (n === 0) return;
+  const s = new Uint8ClampedArray(a), o = new Uint8ClampedArray(a.length);
+  je(s, o, e, i, n), Ze(o, a, e, i, n);
+}
+function je(r, t, e, i, a) {
+  const n = a * 2 + 1;
+  for (let s = 0; s < i; s++) {
     let o = 0, l = 0, h = 0, d = 0;
     for (let p = -a; p <= a; p++) {
-      const f = Math.max(0, Math.min(e - 1, p)), v = (n * e + f) * 4;
+      const u = Math.max(0, Math.min(e - 1, p)), v = (s * e + u) * 4;
       o += r[v], l += r[v + 1], h += r[v + 2], d += r[v + 3];
     }
     for (let p = 0; p < e; p++) {
-      const f = (n * e + p) * 4;
-      t[f] = Math.round(o / s), t[f + 1] = Math.round(l / s), t[f + 2] = Math.round(h / s), t[f + 3] = Math.round(d / s);
-      const v = Math.max(0, p - a), u = Math.min(e - 1, p + a + 1), g = (n * e + v) * 4, x = (n * e + u) * 4;
-      o += r[x] - r[g], l += r[x + 1] - r[g + 1], h += r[x + 2] - r[g + 2], d += r[x + 3] - r[g + 3];
+      const u = (s * e + p) * 4;
+      t[u] = Math.round(o / n), t[u + 1] = Math.round(l / n), t[u + 2] = Math.round(h / n), t[u + 3] = Math.round(d / n);
+      const v = Math.max(0, p - a), g = Math.min(e - 1, p + a + 1), f = (s * e + v) * 4, m = (s * e + g) * 4;
+      o += r[m] - r[f], l += r[m + 1] - r[f + 1], h += r[m + 2] - r[f + 2], d += r[m + 3] - r[f + 3];
     }
   }
 }
-function ze(r, t, e, i, a) {
-  const s = a * 2 + 1;
-  for (let n = 0; n < e; n++) {
+function Ze(r, t, e, i, a) {
+  const n = a * 2 + 1;
+  for (let s = 0; s < e; s++) {
     let o = 0, l = 0, h = 0, d = 0;
     for (let p = -a; p <= a; p++) {
-      const v = (Math.max(0, Math.min(i - 1, p)) * e + n) * 4;
+      const v = (Math.max(0, Math.min(i - 1, p)) * e + s) * 4;
       o += r[v], l += r[v + 1], h += r[v + 2], d += r[v + 3];
     }
     for (let p = 0; p < i; p++) {
-      const f = (p * e + n) * 4;
-      t[f] = Math.round(o / s), t[f + 1] = Math.round(l / s), t[f + 2] = Math.round(h / s), t[f + 3] = Math.round(d / s);
-      const v = Math.max(0, p - a), u = Math.min(i - 1, p + a + 1), g = (v * e + n) * 4, x = (u * e + n) * 4;
-      o += r[x] - r[g], l += r[x + 1] - r[g + 1], h += r[x + 2] - r[g + 2], d += r[x + 3] - r[g + 3];
+      const u = (p * e + s) * 4;
+      t[u] = Math.round(o / n), t[u + 1] = Math.round(l / n), t[u + 2] = Math.round(h / n), t[u + 3] = Math.round(d / n);
+      const v = Math.max(0, p - a), g = Math.min(i - 1, p + a + 1), f = (v * e + s) * 4, m = (g * e + s) * 4;
+      o += r[m] - r[f], l += r[m + 1] - r[f + 1], h += r[m + 2] - r[f + 2], d += r[m + 3] - r[f + 3];
     }
   }
 }
-function De(r, t) {
+function Ke(r, t) {
   if (t === 0) return;
   const e = r.data, i = t / 100;
   for (let a = 0; a < e.length; a += 4) {
-    const s = e[a], n = e[a + 1], o = e[a + 2], l = 0.2126 * s + 0.7152 * n + 0.0722 * o;
-    e[a] = Math.round(s + (l - s) * i), e[a + 1] = Math.round(n + (l - n) * i), e[a + 2] = Math.round(o + (l - o) * i);
+    const n = e[a], s = e[a + 1], o = e[a + 2], l = 0.2126 * n + 0.7152 * s + 0.0722 * o;
+    e[a] = Math.round(n + (l - n) * i), e[a + 1] = Math.round(s + (l - s) * i), e[a + 2] = Math.round(o + (l - o) * i);
   }
 }
-function Le(r, t) {
+function Je(r, t) {
   if (t === 0) return;
   const e = r.data, i = t / 100;
   for (let a = 0; a < e.length; a += 4) {
-    const s = e[a], n = e[a + 1], o = e[a + 2], l = Math.min(255, 0.393 * s + 0.769 * n + 0.189 * o), h = Math.min(255, 0.349 * s + 0.686 * n + 0.168 * o), d = Math.min(255, 0.272 * s + 0.534 * n + 0.131 * o);
-    e[a] = Math.round(s + (l - s) * i), e[a + 1] = Math.round(n + (h - n) * i), e[a + 2] = Math.round(o + (d - o) * i);
+    const n = e[a], s = e[a + 1], o = e[a + 2], l = Math.min(255, 0.393 * n + 0.769 * s + 0.189 * o), h = Math.min(255, 0.349 * n + 0.686 * s + 0.168 * o), d = Math.min(255, 0.272 * n + 0.534 * s + 0.131 * o);
+    e[a] = Math.round(n + (l - n) * i), e[a + 1] = Math.round(s + (h - s) * i), e[a + 2] = Math.round(o + (d - o) * i);
   }
 }
-function Pe(r, t) {
+function Qe(r, t) {
   if (t === 0) return;
   const e = r.data, i = t / 100;
   for (let a = 0; a < e.length; a += 4) {
-    const s = e[a], n = e[a + 1], o = e[a + 2], l = 255 - s, h = 255 - n, d = 255 - o;
-    e[a] = Math.round(s + (l - s) * i), e[a + 1] = Math.round(n + (h - n) * i), e[a + 2] = Math.round(o + (d - o) * i);
+    const n = e[a], s = e[a + 1], o = e[a + 2], l = 255 - n, h = 255 - s, d = 255 - o;
+    e[a] = Math.round(n + (l - n) * i), e[a + 1] = Math.round(s + (h - s) * i), e[a + 2] = Math.round(o + (d - o) * i);
   }
 }
-const Re = {
+const ti = {
   brightness: 0,
   contrast: 0,
   saturation: 0,
@@ -6376,7 +7185,7 @@ const Re = {
   sepia: 0,
   invert: 0
 };
-class vi extends it {
+class ma extends ot {
   constructor() {
     super(...arguments);
     c(this, "name", "filter");
@@ -6389,7 +7198,7 @@ class vi extends it {
    * Get default filter configuration
    */
   getDefaultConfig() {
-    return { ...Re };
+    return { ...ti };
   }
   /**
    * Hook called when plugin is installed
@@ -6523,7 +7332,7 @@ class vi extends it {
    */
   applyFiltersToImageData(e) {
     const i = this.config;
-    i.brightness !== 0 && ke(e, i.brightness), i.contrast !== 0 && Me(e, i.contrast), i.saturation !== 0 && Te(e, i.saturation), i.grayscale !== 0 && De(e, i.grayscale), i.sepia !== 0 && Le(e, i.sepia), i.invert !== 0 && Pe(e, i.invert), i.blur !== 0 && Ie(e, i.blur);
+    i.brightness !== 0 && Ye(e, i.brightness), i.contrast !== 0 && Xe(e, i.contrast), i.saturation !== 0 && Ve(e, i.saturation), i.grayscale !== 0 && Ke(e, i.grayscale), i.sepia !== 0 && Je(e, i.sepia), i.invert !== 0 && Qe(e, i.invert), i.blur !== 0 && Ge(e, i.blur);
   }
   /**
    * Commit current filter state to history
@@ -6564,7 +7373,7 @@ function X(r) {
     colorSpace: "srgb"
   };
 }
-const Q = {
+const it = {
   // Tool names
   "tool.move": "移动",
   "tool.pen": "画笔",
@@ -6701,7 +7510,7 @@ const Q = {
   "shortcut.escape": "Esc",
   "shortcut.zoomIn": "+",
   "shortcut.zoomOut": "-"
-}, Be = {
+}, ei = {
   // Tool names
   "tool.move": "Move",
   "tool.pen": "Pen",
@@ -6838,16 +7647,16 @@ const Q = {
   "shortcut.escape": "Esc",
   "shortcut.zoomIn": "+",
   "shortcut.zoomOut": "-"
-}, _ = {
-  "zh-CN": Q,
-  "en-US": Be
+}, $ = {
+  "zh-CN": it,
+  "en-US": ei
 };
-class ft {
+class Ct {
   constructor(t = "zh-CN") {
     c(this, "locale");
     c(this, "messages");
     c(this, "fallbackMessages");
-    this.locale = t, this.messages = _[t] || Q, this.fallbackMessages = Q;
+    this.locale = t, this.messages = $[t] || it, this.fallbackMessages = it;
   }
   /**
    * Get translated message by key
@@ -6857,8 +7666,8 @@ class ft {
    */
   t(t, e) {
     let i = this.messages[t] || this.fallbackMessages[t] || t;
-    return e && Object.entries(e).forEach(([a, s]) => {
-      i = i.replace(new RegExp(`\\{${a}\\}`, "g"), String(s));
+    return e && Object.entries(e).forEach(([a, n]) => {
+      i = i.replace(new RegExp(`\\{${a}\\}`, "g"), String(n));
     }), i;
   }
   /**
@@ -6866,7 +7675,7 @@ class ft {
    * @param locale - Locale code
    */
   setLocale(t) {
-    _[t] && (this.locale = t, this.messages = _[t]);
+    $[t] && (this.locale = t, this.messages = $[t]);
   }
   /**
    * Get current locale
@@ -6880,7 +7689,7 @@ class ft {
    * @returns Array of supported locale codes
    */
   getSupportedLocales() {
-    return Object.keys(_);
+    return Object.keys($);
   }
   /**
    * Add or extend a locale
@@ -6888,7 +7697,7 @@ class ft {
    * @param messages - Messages to add/merge
    */
   extendLocale(t, e) {
-    _[t] && (_[t] = { ..._[t], ...e }, this.locale === t && (this.messages = _[t]));
+    $[t] && ($[t] = { ...$[t], ...e }, this.locale === t && (this.messages = $[t]));
   }
   /**
    * Register a new locale
@@ -6896,7 +7705,7 @@ class ft {
    * @param messages - Full message set
    */
   registerLocale(t, e) {
-    _[t] = e;
+    $[t] = e;
   }
   /**
    * Detect browser locale and return supported locale
@@ -6906,21 +7715,21 @@ class ft {
     if (typeof navigator > "u")
       return "zh-CN";
     const t = navigator.language || navigator.userLanguage || "zh-CN";
-    if (t in _)
+    if (t in $)
       return t;
     const e = t.split("-")[0];
     return e === "zh" ? "zh-CN" : e === "en" ? "en-US" : "zh-CN";
   }
 }
-let U = null;
-function at(r) {
-  return U ? r && U.setLocale(r) : U = new ft(r || ft.detectLocale()), U;
+let V = null;
+function lt(r) {
+  return V ? r && V.setLocale(r) : V = new Ct(r || Ct.detectLocale()), V;
 }
-function xi(r, t) {
-  return at().t(r, t);
+function xa(r, t) {
+  return lt().t(r, t);
 }
-const _e = 20;
-class mi {
+const ii = 20;
+class ya {
   constructor(t, e, i = {}) {
     c(this, "container");
     c(this, "canvas");
@@ -6956,9 +7765,9 @@ class mi {
     c(this, "handlePointerUp", () => {
       this.isDragging = !1, this.isResizing = !1, this.activeHandle = null;
     });
-    this.container = t, this.canvas = e, this.i18n = i.i18n || at(), this.options = {
+    this.container = t, this.canvas = e, this.i18n = i.i18n || lt(), this.options = {
       ratio: i.ratio || "free",
-      minSize: i.minSize || _e,
+      minSize: i.minSize || ii,
       enableRotation: i.enableRotation !== !1,
       enableFlip: i.enableFlip !== !1,
       i18n: this.i18n
@@ -7040,7 +7849,7 @@ class mi {
   createControlPanel() {
     const t = document.createElement("div");
     t.className = "ie-crop-panel";
-    const e = (s) => this.i18n.t(s), i = document.createElement("div");
+    const e = (n) => this.i18n.t(n), i = document.createElement("div");
     if (i.className = "ie-crop-group", i.innerHTML = `
       <span class="ie-crop-label">${e("crop.ratio")}</span>
       <div class="ie-crop-buttons ie-crop-ratio-buttons">
@@ -7051,8 +7860,8 @@ class mi {
         <button class="ie-crop-btn ${this.currentRatio === "3:2" ? "active" : ""}" data-ratio="3:2">3:2</button>
       </div>
     `, t.appendChild(i), this.options.enableRotation || this.options.enableFlip) {
-      const s = document.createElement("div");
-      s.className = "ie-crop-group", s.innerHTML = `
+      const n = document.createElement("div");
+      n.className = "ie-crop-group", n.innerHTML = `
         <span class="ie-crop-label">${e("crop.rotate")}</span>
         <div class="ie-crop-buttons">
           ${this.options.enableRotation ? `
@@ -7064,14 +7873,14 @@ class mi {
             <button class="ie-crop-btn ie-crop-btn-icon" data-action="flip-v" title="${e("crop.flipV")}">${w.flipV}</button>
           ` : ""}
         </div>
-      `, t.appendChild(s);
+      `, t.appendChild(n);
     }
     const a = document.createElement("div");
     return a.className = "ie-crop-group ie-crop-actions", a.innerHTML = `
       <button class="ie-crop-btn ie-crop-btn-cancel" data-action="cancel">${e("crop.cancel")}</button>
       <button class="ie-crop-btn ie-crop-btn-apply" data-action="apply">${w.check} ${e("crop.apply")}</button>
-    `, t.appendChild(a), t.addEventListener("click", (s) => {
-      const o = s.target.closest("[data-ratio], [data-action]");
+    `, t.appendChild(a), t.addEventListener("click", (n) => {
+      const o = n.target.closest("[data-ratio], [data-action]");
       if (!o) return;
       const l = o.dataset.ratio, h = o.dataset.action;
       if (l)
@@ -7103,12 +7912,12 @@ class mi {
    * Initialize crop rect to cover most of image
    */
   initCropRect() {
-    const t = this.canvas.getBoundingClientRect(), e = this.container.getBoundingClientRect(), i = t.left - e.left, a = t.top - e.top, s = 0.1;
+    const t = this.canvas.getBoundingClientRect(), e = this.container.getBoundingClientRect(), i = t.left - e.left, a = t.top - e.top, n = 0.1;
     this.cropRect = {
-      x: i + t.width * s,
-      y: a + t.height * s,
-      width: t.width * (1 - 2 * s),
-      height: t.height * (1 - 2 * s)
+      x: i + t.width * n,
+      y: a + t.height * n,
+      width: t.width * (1 - 2 * n),
+      height: t.height * (1 - 2 * n)
     }, this.applyRatioConstraint();
   }
   /**
@@ -7116,9 +7925,9 @@ class mi {
    */
   applyRatioConstraint() {
     if (this.currentRatio === "free") return;
-    const [t, e] = this.currentRatio.split(":").map(Number), i = t / e, a = this.cropRect.x + this.cropRect.width / 2, s = this.cropRect.y + this.cropRect.height / 2;
-    let n = this.cropRect.width, o = this.cropRect.height;
-    n / o > i ? n = o * i : o = n / i, this.cropRect.width = n, this.cropRect.height = o, this.cropRect.x = a - n / 2, this.cropRect.y = s - o / 2;
+    const [t, e] = this.currentRatio.split(":").map(Number), i = t / e, a = this.cropRect.x + this.cropRect.width / 2, n = this.cropRect.y + this.cropRect.height / 2;
+    let s = this.cropRect.width, o = this.cropRect.height;
+    s / o > i ? s = o * i : o = s / i, this.cropRect.width = s, this.cropRect.height = o, this.cropRect.x = a - s / 2, this.cropRect.y = n - o / 2;
   }
   /**
    * Update crop box position/size
@@ -7163,37 +7972,37 @@ class mi {
    */
   resizeCropBox(t, e) {
     if (!this.activeHandle) return;
-    const { x: i, y: a, width: s, height: n } = this.cropStart, o = this.options.minSize;
-    let l = i, h = a, d = s, p = n;
+    const { x: i, y: a, width: n, height: s } = this.cropStart, o = this.options.minSize;
+    let l = i, h = a, d = n, p = s;
     switch (this.activeHandle) {
       case "nw":
-        l = i + t, h = a + e, d = s - t, p = n - e;
+        l = i + t, h = a + e, d = n - t, p = s - e;
         break;
       case "n":
-        h = a + e, p = n - e;
+        h = a + e, p = s - e;
         break;
       case "ne":
-        h = a + e, d = s + t, p = n - e;
+        h = a + e, d = n + t, p = s - e;
         break;
       case "e":
-        d = s + t;
+        d = n + t;
         break;
       case "se":
-        d = s + t, p = n + e;
+        d = n + t, p = s + e;
         break;
       case "s":
-        p = n + e;
+        p = s + e;
         break;
       case "sw":
-        l = i + t, d = s - t, p = n + e;
+        l = i + t, d = n - t, p = s + e;
         break;
       case "w":
-        l = i + t, d = s - t;
+        l = i + t, d = n - t;
         break;
     }
-    if (d < o && (this.activeHandle.includes("w") && (l = i + s - o), d = o), p < o && (this.activeHandle.includes("n") && (h = a + n - o), p = o), this.currentRatio !== "free") {
-      const [f, v] = this.currentRatio.split(":").map(Number), u = f / v;
-      ["n", "s"].includes(this.activeHandle) ? d = p * u : ["e", "w"].includes(this.activeHandle) ? p = d / u : d / p > u ? d = p * u : p = d / u;
+    if (d < o && (this.activeHandle.includes("w") && (l = i + n - o), d = o), p < o && (this.activeHandle.includes("n") && (h = a + s - o), p = o), this.currentRatio !== "free") {
+      const [u, v] = this.currentRatio.split(":").map(Number), g = u / v;
+      ["n", "s"].includes(this.activeHandle) ? d = p * g : ["e", "w"].includes(this.activeHandle) ? p = d / g : d / p > g ? d = p * g : p = d / g;
     }
     this.cropRect = { x: l, y: h, width: d, height: p }, this.constrainToContainer();
   }
@@ -7201,19 +8010,19 @@ class mi {
    * Constrain crop rect to container bounds
    */
   constrainToContainer() {
-    const t = this.canvas.getBoundingClientRect(), e = this.container.getBoundingClientRect(), i = t.left - e.left, a = t.top - e.top, s = i + t.width, n = a + t.height;
-    this.cropRect.x = Math.max(i, Math.min(s - this.cropRect.width, this.cropRect.x)), this.cropRect.y = Math.max(a, Math.min(n - this.cropRect.height, this.cropRect.y)), this.cropRect.width = Math.min(this.cropRect.width, s - this.cropRect.x), this.cropRect.height = Math.min(this.cropRect.height, n - this.cropRect.y);
+    const t = this.canvas.getBoundingClientRect(), e = this.container.getBoundingClientRect(), i = t.left - e.left, a = t.top - e.top, n = i + t.width, s = a + t.height;
+    this.cropRect.x = Math.max(i, Math.min(n - this.cropRect.width, this.cropRect.x)), this.cropRect.y = Math.max(a, Math.min(s - this.cropRect.height, this.cropRect.y)), this.cropRect.width = Math.min(this.cropRect.width, n - this.cropRect.x), this.cropRect.height = Math.min(this.cropRect.height, s - this.cropRect.y);
   }
   /**
    * Convert screen rect to canvas coordinates
    */
   toCanvasCoords() {
-    const t = this.canvas.getBoundingClientRect(), e = this.container.getBoundingClientRect(), i = t.left - e.left, a = t.top - e.top, s = this.canvas.width / t.width, n = this.canvas.height / t.height;
+    const t = this.canvas.getBoundingClientRect(), e = this.container.getBoundingClientRect(), i = t.left - e.left, a = t.top - e.top, n = this.canvas.width / t.width, s = this.canvas.height / t.height;
     return {
-      x: (this.cropRect.x - i) * s,
-      y: (this.cropRect.y - a) * n,
-      width: this.cropRect.width * s,
-      height: this.cropRect.height * n
+      x: (this.cropRect.x - i) * n,
+      y: (this.cropRect.y - a) * s,
+      width: this.cropRect.width * n,
+      height: this.cropRect.height * s
     };
   }
   /**
@@ -7248,15 +8057,15 @@ class mi {
     this.hide(), this.onApplyCallback = null, this.onCancelCallback = null;
   }
 }
-function yi(r, t, e, i, a) {
-  const s = r.getContext("2d");
-  if (!s) return r;
-  let n = t.width, o = t.height;
-  (e === 90 || e === 270) && ([n, o] = [o, n]);
+function ba(r, t, e, i, a) {
+  const n = r.getContext("2d");
+  if (!n) return r;
+  let s = t.width, o = t.height;
+  (e === 90 || e === 270) && ([s, o] = [o, s]);
   const l = document.createElement("canvas");
-  l.width = n, l.height = o;
+  l.width = s, l.height = o;
   const h = l.getContext("2d");
-  h.save(), h.translate(n / 2, o / 2), e && h.rotate(e * Math.PI / 180), i && h.scale(-1, 1), a && h.scale(1, -1);
+  h.save(), h.translate(s / 2, o / 2), e && h.rotate(e * Math.PI / 180), i && h.scale(-1, 1), a && h.scale(1, -1);
   let d = t.width, p = t.height;
   return (e === 90 || e === 270) && ([d, p] = [p, d]), h.drawImage(
     r,
@@ -7268,9 +8077,9 @@ function yi(r, t, e, i, a) {
     -p / 2,
     d,
     p
-  ), h.restore(), r.width = n, r.height = o, s.drawImage(l, 0, 0), r;
+  ), h.restore(), r.width = s, r.height = o, n.drawImage(l, 0, 0), r;
 }
-class bi {
+class wa {
   constructor(t) {
     c(this, "menu", null);
     c(this, "items", []);
@@ -7329,8 +8138,8 @@ class bi {
    */
   positionMenu(t, e) {
     if (!this.menu) return;
-    const i = this.menu.getBoundingClientRect(), a = window.innerWidth, s = window.innerHeight;
-    t + i.width > a && (t = a - i.width - 5), e + i.height > s && (e = s - i.height - 5), this.menu.style.left = `${Math.max(5, t)}px`, this.menu.style.top = `${Math.max(5, e)}px`;
+    const i = this.menu.getBoundingClientRect(), a = window.innerWidth, n = window.innerHeight;
+    t + i.width > a && (t = a - i.width - 5), e + i.height > n && (e = n - i.height - 5), this.menu.style.left = `${Math.max(5, t)}px`, this.menu.style.top = `${Math.max(5, e)}px`;
   }
   /**
    * Handle click outside menu
@@ -7345,7 +8154,7 @@ class bi {
     this.hide(), this.items = [];
   }
 }
-function wi(r, t) {
+function Ca(r, t) {
   const e = (t == null ? void 0 : t.t.bind(t)) || ((a) => a), i = [];
   return r.copy && i.push({
     id: "copy",
@@ -7391,7 +8200,7 @@ function wi(r, t) {
     action: r.sendToBack
   }), i;
 }
-class $e {
+class ai {
   constructor(t) {
     c(this, "overlay", null);
     c(this, "dialog", null);
@@ -7414,7 +8223,7 @@ class $e {
     c(this, "handleKeyDown", (t) => {
       t.key === "Escape" ? this.cancel() : t.key === "Enter" && this.confirm();
     });
-    this.options = t, this.i18n = t.i18n || at(), this.format = t.format || "png", this.quality = t.quality || 0.92, this.width = t.width, this.height = t.height, this.aspectRatio = t.width / t.height;
+    this.options = t, this.i18n = t.i18n || lt(), this.format = t.format || "png", this.quality = t.quality || 0.92, this.width = t.width, this.height = t.height, this.aspectRatio = t.width / t.height;
   }
   /**
    * Show dialog and return promise with result
@@ -7528,17 +8337,17 @@ class $e {
    * Setup event listeners
    */
   setupEvents() {
-    var a, s, n, o, l, h, d, p, f, v;
+    var a, n, s, o, l, h, d, p, u, v;
     if (!this.dialog) return;
     (a = this.dialog.querySelector('[data-action="close"]')) == null || a.addEventListener("click", () => {
       this.cancel();
-    }), (s = this.dialog.querySelector('[data-action="cancel"]')) == null || s.addEventListener("click", () => {
+    }), (n = this.dialog.querySelector('[data-action="cancel"]')) == null || n.addEventListener("click", () => {
       this.cancel();
-    }), (n = this.dialog.querySelector('[data-action="export"]')) == null || n.addEventListener("click", () => {
+    }), (s = this.dialog.querySelector('[data-action="export"]')) == null || s.addEventListener("click", () => {
       this.confirm();
-    }), this.dialog.querySelectorAll("[data-format]").forEach((u) => {
-      u.addEventListener("click", () => {
-        this.setFormat(u.getAttribute("data-format"));
+    }), this.dialog.querySelectorAll("[data-format]").forEach((g) => {
+      g.addEventListener("click", () => {
+        this.setFormat(g.getAttribute("data-format"));
       });
     });
     const t = this.dialog.querySelector('[data-input="width"]'), e = this.dialog.querySelector('[data-input="height"]');
@@ -7546,30 +8355,30 @@ class $e {
       this.width = parseInt(t.value) || this.options.width, this.keepRatio && (this.height = Math.round(this.width / this.aspectRatio), e.value = String(this.height)), this.updatePreview();
     }), e == null || e.addEventListener("input", () => {
       this.height = parseInt(e.value) || this.options.height, this.keepRatio && (this.width = Math.round(this.height * this.aspectRatio), t.value = String(this.width)), this.updatePreview();
-    }), (o = this.dialog.querySelector('[data-action="toggle-ratio"]')) == null || o.addEventListener("click", (u) => {
-      this.keepRatio = !this.keepRatio, u.currentTarget.classList.toggle("active", this.keepRatio);
+    }), (o = this.dialog.querySelector('[data-action="toggle-ratio"]')) == null || o.addEventListener("click", (g) => {
+      this.keepRatio = !this.keepRatio, g.currentTarget.classList.toggle("active", this.keepRatio);
     });
     const i = this.dialog.querySelector('[data-slider="quality"]');
     i == null || i.addEventListener("input", () => {
       this.quality = parseFloat(i.value);
-      const u = this.dialog.querySelector('[data-value="quality"]');
-      u && (u.textContent = `${Math.round(this.quality * 100)}%`), this.updateEstimatedSize();
-    }), (l = this.dialog.querySelector('[data-check="transparency"]')) == null || l.addEventListener("change", (u) => {
-      this.preserveTransparency = u.target.checked;
-      const g = this.dialog.querySelector(".ie-bg-color-row");
-      g && (g.style.display = this.preserveTransparency ? "none" : "flex"), this.updateEstimatedSize();
-    }), (h = this.dialog.querySelector('[data-input="bg-color"]')) == null || h.addEventListener("input", (u) => {
-      this.backgroundColor = u.target.value;
+      const g = this.dialog.querySelector('[data-value="quality"]');
+      g && (g.textContent = `${Math.round(this.quality * 100)}%`), this.updateEstimatedSize();
+    }), (l = this.dialog.querySelector('[data-check="transparency"]')) == null || l.addEventListener("change", (g) => {
+      this.preserveTransparency = g.target.checked;
+      const f = this.dialog.querySelector(".ie-bg-color-row");
+      f && (f.style.display = this.preserveTransparency ? "none" : "flex"), this.updateEstimatedSize();
+    }), (h = this.dialog.querySelector('[data-input="bg-color"]')) == null || h.addEventListener("input", (g) => {
+      this.backgroundColor = g.target.value;
     }), (d = this.dialog.querySelector('[data-action="copy"]')) == null || d.addEventListener("click", () => {
       this.copyToClipboard();
-    }), (p = this.dialog.querySelector('[data-check="watermark"]')) == null || p.addEventListener("change", (u) => {
-      this.watermarkEnabled = u.target.checked;
-      const g = this.dialog.querySelector(".ie-watermark-options");
-      g && (g.style.display = this.watermarkEnabled ? "block" : "none");
-    }), (f = this.dialog.querySelector('[data-input="watermark-text"]')) == null || f.addEventListener("input", (u) => {
-      this.watermarkText = u.target.value;
-    }), (v = this.overlay) == null || v.addEventListener("click", (u) => {
-      u.target === this.overlay && this.cancel();
+    }), (p = this.dialog.querySelector('[data-check="watermark"]')) == null || p.addEventListener("change", (g) => {
+      this.watermarkEnabled = g.target.checked;
+      const f = this.dialog.querySelector(".ie-watermark-options");
+      f && (f.style.display = this.watermarkEnabled ? "block" : "none");
+    }), (u = this.dialog.querySelector('[data-input="watermark-text"]')) == null || u.addEventListener("input", (g) => {
+      this.watermarkText = g.target.value;
+    }), (v = this.overlay) == null || v.addEventListener("click", (g) => {
+      g.target === this.overlay && this.cancel();
     }), document.addEventListener("keydown", this.handleKeyDown);
   }
   /**
@@ -7582,13 +8391,13 @@ class $e {
    * Set export format
    */
   setFormat(t) {
-    var a, s, n;
+    var a, n, s;
     this.format = t, (a = this.dialog) == null || a.querySelectorAll("[data-format]").forEach((o) => {
       o.classList.toggle("active", o.getAttribute("data-format") === t);
     });
-    const e = (s = this.dialog) == null ? void 0 : s.querySelector(".ie-quality-section");
+    const e = (n = this.dialog) == null ? void 0 : n.querySelector(".ie-quality-section");
     e && (e.style.display = t === "png" || t === "gif" ? "none" : "block");
-    const i = (n = this.dialog) == null ? void 0 : n.querySelector(".ie-transparency-section");
+    const i = (s = this.dialog) == null ? void 0 : s.querySelector(".ie-transparency-section");
     i && (i.style.display = this.supportsTransparency() ? "block" : "none"), this.updateEstimatedSize();
   }
   /**
@@ -7617,13 +8426,13 @@ class $e {
       const i = e.getContext("2d");
       if (!i) return;
       (!this.supportsTransparency() || !this.preserveTransparency) && (i.fillStyle = this.backgroundColor, i.fillRect(0, 0, this.width, this.height)), i.drawImage(this.options.canvas, 0, 0, this.width, this.height);
-      const a = this.format === "jpg" ? "jpeg" : this.format, s = await new Promise((n) => {
-        e.toBlob(n, `image/${a}`, this.quality);
+      const a = this.format === "jpg" ? "jpeg" : this.format, n = await new Promise((s) => {
+        e.toBlob(s, `image/${a}`, this.quality);
       });
-      if (s) {
-        this.estimatedSize = this.formatSize(s.size);
-        const n = (t = this.dialog) == null ? void 0 : t.querySelector('[data-value="file-size"]');
-        n && (n.textContent = `~${this.estimatedSize}`);
+      if (n) {
+        this.estimatedSize = this.formatSize(n.size);
+        const s = (t = this.dialog) == null ? void 0 : t.querySelector('[data-value="file-size"]');
+        s && (s.textContent = `~${this.estimatedSize}`);
       }
     } catch (e) {
       console.warn("Failed to estimate file size:", e);
@@ -7651,9 +8460,9 @@ class $e {
           ]);
           const a = (t = this.dialog) == null ? void 0 : t.querySelector('[data-action="copy"]');
           if (a) {
-            const s = a.innerHTML;
+            const n = a.innerHTML;
             a.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Copied!', a.style.background = "var(--ie-success, #22c55e)", setTimeout(() => {
-              a.innerHTML = s, a.style.background = "";
+              a.innerHTML = n, a.style.background = "";
             }, 2e3);
           }
         }
@@ -7703,39 +8512,39 @@ class $e {
     document.removeEventListener("keydown", this.handleKeyDown), this.hide(), this.resolvePromise = null;
   }
 }
-function Ae(r, t) {
+function ri(r, t) {
   const e = r.getContext("2d");
   if (!e || !t.text) return;
   e.save();
   const i = Math.max(12, Math.min(r.width, r.height) * 0.03);
   e.font = `${i}px sans-serif`, e.fillStyle = `rgba(255, 255, 255, ${t.opacity || 0.5})`, e.strokeStyle = `rgba(0, 0, 0, ${(t.opacity || 0.5) * 0.5})`, e.lineWidth = 1;
-  const a = e.measureText(t.text), s = i;
-  let n, o;
+  const a = e.measureText(t.text), n = i;
+  let s, o;
   switch (t.position) {
     case "top-left":
-      n = s, o = s + i;
+      s = n, o = n + i;
       break;
     case "top-right":
-      n = r.width - a.width - s, o = s + i;
+      s = r.width - a.width - n, o = n + i;
       break;
     case "bottom-left":
-      n = s, o = r.height - s;
+      s = n, o = r.height - n;
       break;
     case "center":
-      n = (r.width - a.width) / 2, o = r.height / 2;
+      s = (r.width - a.width) / 2, o = r.height / 2;
       break;
     case "bottom-right":
     default:
-      n = r.width - a.width - s, o = r.height - s;
+      s = r.width - a.width - n, o = r.height - n;
       break;
   }
-  e.strokeText(t.text, n, o), e.fillText(t.text, n, o), e.restore();
+  e.strokeText(t.text, s, o), e.fillText(t.text, s, o), e.restore();
 }
-const Oe = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const ni = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  ExportDialog: $e,
-  applyWatermark: Ae
-}, Symbol.toStringTag, { value: "Module" })), Fe = {
+  ExportDialog: ai,
+  applyWatermark: ri
+}, Symbol.toStringTag, { value: "Module" })), si = {
   showHorizontal: !0,
   showVertical: !0,
   showGrid: !1,
@@ -7745,7 +8554,7 @@ const Oe = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   rulerBackground: "#f5f5f5",
   unit: "px"
 };
-class He {
+class oi {
   constructor(t, e = {}) {
     c(this, "options");
     c(this, "container");
@@ -7758,7 +8567,7 @@ class He {
     c(this, "offsetY", 0);
     c(this, "canvasWidth", 0);
     c(this, "canvasHeight", 0);
-    this.container = t, this.options = { ...Fe, ...e }, this.init();
+    this.container = t, this.options = { ...si, ...e }, this.init();
   }
   init() {
     if (this.options.showHorizontal && (this.horizontalRuler = document.createElement("canvas"), this.horizontalRuler.className = "ie-ruler ie-ruler-horizontal", this.horizontalRuler.style.cssText = `
@@ -7804,8 +8613,8 @@ class He {
       `, this.container.appendChild(this.gridOverlay)), this.updateRulers();
   }
   /** Update view state */
-  updateView(t, e, i, a, s) {
-    this.scale = t, this.offsetX = e, this.offsetY = i, this.canvasWidth = a, this.canvasHeight = s, this.updateRulers();
+  updateView(t, e, i, a, n) {
+    this.scale = t, this.offsetX = e, this.offsetY = i, this.canvasWidth = a, this.canvasHeight = n, this.updateRulers();
   }
   /** Update ruler drawings */
   updateRulers() {
@@ -7818,9 +8627,9 @@ class He {
     const i = t.getContext("2d");
     if (!i) return;
     i.scale(window.devicePixelRatio, window.devicePixelRatio), i.clearRect(0, 0, e.width, e.height), i.fillStyle = this.options.rulerColor, i.font = "10px sans-serif", i.textAlign = "center";
-    const a = this.getTickInterval(), n = e.width / 2 + this.offsetX - this.canvasWidth * this.scale / 2;
+    const a = this.getTickInterval(), s = e.width / 2 + this.offsetX - this.canvasWidth * this.scale / 2;
     for (let o = 0; o <= this.canvasWidth; o += a) {
-      const l = n + o * this.scale;
+      const l = s + o * this.scale;
       if (l < 0 || l > e.width) continue;
       const h = o % (a * 5) === 0, d = h ? 12 : 6;
       i.beginPath(), i.moveTo(l, e.height), i.lineTo(l, e.height - d), i.stroke(), h && i.fillText(String(o), l, e.height - 14);
@@ -7833,9 +8642,9 @@ class He {
     const i = t.getContext("2d");
     if (!i) return;
     i.scale(window.devicePixelRatio, window.devicePixelRatio), i.clearRect(0, 0, e.width, e.height), i.fillStyle = this.options.rulerColor, i.font = "10px sans-serif", i.textAlign = "right";
-    const a = this.getTickInterval(), n = e.height / 2 + this.offsetY - this.canvasHeight * this.scale / 2;
+    const a = this.getTickInterval(), s = e.height / 2 + this.offsetY - this.canvasHeight * this.scale / 2;
     for (let o = 0; o <= this.canvasHeight; o += a) {
-      const l = n + o * this.scale;
+      const l = s + o * this.scale;
       if (l < 0 || l > e.height) continue;
       const h = o % (a * 5) === 0, d = h ? 12 : 6;
       i.beginPath(), i.moveTo(e.width, l), i.lineTo(e.width - d, l), i.stroke(), h && (i.save(), i.translate(e.width - 14, l), i.rotate(-Math.PI / 2), i.textAlign = "center", i.fillText(String(o), 0, 0), i.restore());
@@ -7848,14 +8657,14 @@ class He {
     const i = t.getContext("2d");
     if (!i) return;
     i.scale(window.devicePixelRatio, window.devicePixelRatio), i.clearRect(0, 0, e.width, e.height), i.strokeStyle = this.options.gridColor, i.lineWidth = 1;
-    const a = e.width / 2, s = e.height / 2, n = a + this.offsetX - this.canvasWidth * this.scale / 2, o = s + this.offsetY - this.canvasHeight * this.scale / 2, l = n + this.canvasWidth * this.scale, h = o + this.canvasHeight * this.scale;
+    const a = e.width / 2, n = e.height / 2, s = a + this.offsetX - this.canvasWidth * this.scale / 2, o = n + this.offsetY - this.canvasHeight * this.scale / 2, l = s + this.canvasWidth * this.scale, h = o + this.canvasHeight * this.scale;
     for (let d = 0; d <= this.canvasWidth; d += this.options.gridSize) {
-      const p = n + d * this.scale;
+      const p = s + d * this.scale;
       p < 0 || p > e.width || (i.beginPath(), i.moveTo(p, Math.max(0, o)), i.lineTo(p, Math.min(e.height, h)), i.stroke());
     }
     for (let d = 0; d <= this.canvasHeight; d += this.options.gridSize) {
       const p = o + d * this.scale;
-      p < 0 || p > e.height || (i.beginPath(), i.moveTo(Math.max(0, n), p), i.lineTo(Math.min(e.width, l), p), i.stroke());
+      p < 0 || p > e.height || (i.beginPath(), i.moveTo(Math.max(0, s), p), i.lineTo(Math.min(e.width, l), p), i.stroke());
     }
   }
   /** Get tick interval based on scale */
@@ -7884,126 +8693,180 @@ class He {
     (t = this.horizontalRuler) == null || t.remove(), (e = this.verticalRuler) == null || e.remove(), (i = this.gridOverlay) == null || i.remove(), (a = this.container.querySelector(".ie-ruler-corner")) == null || a.remove();
   }
 }
-function Ci(r, t) {
-  return new He(r, t);
+function Sa(r, t) {
+  return new oi(r, t);
 }
-const Si = "0.2.0";
+const Ma = "0.2.0";
 export {
-  it as BasePlugin,
-  Ve as CANVAS_EVENTS,
-  he as Canvas,
-  ne as ConfigManager,
-  bi as ContextMenu,
-  mi as CropTool,
-  st as DEFAULT_EDITOR_CONFIG,
-  Lt as DEFAULT_EXPORT_OPTIONS,
-  Ye as DEFAULT_FILTER_CONFIG,
-  Ne as DEFAULT_MOSAIC_CONFIG,
-  Tt as DEFAULT_TEXT_CONFIG,
-  We as DEFAULT_TEXT_STYLE,
-  Xe as EDITOR_EVENTS,
-  dt as Editor,
-  re as EventManager,
-  $e as ExportDialog,
-  vi as FilterPlugin,
-  le as HistoryManager,
-  ft as I18n,
-  di as KeyboardManager,
-  gi as MosaicPlugin,
-  Ue as PLUGIN_EVENTS,
-  ce as PluginManager,
-  He as Rulers,
-  ue as ShapeLayerManager,
-  me as TextLayerManager,
-  fi as TextPlugin,
-  fe as Toolbar,
-  Si as VERSION,
-  si as addEventListenerWithCleanup,
-  Ie as applyBlur,
-  ke as applyBrightness,
-  Me as applyContrast,
-  yi as applyCropToCanvas,
-  De as applyGrayscale,
-  Pe as applyInvert,
-  ui as applyMosaicAlongPath,
-  Mt as applyMosaicToCircularRegion,
-  pt as applyMosaicToRegion,
-  Te as applySaturation,
-  Le as applySepia,
-  Ae as applyWatermark,
-  It as buildFontString,
-  ot as calculateAspectRatioFit,
-  H as canvasToBlob,
+  ot as BasePlugin,
+  gi as CANVAS_EVENTS,
+  Le as Canvas,
+  Ee as ConfigManager,
+  wa as ContextMenu,
+  ya as CropTool,
+  ct as DEFAULT_EDITOR_CONFIG,
+  Ot as DEFAULT_EXPORT_OPTIONS,
+  di as DEFAULT_FILTER_CONFIG,
+  ci as DEFAULT_MOSAIC_CONFIG,
+  _t as DEFAULT_TEXT_CONFIG,
+  hi as DEFAULT_TEXT_STYLE,
+  pi as EDITOR_EVENTS,
+  xt as Editor,
+  Te as EventManager,
+  ai as ExportDialog,
+  ma as FilterPlugin,
+  De as HistoryManager,
+  Ct as I18n,
+  pa as KeyboardManager,
+  fa as MosaicPlugin,
+  ui as PLUGIN_EVENTS,
+  ze as PluginManager,
+  oi as Rulers,
+  _e as ShapeLayerManager,
+  Oe as TextLayerManager,
+  va as TextPlugin,
+  $e as Toolbar,
+  Ma as VERSION,
+  Di as addEventListenerWithCleanup,
+  be as angle,
+  Fi as angleDegrees,
+  Ge as applyBlur,
+  Ye as applyBrightness,
+  Xe as applyContrast,
+  ba as applyCropToCanvas,
+  Ke as applyGrayscale,
+  Qe as applyInvert,
+  ga as applyMosaicAlongPath,
+  Rt as applyMosaicToCircularRegion,
+  yt as applyMosaicToRegion,
+  Ve as applySaturation,
+  Je as applySepia,
+  ri as applyWatermark,
+  fe as blobToDataUrl,
+  Bt as buildFontString,
+  pt as calculateAspectRatioFit,
+  N as canvasToBlob,
   q as canvasToDataURL,
-  rt as clearCanvas,
-  vt as cloneImageData,
-  te as copyImageToClipboard,
-  Rt as createCanvas,
-  pi as createEditorShortcuts,
-  Ze as createImageData,
-  Qe as createPanEvent,
-  Je as createPinchEvent,
-  se as createPlaceholder,
-  Ci as createRulers,
-  Ke as createScaledCanvas,
-  wi as createShapeMenuItems,
-  ei as debounce,
-  Vt as detectDeviceType,
-  Qt as downloadImage,
-  lt as drawImageToCanvas,
-  Be as enUS,
-  ee as estimateFileSize,
-  et as exportImage,
-  Kt as exportToJPEG,
-  Zt as exportToPNG,
-  Jt as exportToWebP,
-  At as fillCanvas,
-  ut as findTextLayerAtPoint,
-  ie as formatFileSize,
-  Bt as getContext2D,
-  oi as getDevicePixelRatio,
-  Pt as getElement,
-  _t as getElementRect,
-  at as getI18n,
-  qt as getImageData,
-  nt as getImageDimensions,
-  ae as getImageInfo,
-  wt as getMimeType,
-  yt as getNonPassiveOptions,
-  li as getPassiveOptions,
-  Ge as getRelativeCoordinates,
-  xt as getResolvedDeviceType,
-  Et as getTextBoundingBox,
-  Yt as getTouchCenter,
-  Wt as getTouchDistance,
-  hi as getViewportDimensions,
+  R as clamp,
+  ht as clearCanvas,
+  St as cloneImageData,
+  ce as copyImageToClipboard,
+  Nt as createCanvas,
+  ua as createEditorShortcuts,
+  xi as createImageData,
+  Mi as createPanEvent,
+  Si as createPinchEvent,
+  ve as createPlaceholder,
+  Sa as createRulers,
+  yi as createScaledCanvas,
+  Ca as createShapeMenuItems,
+  bi as cropCanvas,
+  na as darken,
+  ge as dataUrlToBlob,
+  Ii as debounce,
+  Oi as degreesToRadians,
+  sa as desaturate,
+  ie as detectDeviceType,
+  Ai as distance,
+  ye as distanceSquared,
+  Yi as doRectsIntersect,
+  le as downloadImage,
+  ut as drawImageToCanvas,
+  ei as enUS,
+  he as estimateFileSize,
+  nt as exportImage,
+  se as exportToJPEG,
+  ne as exportToPNG,
+  oe as exportToWebP,
+  Yt as fillCanvas,
+  bt as findTextLayerAtPoint,
+  Ci as flipCanvas,
+  de as formatFileSize,
+  oa as getComplementary,
+  qt as getContext2D,
+  la as getContrastRatio,
+  ca as getContrastingTextColor,
+  Pi as getDevicePixelRatio,
+  Ht as getElement,
+  Wt as getElementRect,
+  lt as getI18n,
+  Zt as getImageData,
+  dt as getImageDimensions,
+  pe as getImageInfo,
+  et as getLuminance,
+  rt as getMimeType,
+  It as getNonPassiveOptions,
+  Ri as getPassiveOptions,
+  Xi as getRectsIntersection,
+  fi as getRelativeCoordinates,
+  Mt as getResolvedDeviceType,
+  ue as getSupportedFormats,
+  $t as getTextBoundingBox,
+  Qt as getTouchCenter,
+  Jt as getTouchDistance,
+  Bi as getViewportDimensions,
+  Se as hexToRgb,
+  gt as hexToRgba,
+  j as hslToRgb,
+  ea as hsvToRgb,
   w as icons,
-  kt as injectStyles,
-  ve as interpolatePoints,
-  ni as isAndroidDevice,
-  ri as isIOSDevice,
-  je as isInViewport,
-  Ut as isMobileDevice,
-  be as isPointInTextLayer,
-  Xt as isTouchDevice,
-  Ht as loadImage,
-  ye as measureText,
-  F as normalizePointerEvent,
-  ii as preventDefault,
-  Nt as putImageData,
-  Ft as removeElement,
-  gt as renderAllTextLayers,
-  we as renderTextLayer,
-  $t as setCanvasSize,
-  Ot as setStyles,
-  ai as stopPropagation,
-  mt as supportsPassiveEvents,
-  ci as supportsPointerEvents,
-  St as supportsQuality,
-  Ct as supportsTransparency,
-  xi as t,
-  ti as throttle,
-  de as toolbarStyles,
-  Q as zhCN
+  Pt as injectStyles,
+  Ae as interpolatePoints,
+  xe as inverseLerp,
+  da as invertColor,
+  Li as isAndroidDevice,
+  zt as isClipboardSupported,
+  Lt as isFormatSupported,
+  zi as isIOSDevice,
+  vi as isInViewport,
+  Ie as isLightColor,
+  ee as isMobileDevice,
+  Ui as isPointInCircle,
+  Wi as isPointInRect,
+  Ne as isPointInTextLayer,
+  te as isTouchDevice,
+  me as lerp,
+  Me as lighten,
+  jt as loadImage,
+  He as measureText,
+  Ni as midpoint,
+  ra as mixColors,
+  Hi as normalizeAngle,
+  H as normalizePointerEvent,
+  ia as parseColor,
+  Ti as preventDefault,
+  Kt as putImageData,
+  we as radiansToDegrees,
+  ji as randomInt,
+  Ce as randomRange,
+  $i as remap,
+  Vt as removeElement,
+  wt as renderAllTextLayers,
+  qe as renderTextLayer,
+  Ji as rgbToHex,
+  st as rgbToHsl,
+  ta as rgbToHsv,
+  aa as rgbaToCss,
+  Qi as rgbaToHex,
+  wi as rotateCanvas,
+  qi as rotatePoint,
+  Gi as roundTo,
+  mi as safeCalculateAspectRatioFit,
+  ke as saturate,
+  Vi as scaleRectFromCenter,
+  Ut as setCanvasSize,
+  Xt as setStyles,
+  Ki as smootherstep,
+  Zi as smoothstep,
+  Ei as stopPropagation,
+  kt as supportsPassiveEvents,
+  _i as supportsPointerEvents,
+  Dt as supportsQuality,
+  Et as supportsTransparency,
+  xa as t,
+  ki as throttle,
+  ha as toGrayscale,
+  Pe as toolbarStyles,
+  it as zhCN
 };
 //# sourceMappingURL=index.es.js.map

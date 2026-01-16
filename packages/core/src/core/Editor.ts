@@ -216,6 +216,11 @@ export class Editor implements EditorInterface {
     try {
       const { width, height } = await this._canvas.loadImage(source);
 
+      // Clear history when loading a new user image to prevent undoing to previous image/placeholder
+      if (isUserImage) {
+        this._historyManager.clear();
+      }
+
       // Save initial state
       this.saveState('init', 'Initial state');
 
