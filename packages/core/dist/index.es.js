@@ -1,6 +1,6 @@
-var At = Object.defineProperty;
-var Ft = (r, t, e) => t in r ? At(r, t, { enumerable: !0, configurable: !0, writable: !0, value: e }) : r[t] = e;
-var c = (r, t, e) => Ft(r, typeof t != "symbol" ? t + "" : t, e);
+var Bt = Object.defineProperty;
+var $t = (n, t, e) => t in n ? Bt(n, t, { enumerable: !0, configurable: !0, writable: !0, value: e }) : n[t] = e;
+var c = (n, t, e) => $t(n, typeof t != "symbol" ? t + "" : t, e);
 const ct = {
   width: 800,
   height: 600,
@@ -30,7 +30,7 @@ const ct = {
   grayscale: 0,
   sepia: 0,
   invert: 0
-}, Ot = {
+}, At = {
   format: "png",
   quality: 0.92,
   width: 0,
@@ -83,147 +83,147 @@ const ct = {
   /** Canvas resized */
   RESIZE: "resize"
 };
-function Ht(r) {
-  return typeof r == "string" ? document.querySelector(r) : r;
+function Ft(n) {
+  return typeof n == "string" ? document.querySelector(n) : n;
 }
-function Nt(r, t) {
+function Ot(n, t) {
   const e = document.createElement("canvas");
-  return e.width = r, e.height = t, e;
+  return e.width = n, e.height = t, e;
 }
-function qt(r) {
-  const t = r.getContext("2d");
-  if (!t)
+function Ht(n, t = !0) {
+  const e = n.getContext("2d", { willReadFrequently: t });
+  if (!e)
     throw new Error("Failed to get 2D context from canvas");
-  return t;
+  return e;
 }
-function Wt(r) {
-  return r.getBoundingClientRect();
+function Nt(n) {
+  return n.getBoundingClientRect();
 }
-function fi(r, t) {
-  const e = Wt(t);
+function fi(n, t) {
+  const e = Nt(t);
   return {
-    x: r.clientX - e.left,
-    y: r.clientY - e.top
+    x: n.clientX - e.left,
+    y: n.clientY - e.top
   };
 }
-function Ut(r, t, e) {
-  r.width = t, r.height = e;
+function qt(n, t, e) {
+  n.width = t, n.height = e;
 }
-function ht(r, t, e) {
-  r.clearRect(0, 0, t, e);
+function ht(n, t, e) {
+  n.clearRect(0, 0, t, e);
 }
-function Yt(r, t, e, i) {
-  r.fillStyle = i, r.fillRect(0, 0, t, e);
+function Wt(n, t, e, i) {
+  n.fillStyle = i, n.fillRect(0, 0, t, e);
 }
-function Xt(r, t) {
-  Object.assign(r.style, t);
+function Ut(n, t) {
+  Object.assign(n.style, t);
 }
-function Vt(r) {
+function Xt(n) {
   var t;
-  (t = r.parentNode) == null || t.removeChild(r);
+  (t = n.parentNode) == null || t.removeChild(n);
 }
-function vi(r) {
-  const t = r.getBoundingClientRect();
+function vi(n) {
+  const t = n.getBoundingClientRect();
   return t.top >= 0 && t.left >= 0 && t.bottom <= window.innerHeight && t.right <= window.innerWidth;
 }
-const Gt = 3e4;
-function jt(r, t = {}) {
-  const { timeout: e = Gt, crossOrigin: i = "anonymous", signal: a } = t;
-  return new Promise((n, s) => {
+const Yt = 3e4;
+function Vt(n, t = {}) {
+  const { timeout: e = Yt, crossOrigin: i = "anonymous", signal: a } = t;
+  return new Promise((s, r) => {
     if (a != null && a.aborted) {
-      s(new DOMException("Image loading aborted", "AbortError"));
+      r(new DOMException("Image loading aborted", "AbortError"));
       return;
     }
-    if (r instanceof HTMLImageElement) {
-      r.complete && r.naturalWidth > 0 ? n(r) : r.complete && r.naturalWidth === 0 ? s(new Error("Failed to load image: invalid image element")) : (r.onload = () => n(r), r.onerror = () => s(new Error("Failed to load image")));
+    if (n instanceof HTMLImageElement) {
+      n.complete && n.naturalWidth > 0 ? s(n) : n.complete && n.naturalWidth === 0 ? r(new Error("Failed to load image: invalid image element")) : (n.onload = () => s(n), n.onerror = () => r(new Error("Failed to load image")));
       return;
     }
-    if (!r || typeof r != "string") {
-      s(new Error("Invalid image source: must be a non-empty string or HTMLImageElement"));
+    if (!n || typeof n != "string") {
+      r(new Error("Invalid image source: must be a non-empty string or HTMLImageElement"));
       return;
     }
     const o = new Image();
     let l = null, h = !1;
     const d = () => {
       l && (clearTimeout(l), l = null), o.onload = null, o.onerror = null;
-    }, p = (u) => {
-      h || (h = !0, d(), u ? s(u) : n(o));
+    }, p = (v) => {
+      h || (h = !0, d(), v ? r(v) : s(o));
     };
     a && a.addEventListener("abort", () => {
       p(new DOMException("Image loading aborted", "AbortError"));
     }, { once: !0 }), e > 0 && (l = setTimeout(() => {
-      p(new Error(`Image loading timed out after ${e}ms: ${r}`));
-    }, e)), i !== null && (o.crossOrigin = i), o.onload = () => p(), o.onerror = () => p(new Error(`Failed to load image: ${r}`)), o.src = r;
+      p(new Error(`Image loading timed out after ${e}ms: ${n}`));
+    }, e)), i !== null && (o.crossOrigin = i), o.onload = () => p(), o.onerror = () => p(new Error(`Failed to load image: ${n}`)), o.src = n;
   });
 }
-function dt(r) {
+function Gt(n) {
   return {
-    width: r.naturalWidth || r.width,
-    height: r.naturalHeight || r.height
+    width: n.naturalWidth || n.width,
+    height: n.naturalHeight || n.height
   };
 }
-function pt(r, t, e, i) {
-  if (r <= 0 || t <= 0)
-    throw new Error(`Invalid source dimensions: ${r}x${t}. Both must be positive.`);
+function jt(n, t, e, i) {
+  if (n <= 0 || t <= 0)
+    throw new Error(`Invalid source dimensions: ${n}x${t}. Both must be positive.`);
   if (e <= 0 || i <= 0)
     throw new Error(`Invalid max dimensions: ${e}x${i}. Both must be positive.`);
-  const a = Math.min(e / r, i / t);
+  const a = Math.min(e / n, i / t);
   return {
-    width: Math.round(r * a),
+    width: Math.round(n * a),
     height: Math.round(t * a)
   };
 }
-function mi(r, t, e, i) {
-  if (r <= 0 || t <= 0 || e <= 0 || i <= 0)
-    return { width: Math.max(1, r), height: Math.max(1, t) };
-  const a = Math.min(e / r, i / t);
+function mi(n, t, e, i) {
+  if (n <= 0 || t <= 0 || e <= 0 || i <= 0)
+    return { width: Math.max(1, n), height: Math.max(1, t) };
+  const a = Math.min(e / n, i / t);
   return {
-    width: Math.max(1, Math.round(r * a)),
+    width: Math.max(1, Math.round(n * a)),
     height: Math.max(1, Math.round(t * a))
   };
 }
-function ut(r, t, e = 0, i = 0, a, n) {
-  a !== void 0 && n !== void 0 ? r.drawImage(t, e, i, a, n) : r.drawImage(t, e, i);
+function dt(n, t, e = 0, i = 0, a, s) {
+  a !== void 0 && s !== void 0 ? n.drawImage(t, e, i, a, s) : n.drawImage(t, e, i);
 }
-function Zt(r, t = 0, e = 0, i, a) {
-  const n = i ?? r.canvas.width, s = a ?? r.canvas.height;
-  if (n <= 0 || s <= 0)
-    throw new Error(`Invalid dimensions for getImageData: ${n}x${s}. Both must be positive.`);
-  const o = Math.max(0, Math.min(t, r.canvas.width - 1)), l = Math.max(0, Math.min(e, r.canvas.height - 1)), h = Math.min(n, r.canvas.width - o), d = Math.min(s, r.canvas.height - l);
+function Zt(n, t = 0, e = 0, i, a) {
+  const s = i ?? n.canvas.width, r = a ?? n.canvas.height;
+  if (s <= 0 || r <= 0)
+    throw new Error(`Invalid dimensions for getImageData: ${s}x${r}. Both must be positive.`);
+  const o = Math.max(0, Math.min(t, n.canvas.width - 1)), l = Math.max(0, Math.min(e, n.canvas.height - 1)), h = Math.min(s, n.canvas.width - o), d = Math.min(r, n.canvas.height - l);
   if (h <= 0 || d <= 0)
     throw new Error("Region is outside canvas bounds");
-  return r.getImageData(o, l, h, d);
+  return n.getImageData(o, l, h, d);
 }
-function Kt(r, t, e = 0, i = 0) {
-  r.putImageData(t, e, i);
+function Kt(n, t, e = 0, i = 0) {
+  n.putImageData(t, e, i);
 }
-function St(r) {
+function wt(n) {
   return new ImageData(
-    new Uint8ClampedArray(r.data),
-    r.width,
-    r.height
+    new Uint8ClampedArray(n.data),
+    n.width,
+    n.height
   );
 }
-function xi(r, t) {
-  return new ImageData(r, t);
+function xi(n, t) {
+  return new ImageData(n, t);
 }
-function q(r, t = "png", e = 0.92) {
+function W(n, t = "png", e = 0.92) {
   const i = `image/${t}`;
-  return r.toDataURL(i, e);
+  return n.toDataURL(i, e);
 }
-function N(r, t = "png", e = 0.92) {
+function q(n, t = "png", e = 0.92) {
   return new Promise((i, a) => {
-    const n = `image/${t}`;
-    r.toBlob(
-      (s) => {
-        s ? i(s) : a(new Error("Failed to convert canvas to blob"));
+    const s = `image/${t}`;
+    n.toBlob(
+      (r) => {
+        r ? i(r) : a(new Error("Failed to convert canvas to blob"));
       },
-      n,
+      s,
       e
     );
   });
 }
-function yi(r, t, e) {
+function yi(n, t, e) {
   if (t <= 0 || e <= 0)
     throw new Error(`Invalid dimensions for scaled canvas: ${t}x${e}. Both must be positive.`);
   const i = document.createElement("canvas");
@@ -231,18 +231,18 @@ function yi(r, t, e) {
   const a = i.getContext("2d");
   if (!a)
     throw new Error("Failed to get 2D context for scaled canvas");
-  return a.imageSmoothingEnabled = !0, a.imageSmoothingQuality = "high", a.drawImage(r, 0, 0, i.width, i.height), i;
+  return a.imageSmoothingEnabled = !0, a.imageSmoothingQuality = "high", a.drawImage(n, 0, 0, i.width, i.height), i;
 }
-function bi(r, t, e, i, a) {
+function bi(n, t, e, i, a) {
   if (i <= 0 || a <= 0)
     throw new Error(`Invalid crop dimensions: ${i}x${a}. Both must be positive.`);
-  const n = document.createElement("canvas");
-  n.width = Math.round(i), n.height = Math.round(a);
-  const s = n.getContext("2d");
-  if (!s)
+  const s = document.createElement("canvas");
+  s.width = Math.round(i), s.height = Math.round(a);
+  const r = s.getContext("2d");
+  if (!r)
     throw new Error("Failed to get 2D context for cropped canvas");
-  return s.drawImage(
-    r,
+  return r.drawImage(
+    n,
     t,
     e,
     i,
@@ -251,28 +251,28 @@ function bi(r, t, e, i, a) {
     0,
     i,
     a
-  ), n;
+  ), s;
 }
-function wi(r, t) {
-  const e = t * Math.PI / 180, i = Math.abs(Math.sin(e)), a = Math.abs(Math.cos(e)), n = r.width, s = r.height, o = Math.round(n * a + s * i), l = Math.round(n * i + s * a), h = document.createElement("canvas");
+function wi(n, t) {
+  const e = t * Math.PI / 180, i = Math.abs(Math.sin(e)), a = Math.abs(Math.cos(e)), s = n.width, r = n.height, o = Math.round(s * a + r * i), l = Math.round(s * i + r * a), h = document.createElement("canvas");
   h.width = o, h.height = l;
   const d = h.getContext("2d");
   if (!d)
     throw new Error("Failed to get 2D context for rotated canvas");
-  return d.translate(o / 2, l / 2), d.rotate(e), d.drawImage(r, -n / 2, -s / 2), h;
+  return d.translate(o / 2, l / 2), d.rotate(e), d.drawImage(n, -s / 2, -r / 2), h;
 }
-function Ci(r, t) {
+function Ci(n, t) {
   const e = document.createElement("canvas");
-  e.width = r.width, e.height = r.height;
+  e.width = n.width, e.height = n.height;
   const i = e.getContext("2d");
   if (!i)
     throw new Error("Failed to get 2D context for flipped canvas");
-  return t === "horizontal" ? (i.translate(e.width, 0), i.scale(-1, 1)) : (i.translate(0, e.height), i.scale(1, -1)), i.drawImage(r, 0, 0), e;
+  return t === "horizontal" ? (i.translate(e.width, 0), i.scale(-1, 1)) : (i.translate(0, e.height), i.scale(1, -1)), i.drawImage(n, 0, 0), e;
 }
-function H(r, t, e) {
+function H(n, t, e) {
   const i = t.getBoundingClientRect();
-  if ("touches" in r) {
-    const a = r.touches[0] || r.changedTouches[0];
+  if ("touches" in n) {
+    const a = n.touches[0] || n.changedTouches[0];
     return {
       type: e,
       x: a.clientX - i.left,
@@ -284,65 +284,65 @@ function H(r, t, e) {
   }
   return {
     type: e,
-    x: r.clientX - i.left,
-    y: r.clientY - i.top,
+    x: n.clientX - i.left,
+    y: n.clientY - i.top,
     pressure: 0.5,
     isPrimary: !0,
     pointerId: 0
   };
 }
-function Jt(r, t) {
-  const e = r.clientX - t.clientX, i = r.clientY - t.clientY;
+function Jt(n, t) {
+  const e = n.clientX - t.clientX, i = n.clientY - t.clientY;
   return Math.sqrt(e * e + i * i);
 }
-function Qt(r, t) {
+function Qt(n, t) {
   return {
-    x: (r.clientX + t.clientX) / 2,
-    y: (r.clientY + t.clientY) / 2
+    x: (n.clientX + t.clientX) / 2,
+    y: (n.clientY + t.clientY) / 2
   };
 }
-function Si(r, t, e) {
-  const i = r[0], a = r[1], n = Jt(i, a), s = t.getBoundingClientRect(), o = Qt(i, a);
+function Si(n, t, e) {
+  const i = n[0], a = n[1], s = Jt(i, a), r = t.getBoundingClientRect(), o = Qt(i, a);
   return {
     type: "pinch",
-    scale: n / e,
+    scale: s / e,
     center: {
-      x: o.x - s.left,
-      y: o.y - s.top
+      x: o.x - r.left,
+      y: o.y - r.top
     }
   };
 }
-function Mi(r, t) {
+function Mi(n, t) {
   return {
     type: "pan",
-    deltaX: r,
+    deltaX: n,
     deltaY: t
   };
 }
-function ki(r, t) {
+function ki(n, t) {
   let e = 0;
   return (...i) => {
     const a = Date.now();
-    a - e >= t && (e = a, r(...i));
+    a - e >= t && (e = a, n(...i));
   };
 }
-function Ii(r, t) {
+function Ii(n, t) {
   let e = null;
   return (...i) => {
     e && clearTimeout(e), e = setTimeout(() => {
-      r(...i), e = null;
+      n(...i), e = null;
     }, t);
   };
 }
-function Ti(r) {
-  r.preventDefault();
+function Ti(n) {
+  n.preventDefault();
 }
-function Ei(r) {
-  r.stopPropagation();
+function Ei(n) {
+  n.stopPropagation();
 }
-function Di(r, t, e, i) {
-  return r.addEventListener(t, e, i), () => {
-    r.removeEventListener(t, e, i);
+function Di(n, t, e, i) {
+  return n.addEventListener(t, e, i), () => {
+    n.removeEventListener(t, e, i);
   };
 }
 function te() {
@@ -352,9 +352,9 @@ function te() {
 function ee() {
   if (typeof navigator > "u")
     return !1;
-  const r = navigator.userAgent.toLowerCase();
+  const n = navigator.userAgent.toLowerCase();
   return /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(
-    r
+    n
   );
 }
 function zi() {
@@ -366,31 +366,31 @@ function Li() {
 function ie() {
   return ee() || te() ? "mobile" : "pc";
 }
-function Mt(r) {
-  return r === "auto" ? ie() : r;
+function Ct(n) {
+  return n === "auto" ? ie() : n;
 }
 function Pi() {
   return typeof window > "u" ? 1 : window.devicePixelRatio || 1;
 }
-function kt() {
-  let r = !1;
+function St() {
+  let n = !1;
   try {
     const t = {
       get passive() {
-        return r = !0, !1;
+        return n = !0, !1;
       }
     };
     window.addEventListener("test", null, t), window.removeEventListener("test", null, t);
   } catch {
-    r = !1;
+    n = !1;
   }
-  return r;
+  return n;
 }
 function Ri() {
-  return kt() ? { passive: !0 } : !1;
+  return St() ? { passive: !0 } : !1;
 }
-function It() {
-  return kt() ? { passive: !1 } : !1;
+function Mt() {
+  return St() ? { passive: !1 } : !1;
 }
 function _i() {
   return typeof window > "u" ? !1 : "PointerEvent" in window;
@@ -401,104 +401,104 @@ function Bi() {
     height: window.innerHeight
   };
 }
-function at(r) {
-  return r === "jpg" ? "jpeg" : r;
+function at(n) {
+  return n === "jpg" ? "jpeg" : n;
 }
-function Tt(r) {
-  return r === "jpeg" ? "jpg" : r;
+function kt(n) {
+  return n === "jpeg" ? "jpg" : n;
 }
-function rt(r) {
-  return `image/${at(r)}`;
+function nt(n) {
+  return `image/${at(n)}`;
 }
-function Et(r) {
-  return r === "png" || r === "webp" || r === "gif";
+function It(n) {
+  return n === "png" || n === "webp" || n === "gif";
 }
-function Dt(r) {
-  const t = at(r);
+function Tt(n) {
+  const t = at(n);
   return t === "jpeg" || t === "webp";
 }
-function ae(r, t) {
-  let e = r;
-  const i = t.width && t.height && (t.width !== r.width || t.height !== r.height) || t.width && !t.height || t.height && !t.width;
-  let a = r.width, n = r.height;
+function ae(n, t) {
+  let e = n;
+  const i = t.width && t.height && (t.width !== n.width || t.height !== n.height) || t.width && !t.height || t.height && !t.width;
+  let a = n.width, s = n.height;
   if (t.width && t.height)
-    a = t.width, n = t.height;
+    a = t.width, s = t.height;
   else if (t.width && !t.height) {
-    const o = t.width / r.width;
-    a = t.width, n = Math.round(r.height * o);
+    const o = t.width / n.width;
+    a = t.width, s = Math.round(n.height * o);
   } else if (t.height && !t.width) {
-    const o = t.height / r.height;
-    a = Math.round(r.width * o), n = t.height;
+    const o = t.height / n.height;
+    a = Math.round(n.width * o), s = t.height;
   }
-  const s = !Et(t.format) || t.preserveTransparency === !1;
-  if (i || s) {
-    e = document.createElement("canvas"), e.width = a, e.height = n;
+  const r = !It(t.format) || t.preserveTransparency === !1;
+  if (i || r) {
+    e = document.createElement("canvas"), e.width = a, e.height = s;
     const o = e.getContext("2d");
-    o && (s && (o.fillStyle = t.backgroundColor || "#ffffff", o.fillRect(0, 0, a, n)), o.drawImage(r, 0, 0, a, n));
+    o && (r && (o.fillStyle = t.backgroundColor || "#ffffff", o.fillRect(0, 0, a, s)), o.drawImage(n, 0, 0, a, s));
   }
   return e;
 }
-function re(r, t, e) {
-  const i = Tt(t), a = e ? `-${Date.now()}` : "";
-  return `${r}${a}.${i}`;
+function ne(n, t, e) {
+  const i = kt(t), a = e ? `-${Date.now()}` : "";
+  return `${n}${a}.${i}`;
 }
-async function nt(r, t) {
+async function st(n, t) {
   const e = {
-    ...Ot,
+    ...At,
     ...t
-  }, i = at(e.format), a = ae(r, e);
-  let n = e.quality;
-  if (e.maxFileSize && Dt(e.format)) {
-    let s = await N(a, i, n);
-    for (; s.size > e.maxFileSize && n > 0.1; )
-      n -= 0.1, s = await N(a, i, n);
+  }, i = at(e.format), a = ae(n, e);
+  let s = e.quality;
+  if (e.maxFileSize && Tt(e.format)) {
+    let r = await q(a, i, s);
+    for (; r.size > e.maxFileSize && s > 0.1; )
+      s -= 0.1, r = await q(a, i, s);
   }
   switch (e.type) {
     case "base64":
-      return q(a, i, n);
+      return W(a, i, s);
     case "blob":
-      return N(a, i, n);
+      return q(a, i, s);
     case "file": {
-      const s = await N(a, i, n), o = re(e.fileName || "image", e.format, e.addTimestamp ?? !1);
-      return new File([s], o, { type: rt(e.format) });
+      const r = await q(a, i, s), o = ne(e.fileName || "image", e.format, e.addTimestamp ?? !1);
+      return new File([r], o, { type: nt(e.format) });
     }
     case "arraybuffer":
-      return (await N(a, i, n)).arrayBuffer();
+      return (await q(a, i, s)).arrayBuffer();
     default:
-      return q(a, i, n);
+      return W(a, i, s);
   }
 }
-function ne(r) {
-  return q(r, "png", 1);
+function se(n) {
+  return W(n, "png", 1);
 }
-function se(r, t = 0.92) {
+function re(n, t = 0.92) {
   const e = document.createElement("canvas");
-  e.width = r.width, e.height = r.height;
+  e.width = n.width, e.height = n.height;
   const i = e.getContext("2d");
-  return i && (i.fillStyle = "#ffffff", i.fillRect(0, 0, r.width, r.height), i.drawImage(r, 0, 0)), q(e, "jpeg", t);
+  return i && (i.fillStyle = "#ffffff", i.fillRect(0, 0, n.width, n.height), i.drawImage(n, 0, 0)), W(e, "jpeg", t);
 }
-function oe(r, t = 0.92) {
-  return q(r, "webp", t);
+function oe(n, t = 0.92) {
+  return W(n, "webp", t);
 }
-async function le(r, t, e) {
+async function le(n, t, e) {
   const i = {
     format: "png",
     quality: 0.92,
     ...e,
     type: "base64"
-  }, a = await nt(r, i), n = Tt(i.format || "png"), s = i.addTimestamp ? `-${Date.now()}` : "", o = t ? `${t}${s}.${n}` : `image${s}.${n}`, l = document.createElement("a");
+  }, a = await st(n, i), s = kt(i.format || "png"), r = i.addTimestamp ? `-${Date.now()}` : "", o = t ? `${t}${r}.${s}` : `image${r}.${s}`, l = document.createElement("a");
   l.href = a, l.download = o, document.body.appendChild(l), l.click(), document.body.removeChild(l);
 }
-function zt() {
+function Et() {
   return typeof navigator < "u" && "clipboard" in navigator && typeof navigator.clipboard.write == "function";
 }
-async function ce(r) {
+async function ce(n) {
   var t;
   if (typeof window < "u" && !window.isSecureContext)
     throw new Error("Clipboard API requires a secure context (HTTPS)");
-  if (zt())
+  if (Et())
     try {
-      const e = await N(r, "png", 1);
+      const e = await q(n, "png", 1);
       await navigator.clipboard.write([
         new ClipboardItem({ "image/png": e })
       ]);
@@ -509,7 +509,7 @@ async function ce(r) {
     }
   if (typeof navigator < "u" && ((t = navigator.clipboard) != null && t.writeText))
     try {
-      const e = q(r, "png", 1);
+      const e = W(n, "png", 1);
       await navigator.clipboard.writeText(e);
       return;
     } catch {
@@ -517,14 +517,14 @@ async function ce(r) {
     }
   throw new Error("Clipboard API is not supported in this browser");
 }
-async function he(r, t) {
-  return (await nt(r, { ...t, type: "blob" })).size;
+async function he(n, t) {
+  return (await st(n, { ...t, type: "blob" })).size;
 }
-function de(r) {
-  return r < 1024 ? `${r} B` : r < 1024 * 1024 ? `${(r / 1024).toFixed(1)} KB` : `${(r / (1024 * 1024)).toFixed(2)} MB`;
+function de(n) {
+  return n < 1024 ? `${n} B` : n < 1024 * 1024 ? `${(n / 1024).toFixed(1)} KB` : `${(n / (1024 * 1024)).toFixed(2)} MB`;
 }
-function pe(r) {
-  const t = r.width, e = r.height, i = e > 0 ? t / e : 1;
+function pe(n) {
+  const t = n.width, e = n.height, i = e > 0 ? t / e : 1;
   let a;
   return Math.abs(i - 1) < 0.01 ? a = "square" : i > 1 ? a = "landscape" : a = "portrait", {
     width: t,
@@ -534,32 +534,32 @@ function pe(r) {
     orientation: a
   };
 }
-function Lt(r) {
+function Dt(n) {
   if (typeof document > "u") return !1;
   const t = document.createElement("canvas");
   t.width = 1, t.height = 1;
-  const e = rt(r);
+  const e = nt(n);
   return t.toDataURL(e).startsWith(`data:${e}`);
 }
 function ue() {
-  return ["png", "jpeg", "webp", "bmp", "gif"].filter(Lt);
+  return ["png", "jpeg", "webp", "bmp", "gif"].filter(Dt);
 }
-function ge(r) {
-  const t = r.split(",");
+function ge(n) {
+  const t = n.split(",");
   if (t.length !== 2)
     throw new Error("Invalid data URL format");
   const e = t[0].match(/:(.*?);/);
   if (!e)
     throw new Error("Could not extract MIME type from data URL");
-  const i = e[1], a = atob(t[1]), n = new ArrayBuffer(a.length), s = new Uint8Array(n);
+  const i = e[1], a = atob(t[1]), s = new ArrayBuffer(a.length), r = new Uint8Array(s);
   for (let o = 0; o < a.length; o++)
-    s[o] = a.charCodeAt(o);
-  return new Blob([n], { type: i });
+    r[o] = a.charCodeAt(o);
+  return new Blob([s], { type: i });
 }
-function fe(r) {
+function fe(n) {
   return new Promise((t, e) => {
     const i = new FileReader();
-    i.onload = () => t(i.result), i.onerror = () => e(new Error("Failed to convert blob to data URL")), i.readAsDataURL(r);
+    i.onload = () => t(i.result), i.onerror = () => e(new Error("Failed to convert blob to data URL")), i.readAsDataURL(n);
   });
 }
 const Y = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
@@ -569,130 +569,130 @@ const Y = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   dataUrlToBlob: ge,
   downloadImage: le,
   estimateFileSize: he,
-  exportImage: nt,
-  exportToJPEG: se,
-  exportToPNG: ne,
+  exportImage: st,
+  exportToJPEG: re,
+  exportToPNG: se,
   exportToWebP: oe,
   formatFileSize: de,
   getImageInfo: pe,
-  getMimeType: rt,
+  getMimeType: nt,
   getSupportedFormats: ue,
-  isClipboardSupported: zt,
-  isFormatSupported: Lt,
-  supportsQuality: Dt,
-  supportsTransparency: Et
+  isClipboardSupported: Et,
+  isFormatSupported: Dt,
+  supportsQuality: Tt,
+  supportsTransparency: It
 }, Symbol.toStringTag, { value: "Module" }));
-function ve(r = {}) {
+function ve(n = {}) {
   const {
     width: t = 800,
     height: e = 600,
     text: i = "点击上传或拖放图片",
     subText: a = "支持 PNG、JPG、GIF 等格式",
-    theme: n = "dark"
-  } = r, s = document.createElement("canvas");
-  s.width = t, s.height = e;
-  const o = s.getContext("2d");
+    theme: s = "dark"
+  } = n, r = document.createElement("canvas");
+  r.width = t, r.height = e;
+  const o = r.getContext("2d");
   if (!o) return "";
-  const l = n === "dark", h = l ? "rgba(255,255,255,0.15)" : "rgba(0,0,0,0.12)", d = l ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.35)", p = l ? "rgba(255,255,255,0.7)" : "rgba(0,0,0,0.65)", u = l ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.4)";
+  const l = s === "dark", h = l ? "rgba(255,255,255,0.15)" : "rgba(0,0,0,0.12)", d = l ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.35)", p = l ? "rgba(255,255,255,0.7)" : "rgba(0,0,0,0.65)", v = l ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.4)";
   o.clearRect(0, 0, t, e);
-  const v = Math.max(20, Math.min(t, e) * 0.05), g = 8, f = v, m = v, S = t - v * 2, C = e - v * 2;
-  o.strokeStyle = h, o.lineWidth = 1, o.setLineDash([4, 3]), o.beginPath(), o.moveTo(f + g, m), o.lineTo(f + S - g, m), o.quadraticCurveTo(f + S, m, f + S, m + g), o.lineTo(f + S, m + C - g), o.quadraticCurveTo(f + S, m + C, f + S - g, m + C), o.lineTo(f + g, m + C), o.quadraticCurveTo(f, m + C, f, m + C - g), o.lineTo(f, m + g), o.quadraticCurveTo(f, m, f + g, m), o.closePath(), o.stroke(), o.setLineDash([]);
-  const k = t / 2, I = e / 2;
+  const f = Math.max(20, Math.min(t, e) * 0.05), u = 8, g = f, m = f, C = t - f * 2, S = e - f * 2;
+  o.strokeStyle = h, o.lineWidth = 1, o.setLineDash([4, 3]), o.beginPath(), o.moveTo(g + u, m), o.lineTo(g + C - u, m), o.quadraticCurveTo(g + C, m, g + C, m + u), o.lineTo(g + C, m + S - u), o.quadraticCurveTo(g + C, m + S, g + C - u, m + S), o.lineTo(g + u, m + S), o.quadraticCurveTo(g, m + S, g, m + S - u), o.lineTo(g, m + u), o.quadraticCurveTo(g, m, g + u, m), o.closePath(), o.stroke(), o.setLineDash([]);
+  const M = t / 2, I = e / 2;
   o.strokeStyle = d, o.lineWidth = 2, o.lineCap = "round", o.lineJoin = "round";
-  const T = 48, E = 36, M = k - T / 2, x = I - 45, y = 5;
-  return o.beginPath(), o.moveTo(M + y, x), o.lineTo(M + T - y, x), o.quadraticCurveTo(M + T, x, M + T, x + y), o.lineTo(M + T, x + E - y), o.quadraticCurveTo(M + T, x + E, M + T - y, x + E), o.lineTo(M + y, x + E), o.quadraticCurveTo(M, x + E, M, x + E - y), o.lineTo(M, x + y), o.quadraticCurveTo(M, x, M + y, x), o.stroke(), o.beginPath(), o.moveTo(M + 8, x + E - 8), o.lineTo(M + 18, x + 12), o.lineTo(M + 26, x + E - 12), o.lineTo(M + 34, x + 14), o.lineTo(M + T - 8, x + E - 8), o.stroke(), o.beginPath(), o.arc(M + T - 12, x + 11, 5, 0, Math.PI * 2), o.stroke(), o.fillStyle = p, o.font = '600 14px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', o.textAlign = "center", o.textBaseline = "middle", o.fillText(i, k, I + 12), a && (o.fillStyle = u, o.font = '400 12px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', o.fillText(a, k, I + 34)), s.toDataURL("image/png");
+  const E = 48, T = 36, k = M - E / 2, x = I - 45, b = 5;
+  return o.beginPath(), o.moveTo(k + b, x), o.lineTo(k + E - b, x), o.quadraticCurveTo(k + E, x, k + E, x + b), o.lineTo(k + E, x + T - b), o.quadraticCurveTo(k + E, x + T, k + E - b, x + T), o.lineTo(k + b, x + T), o.quadraticCurveTo(k, x + T, k, x + T - b), o.lineTo(k, x + b), o.quadraticCurveTo(k, x, k + b, x), o.stroke(), o.beginPath(), o.moveTo(k + 8, x + T - 8), o.lineTo(k + 18, x + 12), o.lineTo(k + 26, x + T - 12), o.lineTo(k + 34, x + 14), o.lineTo(k + E - 8, x + T - 8), o.stroke(), o.beginPath(), o.arc(k + E - 12, x + 11, 5, 0, Math.PI * 2), o.stroke(), o.fillStyle = p, o.font = '600 14px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', o.textAlign = "center", o.textBaseline = "middle", o.fillText(i, M, I + 12), a && (o.fillStyle = v, o.font = '400 12px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', o.fillText(a, M, I + 34)), r.toDataURL("image/png");
 }
-function R(r, t, e) {
-  return Math.max(t, Math.min(e, r));
+function R(n, t, e) {
+  return Math.max(t, Math.min(e, n));
 }
-function me(r, t, e) {
-  return r + (t - r) * R(e, 0, 1);
+function me(n, t, e) {
+  return n + (t - n) * R(e, 0, 1);
 }
-function xe(r, t, e) {
-  return r === t ? 0 : R((e - r) / (t - r), 0, 1);
+function xe(n, t, e) {
+  return n === t ? 0 : R((e - n) / (t - n), 0, 1);
 }
-function $i(r, t, e, i, a) {
-  const n = xe(t, e, r);
-  return me(i, a, n);
+function $i(n, t, e, i, a) {
+  const s = xe(t, e, n);
+  return me(i, a, s);
 }
-function Ai(r, t) {
-  const e = t.x - r.x, i = t.y - r.y;
+function Ai(n, t) {
+  const e = t.x - n.x, i = t.y - n.y;
   return Math.sqrt(e * e + i * i);
 }
-function ye(r, t) {
-  const e = t.x - r.x, i = t.y - r.y;
+function ye(n, t) {
+  const e = t.x - n.x, i = t.y - n.y;
   return e * e + i * i;
 }
-function be(r, t) {
-  return Math.atan2(t.y - r.y, t.x - r.x);
+function be(n, t) {
+  return Math.atan2(t.y - n.y, t.x - n.x);
 }
-function Fi(r, t) {
-  return we(be(r, t));
+function Fi(n, t) {
+  return we(be(n, t));
 }
-function Oi(r) {
-  return r * Math.PI / 180;
+function Oi(n) {
+  return n * Math.PI / 180;
 }
-function we(r) {
-  return r * 180 / Math.PI;
+function we(n) {
+  return n * 180 / Math.PI;
 }
-function Hi(r) {
-  return (r % 360 + 360) % 360;
+function Hi(n) {
+  return (n % 360 + 360) % 360;
 }
-function Ni(r, t) {
+function Ni(n, t) {
   return {
-    x: (r.x + t.x) / 2,
-    y: (r.y + t.y) / 2
+    x: (n.x + t.x) / 2,
+    y: (n.y + t.y) / 2
   };
 }
-function qi(r, t, e) {
-  const i = Math.cos(e), a = Math.sin(e), n = r.x - t.x, s = r.y - t.y;
+function qi(n, t, e) {
+  const i = Math.cos(e), a = Math.sin(e), s = n.x - t.x, r = n.y - t.y;
   return {
-    x: t.x + n * i - s * a,
-    y: t.y + n * a + s * i
+    x: t.x + s * i - r * a,
+    y: t.y + s * a + r * i
   };
 }
-function Wi(r, t) {
-  return r.x >= t.x && r.x <= t.x + t.width && r.y >= t.y && r.y <= t.y + t.height;
+function Wi(n, t) {
+  return n.x >= t.x && n.x <= t.x + t.width && n.y >= t.y && n.y <= t.y + t.height;
 }
-function Ui(r, t, e) {
-  return ye(r, t) <= e * e;
+function Ui(n, t, e) {
+  return ye(n, t) <= e * e;
 }
-function Yi(r, t) {
-  return !(r.x + r.width < t.x || t.x + t.width < r.x || r.y + r.height < t.y || t.y + t.height < r.y);
+function Xi(n, t) {
+  return !(n.x + n.width < t.x || t.x + t.width < n.x || n.y + n.height < t.y || t.y + t.height < n.y);
 }
-function Xi(r, t) {
-  const e = Math.max(r.x, t.x), i = Math.max(r.y, t.y), a = Math.min(r.x + r.width, t.x + t.width) - e, n = Math.min(r.y + r.height, t.y + t.height) - i;
-  return a <= 0 || n <= 0 ? null : { x: e, y: i, width: a, height: n };
+function Yi(n, t) {
+  const e = Math.max(n.x, t.x), i = Math.max(n.y, t.y), a = Math.min(n.x + n.width, t.x + t.width) - e, s = Math.min(n.y + n.height, t.y + t.height) - i;
+  return a <= 0 || s <= 0 ? null : { x: e, y: i, width: a, height: s };
 }
-function Vi(r, t) {
-  const e = r.x + r.width / 2, i = r.y + r.height / 2, a = r.width * t, n = r.height * t;
+function Vi(n, t) {
+  const e = n.x + n.width / 2, i = n.y + n.height / 2, a = n.width * t, s = n.height * t;
   return {
     x: e - a / 2,
-    y: i - n / 2,
+    y: i - s / 2,
     width: a,
-    height: n
+    height: s
   };
 }
-function Gi(r, t = 0) {
+function Gi(n, t = 0) {
   const e = Math.pow(10, t);
-  return Math.round(r * e) / e;
+  return Math.round(n * e) / e;
 }
-function Ce(r, t) {
-  return r + Math.random() * (t - r);
+function Ce(n, t) {
+  return n + Math.random() * (t - n);
 }
-function ji(r, t) {
-  return Math.floor(Ce(r, t + 1));
+function ji(n, t) {
+  return Math.floor(Ce(n, t + 1));
 }
-function Zi(r) {
-  const t = R(r, 0, 1);
+function Zi(n) {
+  const t = R(n, 0, 1);
   return t * t * (3 - 2 * t);
 }
-function Ki(r) {
-  const t = R(r, 0, 1);
+function Ki(n) {
+  const t = R(n, 0, 1);
   return t * t * t * (t * (t * 6 - 15) + 10);
 }
-function Se(r) {
-  const t = r.replace(/^#/, "");
+function Se(n) {
+  const t = n.replace(/^#/, "");
   let e, i, a;
   if (t.length === 3)
     e = parseInt(t[0] + t[0], 16), i = parseInt(t[1] + t[1], 16), a = parseInt(t[2] + t[2], 16);
@@ -702,33 +702,33 @@ function Se(r) {
     return null;
   return isNaN(e) || isNaN(i) || isNaN(a) ? null : { r: e, g: i, b: a };
 }
-function gt(r) {
-  const t = r.replace(/^#/, "");
-  let e, i, a, n = 255;
+function pt(n) {
+  const t = n.replace(/^#/, "");
+  let e, i, a, s = 255;
   if (t.length === 4)
-    e = parseInt(t[0] + t[0], 16), i = parseInt(t[1] + t[1], 16), a = parseInt(t[2] + t[2], 16), n = parseInt(t[3] + t[3], 16);
+    e = parseInt(t[0] + t[0], 16), i = parseInt(t[1] + t[1], 16), a = parseInt(t[2] + t[2], 16), s = parseInt(t[3] + t[3], 16);
   else if (t.length === 8)
-    e = parseInt(t.slice(0, 2), 16), i = parseInt(t.slice(2, 4), 16), a = parseInt(t.slice(4, 6), 16), n = parseInt(t.slice(6, 8), 16);
+    e = parseInt(t.slice(0, 2), 16), i = parseInt(t.slice(2, 4), 16), a = parseInt(t.slice(4, 6), 16), s = parseInt(t.slice(6, 8), 16);
   else {
-    const s = Se(r);
-    return s ? { ...s, a: 1 } : null;
+    const r = Se(n);
+    return r ? { ...r, a: 1 } : null;
   }
-  return isNaN(e) || isNaN(i) || isNaN(a) || isNaN(n) ? null : { r: e, g: i, b: a, a: n / 255 };
+  return isNaN(e) || isNaN(i) || isNaN(a) || isNaN(s) ? null : { r: e, g: i, b: a, a: s / 255 };
 }
-function Ji(r) {
-  const t = R(Math.round(r.r), 0, 255), e = R(Math.round(r.g), 0, 255), i = R(Math.round(r.b), 0, 255);
+function Ji(n) {
+  const t = R(Math.round(n.r), 0, 255), e = R(Math.round(n.g), 0, 255), i = R(Math.round(n.b), 0, 255);
   return "#" + [t, e, i].map((a) => a.toString(16).padStart(2, "0")).join("");
 }
-function Qi(r) {
-  const t = R(Math.round(r.r), 0, 255), e = R(Math.round(r.g), 0, 255), i = R(Math.round(r.b), 0, 255), a = R(Math.round(r.a * 255), 0, 255);
-  return "#" + [t, e, i, a].map((n) => n.toString(16).padStart(2, "0")).join("");
+function Qi(n) {
+  const t = R(Math.round(n.r), 0, 255), e = R(Math.round(n.g), 0, 255), i = R(Math.round(n.b), 0, 255), a = R(Math.round(n.a * 255), 0, 255);
+  return "#" + [t, e, i, a].map((s) => s.toString(16).padStart(2, "0")).join("");
 }
-function st(r) {
-  const t = r.r / 255, e = r.g / 255, i = r.b / 255, a = Math.max(t, e, i), n = Math.min(t, e, i), s = (a + n) / 2;
+function rt(n) {
+  const t = n.r / 255, e = n.g / 255, i = n.b / 255, a = Math.max(t, e, i), s = Math.min(t, e, i), r = (a + s) / 2;
   let o = 0, l = 0;
-  if (a !== n) {
-    const h = a - n;
-    switch (l = s > 0.5 ? h / (2 - a - n) : h / (a + n), a) {
+  if (a !== s) {
+    const h = a - s;
+    switch (l = r > 0.5 ? h / (2 - a - s) : h / (a + s), a) {
       case t:
         o = ((e - i) / h + (e < i ? 6 : 0)) / 6;
         break;
@@ -743,38 +743,38 @@ function st(r) {
   return {
     h: Math.round(o * 360),
     s: Math.round(l * 100),
-    l: Math.round(s * 100)
+    l: Math.round(r * 100)
   };
 }
-function j(r) {
-  const t = r.h / 360, e = r.s / 100, i = r.l / 100;
-  let a, n, s;
+function Z(n) {
+  const t = n.h / 360, e = n.s / 100, i = n.l / 100;
+  let a, s, r;
   if (e === 0)
-    a = n = s = i;
+    a = s = r = i;
   else {
-    const o = (d, p, u) => (u < 0 && (u += 1), u > 1 && (u -= 1), u < 0.16666666666666666 ? d + (p - d) * 6 * u : u < 0.5 ? p : u < 0.6666666666666666 ? d + (p - d) * (0.6666666666666666 - u) * 6 : d), l = i < 0.5 ? i * (1 + e) : i + e - i * e, h = 2 * i - l;
-    a = o(h, l, t + 1 / 3), n = o(h, l, t), s = o(h, l, t - 1 / 3);
+    const o = (d, p, v) => (v < 0 && (v += 1), v > 1 && (v -= 1), v < 0.16666666666666666 ? d + (p - d) * 6 * v : v < 0.5 ? p : v < 0.6666666666666666 ? d + (p - d) * (0.6666666666666666 - v) * 6 : d), l = i < 0.5 ? i * (1 + e) : i + e - i * e, h = 2 * i - l;
+    a = o(h, l, t + 1 / 3), s = o(h, l, t), r = o(h, l, t - 1 / 3);
   }
   return {
     r: Math.round(a * 255),
-    g: Math.round(n * 255),
-    b: Math.round(s * 255)
+    g: Math.round(s * 255),
+    b: Math.round(r * 255)
   };
 }
-function ta(r) {
-  const t = r.r / 255, e = r.g / 255, i = r.b / 255, a = Math.max(t, e, i), n = Math.min(t, e, i), s = a - n;
+function ta(n) {
+  const t = n.r / 255, e = n.g / 255, i = n.b / 255, a = Math.max(t, e, i), s = Math.min(t, e, i), r = a - s;
   let o = 0;
-  const l = a === 0 ? 0 : s / a, h = a;
-  if (a !== n)
+  const l = a === 0 ? 0 : r / a, h = a;
+  if (a !== s)
     switch (a) {
       case t:
-        o = ((e - i) / s + (e < i ? 6 : 0)) / 6;
+        o = ((e - i) / r + (e < i ? 6 : 0)) / 6;
         break;
       case e:
-        o = ((i - t) / s + 2) / 6;
+        o = ((i - t) / r + 2) / 6;
         break;
       case i:
-        o = ((t - e) / s + 4) / 6;
+        o = ((t - e) / r + 4) / 6;
         break;
     }
   return {
@@ -783,27 +783,27 @@ function ta(r) {
     v: Math.round(h * 100)
   };
 }
-function ea(r) {
-  const t = r.h / 360, e = r.s / 100, i = r.v / 100, a = Math.floor(t * 6), n = t * 6 - a, s = i * (1 - e), o = i * (1 - n * e), l = i * (1 - (1 - n) * e);
+function ea(n) {
+  const t = n.h / 360, e = n.s / 100, i = n.v / 100, a = Math.floor(t * 6), s = t * 6 - a, r = i * (1 - e), o = i * (1 - s * e), l = i * (1 - (1 - s) * e);
   let h, d, p;
   switch (a % 6) {
     case 0:
-      h = i, d = l, p = s;
+      h = i, d = l, p = r;
       break;
     case 1:
-      h = o, d = i, p = s;
+      h = o, d = i, p = r;
       break;
     case 2:
-      h = s, d = i, p = l;
+      h = r, d = i, p = l;
       break;
     case 3:
-      h = s, d = o, p = i;
+      h = r, d = o, p = i;
       break;
     case 4:
-      h = l, d = s, p = i;
+      h = l, d = r, p = i;
       break;
     case 5:
-      h = i, d = s, p = o;
+      h = i, d = r, p = o;
       break;
     default:
       h = 0, d = 0, p = 0;
@@ -814,10 +814,10 @@ function ea(r) {
     b: Math.round(p * 255)
   };
 }
-function ia(r) {
-  const t = r.trim().toLowerCase();
+function ia(n) {
+  const t = n.trim().toLowerCase();
   if (t.startsWith("#"))
-    return gt(t);
+    return pt(t);
   const e = t.match(/^rgba?\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*(?:,\s*([\d.]+))?\s*\)$/);
   if (e)
     return {
@@ -829,7 +829,7 @@ function ia(r) {
   const i = t.match(/^hsla?\s*\(\s*(\d+)\s*,\s*(\d+)%?\s*,\s*(\d+)%?\s*(?:,\s*([\d.]+))?\s*\)$/);
   if (i)
     return {
-      ...j({
+      ...Z({
         h: parseInt(i[1], 10),
         s: parseInt(i[2], 10),
         l: parseInt(i[3], 10)
@@ -852,62 +852,62 @@ function ia(r) {
     grey: "#808080",
     transparent: "#00000000"
   };
-  return a[t] ? gt(a[t]) : null;
+  return a[t] ? pt(a[t]) : null;
 }
-function aa(r) {
-  return r.a === 1 ? `rgb(${Math.round(r.r)}, ${Math.round(r.g)}, ${Math.round(r.b)})` : `rgba(${Math.round(r.r)}, ${Math.round(r.g)}, ${Math.round(r.b)}, ${r.a})`;
+function aa(n) {
+  return n.a === 1 ? `rgb(${Math.round(n.r)}, ${Math.round(n.g)}, ${Math.round(n.b)})` : `rgba(${Math.round(n.r)}, ${Math.round(n.g)}, ${Math.round(n.b)}, ${n.a})`;
 }
-function ra(r, t, e = 0.5) {
+function na(n, t, e = 0.5) {
   const i = R(e, 0, 1);
   return {
-    r: Math.round(r.r * (1 - i) + t.r * i),
-    g: Math.round(r.g * (1 - i) + t.g * i),
-    b: Math.round(r.b * (1 - i) + t.b * i),
-    a: r.a * (1 - i) + t.a * i
+    r: Math.round(n.r * (1 - i) + t.r * i),
+    g: Math.round(n.g * (1 - i) + t.g * i),
+    b: Math.round(n.b * (1 - i) + t.b * i),
+    a: n.a * (1 - i) + t.a * i
   };
 }
-function Me(r, t) {
-  const e = st(r);
-  return e.l = R(e.l + t * 100, 0, 100), { ...j(e), a: r.a };
+function Me(n, t) {
+  const e = rt(n);
+  return e.l = R(e.l + t * 100, 0, 100), { ...Z(e), a: n.a };
 }
-function na(r, t) {
-  return Me(r, -t);
+function sa(n, t) {
+  return Me(n, -t);
 }
-function ke(r, t) {
-  const e = st(r);
-  return e.s = R(e.s + t * 100, 0, 100), { ...j(e), a: r.a };
+function ke(n, t) {
+  const e = rt(n);
+  return e.s = R(e.s + t * 100, 0, 100), { ...Z(e), a: n.a };
 }
-function sa(r, t) {
-  return ke(r, -t);
+function ra(n, t) {
+  return ke(n, -t);
 }
-function oa(r) {
-  const t = st(r);
-  return t.h = (t.h + 180) % 360, { ...j(t), a: r.a };
+function oa(n) {
+  const t = rt(n);
+  return t.h = (t.h + 180) % 360, { ...Z(t), a: n.a };
 }
-function et(r) {
-  const t = [r.r, r.g, r.b].map((e) => (e = e / 255, e <= 0.03928 ? e / 12.92 : Math.pow((e + 0.055) / 1.055, 2.4)));
+function et(n) {
+  const t = [n.r, n.g, n.b].map((e) => (e = e / 255, e <= 0.03928 ? e / 12.92 : Math.pow((e + 0.055) / 1.055, 2.4)));
   return 0.2126 * t[0] + 0.7152 * t[1] + 0.0722 * t[2];
 }
-function la(r, t) {
-  const e = et(r), i = et(t), a = Math.max(e, i), n = Math.min(e, i);
-  return (a + 0.05) / (n + 0.05);
+function la(n, t) {
+  const e = et(n), i = et(t), a = Math.max(e, i), s = Math.min(e, i);
+  return (a + 0.05) / (s + 0.05);
 }
-function Ie(r) {
-  return et(r) > 0.5;
+function Ie(n) {
+  return et(n) > 0.5;
 }
-function ca(r) {
-  return Ie(r) ? "black" : "white";
+function ca(n) {
+  return Ie(n) ? "black" : "white";
 }
-function ha(r) {
-  const t = Math.round(0.299 * r.r + 0.587 * r.g + 0.114 * r.b);
-  return { r: t, g: t, b: t, a: r.a };
+function ha(n) {
+  const t = Math.round(0.299 * n.r + 0.587 * n.g + 0.114 * n.b);
+  return { r: t, g: t, b: t, a: n.a };
 }
-function da(r) {
+function da(n) {
   return {
-    r: 255 - r.r,
-    g: 255 - r.g,
-    b: 255 - r.b,
-    a: r.a
+    r: 255 - n.r,
+    g: 255 - n.g,
+    b: 255 - n.b,
+    a: n.a
   };
 }
 class Te {
@@ -927,12 +927,12 @@ class Te {
   on(t, e, i) {
     const a = t;
     this.listeners.has(a) || this.listeners.set(a, /* @__PURE__ */ new Set());
-    const n = {
+    const s = {
       handler: e,
       once: (i == null ? void 0 : i.once) ?? !1,
       priority: (i == null ? void 0 : i.priority) ?? 0
     };
-    this.listeners.get(a).add(n);
+    this.listeners.get(a).add(s);
   }
   /**
    * Subscribe to an event once (auto-unsubscribe after first trigger)
@@ -950,9 +950,9 @@ class Te {
   off(t, e) {
     const i = t, a = this.listeners.get(i);
     if (a) {
-      for (const n of a)
-        if (n.handler === e) {
-          a.delete(n);
+      for (const s of a)
+        if (s.handler === e) {
+          a.delete(s);
           break;
         }
       a.size === 0 && this.listeners.delete(i);
@@ -978,12 +978,12 @@ class Te {
     const i = this.listeners.get(t);
     if (!i)
       return;
-    const a = Array.from(i).sort((n, s) => s.priority - n.priority);
-    for (const n of a)
+    const a = Array.from(i).sort((s, r) => r.priority - s.priority);
+    for (const s of a)
       try {
-        n.handler(e), n.once && i.delete(n);
-      } catch (s) {
-        console.error(`Error in event handler for "${t}":`, s);
+        s.handler(e), s.once && i.delete(s);
+      } catch (r) {
+        console.error(`Error in event handler for "${t}":`, r);
       }
     i.size === 0 && this.listeners.delete(t);
   }
@@ -997,14 +997,14 @@ class Te {
     const i = t, a = this.listeners.get(i);
     if (!a)
       return;
-    const s = Array.from(a).sort((o, l) => l.priority - o.priority).map(async (o) => {
+    const r = Array.from(a).sort((o, l) => l.priority - o.priority).map(async (o) => {
       try {
         await o.handler(e), o.once && a.delete(o);
       } catch (l) {
         console.error(`Error in async event handler for "${i}":`, l);
       }
     });
-    await Promise.all(s), a.size === 0 && this.listeners.delete(i);
+    await Promise.all(r), a.size === 0 && this.listeners.delete(i);
   }
   /**
    * Emit an event and wait for each handler sequentially
@@ -1016,10 +1016,10 @@ class Te {
     const i = t, a = this.listeners.get(i);
     if (!a)
       return;
-    const n = Array.from(a).sort((s, o) => o.priority - s.priority);
-    for (const s of n)
+    const s = Array.from(a).sort((r, o) => o.priority - r.priority);
+    for (const r of s)
       try {
-        await s.handler(e), s.once && a.delete(s);
+        await r.handler(e), r.once && a.delete(r);
       } catch (o) {
         console.error(`Error in sequential event handler for "${i}":`, o);
       }
@@ -1115,8 +1115,8 @@ class Ee {
       return { ...t };
     const i = { ...t };
     for (const a of Object.keys(e)) {
-      const n = e[a];
-      n !== void 0 && (i[a] = n);
+      const s = e[a];
+      s !== void 0 && (i[a] = s);
     }
     return i;
   }
@@ -1188,7 +1188,7 @@ class Ee {
     this.listeners.clear();
   }
 }
-function ft() {
+function ut() {
   return `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
 }
 class De {
@@ -1222,7 +1222,7 @@ class De {
     this.currentIndex < this.states.length - 1 && (this.states = this.states.slice(0, this.currentIndex + 1));
     const e = {
       ...t,
-      id: ft(),
+      id: ut(),
       timestamp: Date.now()
     };
     for (this.states.push(e), this.currentIndex = this.states.length - 1; this.states.length > this.limit; )
@@ -1354,7 +1354,7 @@ class De {
   startBatch() {
     if (this.batchId)
       throw new Error("Batch operation already in progress");
-    return this.batchId = ft(), this.batchStartIndex = this.currentIndex, this.batchId;
+    return this.batchId = ut(), this.batchStartIndex = this.currentIndex, this.batchId;
   }
   /**
    * End a batch operation (combines all operations since startBatch into one)
@@ -1558,9 +1558,9 @@ class ze {
     this.plugins.clear(), this.listeners.clear(), this.context = null;
   }
 }
-function vt(r) {
+function gt(n) {
   const t = [];
-  return r.ctrl && t.push("ctrl"), r.alt && t.push("alt"), r.shift && t.push("shift"), t.push(r.key.toLowerCase()), t.join("+");
+  return n.ctrl && t.push("ctrl"), n.alt && t.push("alt"), n.shift && t.push("shift"), t.push(n.key.toLowerCase()), t.join("+");
 }
 class pa {
   constructor(t = document) {
@@ -1602,7 +1602,7 @@ class pa {
    * @returns Unregister function
    */
   register(t, e) {
-    const i = vt(t);
+    const i = gt(t);
     this.shortcuts.has(i) && console.warn(`Keyboard shortcut "${i}" is already registered. Overwriting.`);
     const a = {
       ...t,
@@ -1669,7 +1669,7 @@ class pa {
     const e = t.target;
     if ((e.tagName === "INPUT" || e.tagName === "TEXTAREA" || e.isContentEditable) && t.key !== "Escape")
       return;
-    const i = vt({
+    const i = gt({
       key: t.key,
       ctrl: t.ctrlKey || t.metaKey,
       // Support both Ctrl and Cmd (Mac)
@@ -1705,76 +1705,76 @@ class pa {
     this.detach(), this.shortcuts.clear(), this.groups.clear();
   }
 }
-function ua(r) {
+function ua(n) {
   const t = [];
-  return r.undo && t.push({
+  return n.undo && t.push({
     key: "z",
     ctrl: !0,
-    handler: r.undo,
+    handler: n.undo,
     description: "Undo"
-  }), r.redo && (t.push({
+  }), n.redo && (t.push({
     key: "y",
     ctrl: !0,
-    handler: r.redo,
+    handler: n.redo,
     description: "Redo"
   }), t.push({
     key: "z",
     ctrl: !0,
     shift: !0,
-    handler: r.redo,
+    handler: n.redo,
     description: "Redo"
-  })), r.copy && t.push({
+  })), n.copy && t.push({
     key: "c",
     ctrl: !0,
-    handler: r.copy,
+    handler: n.copy,
     description: "Copy"
-  }), r.paste && t.push({
+  }), n.paste && t.push({
     key: "v",
     ctrl: !0,
-    handler: r.paste,
+    handler: n.paste,
     description: "Paste"
-  }), r.delete && (t.push({
+  }), n.delete && (t.push({
     key: "Delete",
-    handler: r.delete,
+    handler: n.delete,
     description: "Delete"
   }), t.push({
     key: "Backspace",
-    handler: r.delete,
+    handler: n.delete,
     description: "Delete"
-  })), r.escape && t.push({
+  })), n.escape && t.push({
     key: "Escape",
-    handler: r.escape,
+    handler: n.escape,
     description: "Cancel / Deselect"
-  }), r.zoomIn && (t.push({
+  }), n.zoomIn && (t.push({
     key: "=",
     ctrl: !0,
-    handler: r.zoomIn,
+    handler: n.zoomIn,
     description: "Zoom In"
   }), t.push({
     key: "+",
     ctrl: !0,
-    handler: r.zoomIn,
+    handler: n.zoomIn,
     description: "Zoom In"
-  })), r.zoomOut && t.push({
+  })), n.zoomOut && t.push({
     key: "-",
     ctrl: !0,
-    handler: r.zoomOut,
+    handler: n.zoomOut,
     description: "Zoom Out"
-  }), r.zoomReset && t.push({
+  }), n.zoomReset && t.push({
     key: "0",
     ctrl: !0,
-    handler: r.zoomReset,
+    handler: n.zoomReset,
     description: "Reset Zoom"
-  }), r.selectTool && [null, "pen", "rect", "circle", "arrow", "text", "mosaic", "eraser", "crop"].forEach((i, a) => {
+  }), n.selectTool && [null, "pen", "rect", "circle", "arrow", "text", "mosaic", "eraser", "crop"].forEach((i, a) => {
     a < 10 && t.push({
       key: String(a),
-      handler: () => r.selectTool(i),
+      handler: () => n.selectTool(i),
       description: `Select ${i || "Move"} tool`
     });
-  }), r.save && t.push({
+  }), n.save && t.push({
     key: "s",
     ctrl: !0,
-    handler: r.save,
+    handler: n.save,
     description: "Save / Export"
   }), t;
 }
@@ -1811,7 +1811,7 @@ class Le {
     c(this, "handleResize", () => {
       this.handleContainerResize();
     });
-    this._container = t, this._responsive = e.responsive, this._backgroundColor = e.backgroundColor, this._canvas = Nt(e.width, e.height), this._ctx = qt(this._canvas), Xt(this._canvas, {
+    this._container = t, this._responsive = e.responsive, this._backgroundColor = e.backgroundColor, this._canvas = Ot(e.width, e.height), this._ctx = Ht(this._canvas), Ut(this._canvas, {
       display: "block",
       maxWidth: "100%",
       maxHeight: "100%"
@@ -1863,7 +1863,7 @@ class Le {
    * Fill canvas with background color
    */
   fillBackground() {
-    this._backgroundColor === "transparent" ? ht(this._ctx, this.width, this.height) : Yt(this._ctx, this.width, this.height, this._backgroundColor);
+    this._backgroundColor === "transparent" ? ht(this._ctx, this.width, this.height) : Wt(this._ctx, this.width, this.height, this._backgroundColor);
   }
   /**
    * Setup responsive behavior
@@ -1882,25 +1882,24 @@ class Le {
   /**
    * Handle container resize
    * Requirements: 8.2 - Maintain aspect ratio on resize
+   * 
+   * Note: When the container size changes, we do NOT resize the canvas or redraw
+   * the image. This preserves all user edits (drawings, zoom, position, etc.).
+   * Instead, we only notify listeners so the Toolbar can adjust the view.
    */
   handleContainerResize() {
-    if (this._destroyed || !this._originalImage)
+    if (this._destroyed)
       return;
     const t = this._container.getBoundingClientRect(), e = t.width, i = t.height;
     if (e === 0 || i === 0)
       return;
-    const { width: a, height: n } = dt(this._originalImage), s = this.width, o = this.height, { width: l, height: h } = pt(
-      a,
-      n,
-      e,
-      i
-    );
-    (l !== s || h !== o) && (this.resize(l, h, !0), this.notifyResizeListeners({
-      width: l,
-      height: h,
-      previousWidth: s,
-      previousHeight: o
-    }));
+    const a = this.width, s = this.height;
+    this.notifyResizeListeners({
+      width: this.width,
+      height: this.height,
+      previousWidth: a,
+      previousHeight: s
+    });
   }
   /**
    * Load an image onto the canvas
@@ -1909,20 +1908,20 @@ class Le {
    * @returns Promise with image dimensions
    */
   async loadImage(t) {
-    const e = await jt(t);
+    const e = await Vt(t);
     this._originalImage = e;
-    const { width: i, height: a } = dt(e);
-    let n = i, s = a;
+    const { width: i, height: a } = Gt(e);
+    let s = i, r = a;
     if (this._responsive) {
-      const o = this._container.getBoundingClientRect(), l = o.width || i, h = o.height || a, d = pt(
+      const o = this._container.getBoundingClientRect(), l = o.width || i, h = o.height || a, d = jt(
         i,
         a,
         l,
         h
       );
-      n = d.width, s = d.height;
+      s = d.width, r = d.height;
     }
-    return this.resize(n, s, !1), ut(this._ctx, e, 0, 0, n, s), this._originalImageData = this.getImageData(), { width: n, height: s };
+    return this.resize(s, r, !1), dt(this._ctx, e, 0, 0, s, r), this._originalImageData = this.getImageData(), { width: s, height: r };
   }
   /**
    * Resize the canvas
@@ -1931,7 +1930,7 @@ class Le {
    * @param preserveContent - Whether to preserve current content
    */
   resize(t, e, i = !1) {
-    Ut(this._canvas, t, e), this.fillBackground(), i && this._originalImage && ut(this._ctx, this._originalImage, 0, 0, t, e);
+    qt(this._canvas, t, e), this.fillBackground(), i && this._originalImage && (dt(this._ctx, this._originalImage, 0, 0, t, e), this._originalImageData = this.getImageData());
   }
   /**
    * Get image data from canvas
@@ -1945,10 +1944,10 @@ class Le {
   getImageData(t = 0, e = 0, i, a) {
     if (this._destroyed)
       throw new Error("Cannot get image data from destroyed canvas");
-    const n = i ?? this.width, s = a ?? this.height;
-    if (n <= 0 || s <= 0)
-      throw new Error(`Invalid dimensions for getImageData: ${n}x${s}`);
-    return Zt(this._ctx, t, e, n, s);
+    const s = i ?? this.width, r = a ?? this.height;
+    if (s <= 0 || r <= 0)
+      throw new Error(`Invalid dimensions for getImageData: ${s}x${r}`);
+    return Zt(this._ctx, t, e, s, r);
   }
   /**
    * Put image data to canvas
@@ -1967,7 +1966,7 @@ class Le {
    * @returns Original ImageData or null
    */
   getOriginalImageData() {
-    return this._originalImageData ? St(this._originalImageData) : null;
+    return this._originalImageData ? wt(this._originalImageData) : null;
   }
   /**
    * Clear the canvas
@@ -2002,10 +2001,10 @@ class Le {
   rotate(t) {
     if (this._destroyed)
       throw new Error("Cannot rotate destroyed canvas");
-    const e = t * Math.PI / 180, i = Math.abs(Math.sin(e)), a = Math.abs(Math.cos(e)), n = this.width, s = this.height, o = Math.round(n * a + s * i), l = Math.round(n * i + s * a), h = this.getImageData(), d = document.createElement("canvas");
-    d.width = n, d.height = s;
+    const e = t * Math.PI / 180, i = Math.abs(Math.sin(e)), a = Math.abs(Math.cos(e)), s = this.width, r = this.height, o = Math.round(s * a + r * i), l = Math.round(s * i + r * a), h = this.getImageData(), d = document.createElement("canvas");
+    d.width = s, d.height = r;
     const p = d.getContext("2d");
-    p && (p.putImageData(h, 0, 0), this._canvas.width = o, this._canvas.height = l, this.fillBackground(), this._ctx.save(), this._ctx.translate(o / 2, l / 2), this._ctx.rotate(e), this._ctx.drawImage(d, -n / 2, -s / 2), this._ctx.restore(), this._originalImage && (this._originalImageData = this.getImageData()));
+    p && (p.putImageData(h, 0, 0), this._canvas.width = o, this._canvas.height = l, this.fillBackground(), this._ctx.save(), this._ctx.translate(o / 2, l / 2), this._ctx.rotate(e), this._ctx.drawImage(d, -s / 2, -r / 2), this._ctx.restore(), this._originalImage && (this._originalImageData = this.getImageData()));
   }
   /**
    * Flip the canvas horizontally or vertically
@@ -2033,10 +2032,10 @@ class Le {
       throw new Error("Cannot crop destroyed canvas");
     if (i <= 0 || a <= 0)
       throw new Error(`Invalid crop dimensions: ${i}x${a}`);
-    const n = Math.max(0, Math.min(t, this.width - 1)), s = Math.max(0, Math.min(e, this.height - 1)), o = Math.min(i, this.width - n), l = Math.min(a, this.height - s);
+    const s = Math.max(0, Math.min(t, this.width - 1)), r = Math.max(0, Math.min(e, this.height - 1)), o = Math.min(i, this.width - s), l = Math.min(a, this.height - r);
     if (o <= 0 || l <= 0)
       throw new Error("Crop region is outside canvas bounds");
-    const h = this._ctx.getImageData(n, s, o, l);
+    const h = this._ctx.getImageData(s, r, o, l);
     this._canvas.width = o, this._canvas.height = l, this.fillBackground(), this._ctx.putImageData(h, 0, 0), this._originalImageData = this.getImageData();
   }
   /**
@@ -2051,15 +2050,15 @@ class Le {
       throw new Error("Cannot scale destroyed canvas");
     if (t <= 0 || e <= 0)
       throw new Error(`Invalid scale dimensions: ${t}x${e}`);
-    let a = Math.round(t), n = Math.round(e);
+    let a = Math.round(t), s = Math.round(e);
     if (i) {
       const h = Math.min(t / this.width, e / this.height);
-      a = Math.round(this.width * h), n = Math.round(this.height * h);
+      a = Math.round(this.width * h), s = Math.round(this.height * h);
     }
-    const s = this.getImageData(), o = document.createElement("canvas");
+    const r = this.getImageData(), o = document.createElement("canvas");
     o.width = this.width, o.height = this.height;
     const l = o.getContext("2d");
-    l && (l.putImageData(s, 0, 0), this._canvas.width = a, this._canvas.height = n, this.fillBackground(), this._ctx.imageSmoothingEnabled = !0, this._ctx.imageSmoothingQuality = "high", this._ctx.drawImage(o, 0, 0, a, n), this._originalImageData = this.getImageData());
+    l && (l.putImageData(r, 0, 0), this._canvas.width = a, this._canvas.height = s, this.fillBackground(), this._ctx.imageSmoothingEnabled = !0, this._ctx.imageSmoothingQuality = "high", this._ctx.drawImage(o, 0, 0, a, s), this._originalImageData = this.getImageData());
   }
   /**
    * Subscribe to resize events
@@ -2087,91 +2086,91 @@ class Le {
    * Requirements: 1.5 - Clean up canvas resources
    */
   destroy() {
-    this._destroyed || (this._destroyed = !0, this._resizeObserver && (this._resizeObserver.disconnect(), this._resizeObserver = null), window.removeEventListener("resize", this.handleResize), this._resizeListeners.clear(), Vt(this._canvas), this._originalImage = null, this._originalImageData = null);
+    this._destroyed || (this._destroyed = !0, this._resizeObserver && (this._resizeObserver.disconnect(), this._resizeObserver = null), window.removeEventListener("resize", this.handleResize), this._resizeListeners.clear(), Xt(this._canvas), this._originalImage = null, this._originalImageData = null);
   }
 }
-const b = (r, t = 20) => `
+const w = (n, t = 20) => `
 <svg xmlns="http://www.w3.org/2000/svg" width="${t}" height="${t}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-  ${r}
-</svg>`.trim(), w = {
+  ${n}
+</svg>`.trim(), y = {
   // Move/Hand
-  move: b(`
+  move: w(`
     <path d="M18 11V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2"/>
     <path d="M14 10V4a2 2 0 0 0-2-2a2 2 0 0 0-2 2v2"/>
     <path d="M10 10.5V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2v8"/>
     <path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/>
   `),
   // Brush/Pencil
-  brush: b(`
+  brush: w(`
     <path d="m9.06 11.9 8.07-8.06a2.85 2.85 0 1 1 4.03 4.03l-8.06 8.08"/>
     <path d="M7.07 14.94c-1.66 0-3 1.35-3 3.02 0 1.33-2.5 1.52-2 2.02 1.08 1.1 2.49 2.02 4 2.02 2.2 0 4-1.8 4-4.04a3.01 3.01 0 0 0-3-3.02z"/>
   `),
   // Text/Type
-  type: b(`
+  type: w(`
     <polyline points="4 7 4 4 20 4 20 7"/>
     <line x1="9" y1="20" x2="15" y2="20"/>
     <line x1="12" y1="4" x2="12" y2="20"/>
   `),
   // Zoom In
-  zoomIn: b(`
+  zoomIn: w(`
     <circle cx="11" cy="11" r="8"/>
     <line x1="21" y1="21" x2="16.65" y2="16.65"/>
     <line x1="11" y1="8" x2="11" y2="14"/>
     <line x1="8" y1="11" x2="14" y2="11"/>
   `),
   // Zoom Out
-  zoomOut: b(`
+  zoomOut: w(`
     <circle cx="11" cy="11" r="8"/>
     <line x1="21" y1="21" x2="16.65" y2="16.65"/>
     <line x1="8" y1="11" x2="14" y2="11"/>
   `),
   // Undo
-  undo: b(`
+  undo: w(`
     <path d="M3 7v6h6"/>
     <path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/>
   `),
   // Redo
-  redo: b(`
+  redo: w(`
     <path d="M21 7v6h-6"/>
     <path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3l3 2.7"/>
   `),
   // Download
-  download: b(`
+  download: w(`
     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
     <polyline points="7 10 12 15 17 10"/>
     <line x1="12" y1="15" x2="12" y2="3"/>
   `),
   // Reset/RotateCcw
-  reset: b(`
+  reset: w(`
     <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
     <path d="M3 3v5h5"/>
   `),
   // Plus
-  plus: b(`
+  plus: w(`
     <line x1="12" y1="5" x2="12" y2="19"/>
     <line x1="5" y1="12" x2="19" y2="12"/>
   `),
   // Minus
-  minus: b(`
+  minus: w(`
     <line x1="5" y1="12" x2="19" y2="12"/>
   `),
   // Check
-  check: b(`
+  check: w(`
     <polyline points="20 6 9 17 4 12"/>
   `),
   // X/Close
-  close: b(`
+  close: w(`
     <line x1="18" y1="6" x2="6" y2="18"/>
     <line x1="6" y1="6" x2="18" y2="18"/>
   `),
   // Upload
-  upload: b(`
+  upload: w(`
     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
     <polyline points="17 8 12 3 7 8"/>
     <line x1="12" y1="3" x2="12" y2="15"/>
   `),
   // Settings/Sliders
-  settings: b(`
+  settings: w(`
     <line x1="4" y1="21" x2="4" y2="14"/>
     <line x1="4" y1="10" x2="4" y2="3"/>
     <line x1="12" y1="21" x2="12" y2="12"/>
@@ -2183,79 +2182,79 @@ const b = (r, t = 20) => `
     <line x1="17" y1="16" x2="23" y2="16"/>
   `),
   // Pen/Pencil (free draw)
-  pen: b(`
+  pen: w(`
     <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>
     <path d="m15 5 4 4"/>
   `),
   // Rectangle/Square
-  rect: b(`
+  rect: w(`
     <rect x="3" y="3" width="18" height="18" rx="2"/>
   `),
   // Circle
-  circle: b(`
+  circle: w(`
     <circle cx="12" cy="12" r="10"/>
   `),
   // Arrow
-  arrow: b(`
+  arrow: w(`
     <path d="M5 12h14"/>
     <path d="m12 5 7 7-7 7"/>
   `),
   // Mosaic/Blur
-  mosaic: b(`
+  mosaic: w(`
     <circle cx="12" cy="12" r="3"/>
     <circle cx="12" cy="12" r="6" opacity="0.6"/>
     <circle cx="12" cy="12" r="9" opacity="0.3"/>
   `),
   // Crop
-  crop: b(`
+  crop: w(`
     <path d="M6 2v14a2 2 0 0 0 2 2h14"/>
     <path d="M18 22V8a2 2 0 0 0-2-2H2"/>
   `),
   // Filter/Adjustments
-  filter: b(`
+  filter: w(`
     <circle cx="12" cy="12" r="10"/>
     <path d="M12 2a10 10 0 0 0 0 20"/>
     <path d="M12 2a10 10 0 0 1 0 20"/>
     <line x1="2" y1="12" x2="22" y2="12"/>
   `),
   // Eraser
-  eraser: b(`
+  eraser: w(`
     <path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21"/>
     <path d="M22 21H7"/>
     <path d="m5 11 9 9"/>
   `),
   // Line
-  line: b(`
+  line: w(`
     <path d="M4 20L20 4"/>
   `),
   // Triangle
-  triangle: b(`
+  triangle: w(`
     <path d="M12 3L22 21H2L12 3Z"/>
   `),
   // Rotate Left
-  rotateLeft: b(`
+  rotateLeft: w(`
     <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
     <path d="M3 3v5h5"/>
   `),
   // Rotate Right
-  rotateRight: b(`
+  rotateRight: w(`
     <path d="M21 12a9 9 0 1 1-9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
     <path d="M21 3v5h-5"/>
   `),
   // Flip Horizontal
-  flipH: b(`
+  flipH: w(`
     <path d="M8 3H5a2 2 0 0 0-2 2v14c0 1.1.9 2 2 2h3"/>
     <path d="M16 3h3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-3"/>
     <line x1="12" y1="2" x2="12" y2="22"/>
   `),
   // Flip Vertical
-  flipV: b(`
+  flipV: w(`
     <path d="M3 8V5a2 2 0 0 1 2-2h14c1.1 0 2 .9 2 2v3"/>
     <path d="M3 16v3a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-3"/>
     <line x1="2" y1="12" x2="22" y2="12"/>
   `),
   // Ruler
-  ruler: b(`
+  ruler: w(`
     <path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z"/>
     <path d="m14.5 12.5 2-2"/>
     <path d="m11.5 9.5 2-2"/>
@@ -2263,7 +2262,7 @@ const b = (r, t = 20) => `
     <path d="m17.5 15.5 2-2"/>
   `),
   // Grid
-  grid: b(`
+  grid: w(`
     <rect x="3" y="3" width="18" height="18" rx="2"/>
     <line x1="3" y1="9" x2="21" y2="9"/>
     <line x1="3" y1="15" x2="21" y2="15"/>
@@ -2271,7 +2270,7 @@ const b = (r, t = 20) => `
     <line x1="15" y1="3" x2="15" y2="21"/>
   `),
   // Sun (for brightness)
-  sun: b(`
+  sun: w(`
     <circle cx="12" cy="12" r="4"/>
     <path d="M12 2v2"/>
     <path d="M12 20v2"/>
@@ -2283,78 +2282,82 @@ const b = (r, t = 20) => `
     <path d="m19.07 4.93-1.41 1.41"/>
   `),
   // Contrast
-  contrast: b(`
+  contrast: w(`
     <circle cx="12" cy="12" r="10"/>
     <path d="M12 2a10 10 0 0 1 0 20z"/>
   `),
   // Image (for presets)
-  image: b(`
+  image: w(`
     <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
     <circle cx="9" cy="9" r="2"/>
     <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>
   `),
   // Layers
-  layers: b(`
+  layers: w(`
     <polygon points="12 2 2 7 12 12 22 7 12 2"/>
     <polyline points="2 17 12 22 22 17"/>
     <polyline points="2 12 12 17 22 12"/>
   `),
   // Bold
-  bold: b(`
+  bold: w(`
     <path d="M6 4h8a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"/>
     <path d="M6 12h9a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"/>
   `),
   // Italic
-  italic: b(`
+  italic: w(`
     <line x1="19" y1="4" x2="10" y2="4"/>
     <line x1="14" y1="20" x2="5" y2="20"/>
     <line x1="15" y1="4" x2="9" y2="20"/>
   `),
   // Underline
-  underline: b(`
+  underline: w(`
     <path d="M6 4v6a6 6 0 0 0 12 0V4"/>
     <line x1="4" y1="20" x2="20" y2="20"/>
   `),
   // Dashed line
-  dashed: b(`
+  dashed: w(`
     <line x1="3" y1="12" x2="8" y2="12" stroke-dasharray="5,5"/>
     <line x1="11" y1="12" x2="16" y2="12" stroke-dasharray="5,5"/>
     <line x1="19" y1="12" x2="21" y2="12"/>
   `),
   // Fill
-  fill: b(`
+  fill: w(`
     <path d="m19 11-8-8-8.6 8.6a2 2 0 0 0 0 2.8l5.2 5.2c.8.8 2 .8 2.8 0L19 11Z"/>
     <path d="m5 2 5 5"/>
     <path d="M2 13h15"/>
     <path d="M22 20a2 2 0 1 1-4 0c0-1.6 1.7-2.4 2-4 .3 1.6 2 2.4 2 4Z"/>
   `),
   // Copy
-  copy: b(`
+  copy: w(`
     <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
     <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
   `),
   // Clipboard/Paste
-  paste: b(`
+  paste: w(`
     <rect width="8" height="4" x="8" y="2" rx="1" ry="1"/>
     <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
   `),
   // Trash/Delete
-  trash: b(`
+  trash: w(`
     <path d="M3 6h18"/>
     <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
     <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
   `),
   // Watermark
-  watermark: b(`
+  watermark: w(`
     <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/>
     <path d="m9 12 2 2 4-4"/>
   `),
   // More/Menu
-  more: b(`
+  more: w(`
     <circle cx="12" cy="12" r="1"/>
     <circle cx="19" cy="12" r="1"/>
     <circle cx="5" cy="12" r="1"/>
-  `)
+  `),
+  // Chevron Down (for dropdown)
+  chevronDown: w(`
+    <path d="m6 9 6 6 6-6"/>
+  `, 12)
 }, Pe = `
 /* Default (Dark theme) variables */
 .ie-editor-wrapper {
@@ -3679,6 +3682,11 @@ const b = (r, t = 20) => `
 /* Filter panel specific */
 .ie-panel-filter {
   width: 300px;
+  --arrow-left: 50%;
+}
+
+.ie-panel-filter::before {
+  left: var(--arrow-left);
 }
 
 /* Filter presets grid */
@@ -3686,9 +3694,6 @@ const b = (r, t = 20) => `
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 8px;
-  margin-bottom: 16px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid var(--ie-divider);
 }
 
 .ie-filter-preset {
@@ -3781,6 +3786,154 @@ const b = (r, t = 20) => `
   50% { transform: translateY(-6px); }
 }
 
+/* ========== Dropdown menu (compact layout) ========== */
+.ie-dropdown-container {
+  position: relative;
+  display: inline-flex;
+}
+
+.ie-dropdown-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  width: 46px;
+  height: 36px;
+  padding: 0 4px;
+}
+
+.ie-dropdown-btn .ie-dropdown-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ie-dropdown-btn .ie-dropdown-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.ie-dropdown-btn .ie-dropdown-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.5;
+  margin-left: -2px;
+}
+
+.ie-dropdown-btn .ie-dropdown-arrow svg {
+  width: 12px;
+  height: 12px;
+}
+
+.ie-dropdown-btn:hover .ie-dropdown-arrow {
+  opacity: 0.8;
+}
+
+.ie-dropdown-btn.active {
+  background: var(--ie-btn-active-bg);
+  color: var(--ie-btn-active-color);
+}
+
+.ie-dropdown-btn.active .ie-dropdown-arrow {
+  opacity: 0.9;
+}
+
+.ie-dropdown-menu {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-8px);
+  min-width: 160px;
+  padding: 8px 0;
+  background: var(--ie-panel-bg);
+  border: 1px solid var(--ie-toolbar-border);
+  border-radius: 10px;
+  box-shadow: 0 8px 32px var(--ie-shadow), 0 0 0 1px rgba(255,255,255,0.05) inset;
+  z-index: 100;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.ie-dropdown-menu.open {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(-12px);
+}
+
+.ie-dropdown-menu::after {
+  content: '';
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%) rotate(45deg);
+  width: 10px;
+  height: 10px;
+  background: var(--ie-panel-bg);
+  border-right: 1px solid var(--ie-toolbar-border);
+  border-bottom: 1px solid var(--ie-toolbar-border);
+}
+
+.ie-dropdown-title {
+  padding: 4px 12px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ie-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid var(--ie-divider);
+  margin-bottom: 4px;
+}
+
+.ie-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 12px;
+  background: transparent;
+  border: none;
+  color: var(--ie-btn-color);
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.1s ease;
+  text-align: left;
+}
+
+.ie-dropdown-item:hover {
+  background: var(--ie-btn-hover-bg);
+  color: var(--ie-btn-hover-color);
+}
+
+.ie-dropdown-item.active {
+  background: rgba(102, 126, 234, 0.15);
+  color: var(--ie-btn-active-bg);
+}
+
+.ie-dropdown-item-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+}
+
+.ie-dropdown-item-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.ie-dropdown-item-label {
+  flex: 1;
+}
+
+.ie-dropdown-item-shortcut {
+  font-size: 11px;
+  color: var(--ie-text-muted);
+  opacity: 0.7;
+}
+
 /* ========== Touch improvements ========== */
 @media (pointer: coarse) {
   .ie-btn {
@@ -3790,6 +3943,14 @@ const b = (r, t = 20) => `
   
   .ie-tooltip {
     display: none;
+  }
+  
+  .ie-dropdown-menu {
+    min-width: 180px;
+  }
+  
+  .ie-dropdown-item {
+    padding: 12px 16px;
   }
   
   .ie-crop-handle {
@@ -3807,15 +3968,15 @@ const b = (r, t = 20) => `
   .ie-crop-handle-w { margin-top: -10px; left: -10px; }
 }
 `;
-function Pt() {
+function zt() {
   if (typeof document > "u") return;
-  const r = "ie-toolbar-styles";
-  if (document.getElementById(r)) return;
+  const n = "ie-toolbar-styles";
+  if (document.getElementById(n)) return;
   const t = document.createElement("style");
-  t.id = r, t.textContent = Pe, document.head.appendChild(t);
+  t.id = n, t.textContent = Pe, document.head.appendChild(t);
 }
 let Re = 0;
-function mt() {
+function ft() {
   return `shape_${Date.now()}_${++Re}`;
 }
 class _e {
@@ -3826,7 +3987,7 @@ class _e {
   }
   /** Create a new shape */
   createShape(t, e) {
-    const i = mt(), a = { id: i, type: t, style: e, selected: !1 };
+    const i = ft(), a = { id: i, type: t, style: e, selected: !1 };
     switch (t) {
       case "pen":
         this.shapes.push({ ...a, type: "pen", points: [] });
@@ -3885,9 +4046,9 @@ class _e {
   /** Find shape at point */
   findShapeAtPoint(t, e, i = 5) {
     for (let a = this.shapes.length - 1; a >= 0; a--) {
-      const n = this.shapes[a];
-      if (this.isPointInShape(n, t, e, i))
-        return n;
+      const s = this.shapes[a];
+      if (this.isPointInShape(s, t, e, i))
+        return s;
     }
     return null;
   }
@@ -3895,88 +4056,88 @@ class _e {
   isPointInShape(t, e, i, a) {
     switch (t.type) {
       case "rect": {
-        const n = t;
-        return e >= n.x - a && e <= n.x + n.width + a && i >= n.y - a && i <= n.y + n.height + a;
+        const s = t;
+        return e >= s.x - a && e <= s.x + s.width + a && i >= s.y - a && i <= s.y + s.height + a;
       }
       case "circle": {
-        const n = t, s = (e - n.cx) / (n.rx + a), o = (i - n.cy) / (n.ry + a);
-        return s * s + o * o <= 1;
+        const s = t, r = (e - s.cx) / (s.rx + a), o = (i - s.cy) / (s.ry + a);
+        return r * r + o * o <= 1;
       }
       case "arrow":
       case "line": {
-        const n = t;
-        return this.pointToLineDistance(e, i, n.start.x, n.start.y, n.end.x, n.end.y) <= a + n.style.strokeWidth;
+        const s = t;
+        return this.pointToLineDistance(e, i, s.start.x, s.start.y, s.end.x, s.end.y) <= a + s.style.strokeWidth;
       }
       case "triangle": {
-        const n = t;
-        for (let s = 0; s < 3; s++) {
-          const o = n.points[s], l = n.points[(s + 1) % 3];
-          if (this.pointToLineDistance(e, i, o.x, o.y, l.x, l.y) <= a + n.style.strokeWidth) return !0;
+        const s = t;
+        for (let r = 0; r < 3; r++) {
+          const o = s.points[r], l = s.points[(r + 1) % 3];
+          if (this.pointToLineDistance(e, i, o.x, o.y, l.x, l.y) <= a + s.style.strokeWidth) return !0;
         }
         return !1;
       }
       case "pen": {
-        const n = t;
-        for (let s = 1; s < n.points.length; s++)
-          if (this.pointToLineDistance(e, i, n.points[s - 1].x, n.points[s - 1].y, n.points[s].x, n.points[s].y) <= a + n.style.strokeWidth) return !0;
+        const s = t;
+        for (let r = 1; r < s.points.length; r++)
+          if (this.pointToLineDistance(e, i, s.points[r - 1].x, s.points[r - 1].y, s.points[r].x, s.points[r].y) <= a + s.style.strokeWidth) return !0;
         return !1;
       }
       case "text": {
-        const n = t, s = n.text.length * n.fontSize * 0.6, o = n.fontSize * 1.2;
-        return e >= n.x - a && e <= n.x + s + a && i >= n.y - o - a && i <= n.y + a;
+        const s = t, r = s.text.length * s.fontSize * 0.6, o = s.fontSize * 1.2;
+        return e >= s.x - a && e <= s.x + r + a && i >= s.y - o - a && i <= s.y + a;
       }
     }
     return !1;
   }
   /** Calculate distance from point to line segment */
-  pointToLineDistance(t, e, i, a, n, s) {
-    const o = n - i, l = s - a, h = o * o + l * l;
+  pointToLineDistance(t, e, i, a, s, r) {
+    const o = s - i, l = r - a, h = o * o + l * l;
     if (h === 0)
       return Math.sqrt((t - i) ** 2 + (e - a) ** 2);
     let d = ((t - i) * o + (e - a) * l) / h;
     d = Math.max(0, Math.min(1, d));
-    const p = i + d * o, u = a + d * l;
-    return Math.sqrt((t - p) ** 2 + (e - u) ** 2);
+    const p = i + d * o, v = a + d * l;
+    return Math.sqrt((t - p) ** 2 + (e - v) ** 2);
   }
   /** Move shape by delta */
   moveShape(t, e, i) {
-    const a = this.shapes.find((n) => n.id === t);
+    const a = this.shapes.find((s) => s.id === t);
     if (a) {
       switch (a.type) {
         case "rect": {
-          const n = a;
-          n.x += e, n.y += i;
+          const s = a;
+          s.x += e, s.y += i;
           break;
         }
         case "circle": {
-          const n = a;
-          n.cx += e, n.cy += i;
+          const s = a;
+          s.cx += e, s.cy += i;
           break;
         }
         case "arrow": {
-          const n = a;
-          n.start.x += e, n.start.y += i, n.end.x += e, n.end.y += i;
+          const s = a;
+          s.start.x += e, s.start.y += i, s.end.x += e, s.end.y += i;
           break;
         }
         case "pen": {
-          a.points.forEach((s) => {
-            s.x += e, s.y += i;
+          a.points.forEach((r) => {
+            r.x += e, r.y += i;
           });
           break;
         }
         case "text": {
-          const n = a;
-          n.x += e, n.y += i;
+          const s = a;
+          s.x += e, s.y += i;
           break;
         }
         case "line": {
-          const n = a;
-          n.start.x += e, n.start.y += i, n.end.x += e, n.end.y += i;
+          const s = a;
+          s.start.x += e, s.start.y += i, s.end.x += e, s.end.y += i;
           break;
         }
         case "triangle": {
-          a.points.forEach((s) => {
-            s.x += e, s.y += i;
+          a.points.forEach((r) => {
+            r.x += e, r.y += i;
           });
           break;
         }
@@ -4025,10 +4186,10 @@ class _e {
   }
   /** Duplicate a shape */
   duplicateShape(t, e = { x: 20, y: 20 }) {
-    const i = this.shapes.find((s) => s.id === t);
+    const i = this.shapes.find((r) => r.id === t);
     if (!i) return null;
-    const a = mt(), n = JSON.parse(JSON.stringify(i));
-    return n.id = a, n.selected = !1, this.offsetShape(n, e.x, e.y), this.shapes.push(n), this.notifyChange(), a;
+    const a = ft(), s = JSON.parse(JSON.stringify(i));
+    return s.id = a, s.selected = !1, this.offsetShape(s, e.x, e.y), this.shapes.push(s), this.notifyChange(), a;
   }
   /** Offset shape position */
   offsetShape(t, e, i) {
@@ -4091,8 +4252,8 @@ class _e {
       case "arrow": {
         const i = e;
         t.beginPath(), t.moveTo(i.start.x, i.start.y), t.lineTo(i.end.x, i.end.y), t.stroke();
-        const a = Math.max(10, i.style.strokeWidth * 4), n = Math.atan2(i.end.y - i.start.y, i.end.x - i.start.x);
-        t.beginPath(), t.moveTo(i.end.x, i.end.y), t.lineTo(i.end.x - a * Math.cos(n - Math.PI / 6), i.end.y - a * Math.sin(n - Math.PI / 6)), t.moveTo(i.end.x, i.end.y), t.lineTo(i.end.x - a * Math.cos(n + Math.PI / 6), i.end.y - a * Math.sin(n + Math.PI / 6)), t.stroke();
+        const a = Math.max(10, i.style.strokeWidth * 4), s = Math.atan2(i.end.y - i.start.y, i.end.x - i.start.x);
+        t.beginPath(), t.moveTo(i.end.x, i.end.y), t.lineTo(i.end.x - a * Math.cos(s - Math.PI / 6), i.end.y - a * Math.sin(s - Math.PI / 6)), t.moveTo(i.end.x, i.end.y), t.lineTo(i.end.x - a * Math.cos(s + Math.PI / 6), i.end.y - a * Math.sin(s + Math.PI / 6)), t.stroke();
         break;
       }
       case "pen": {
@@ -4146,62 +4307,62 @@ class _e {
         return { x: e.cx - e.rx, y: e.cy - e.ry, width: e.rx * 2, height: e.ry * 2 };
       }
       case "arrow": {
-        const e = t, i = Math.min(e.start.x, e.end.x), a = Math.min(e.start.y, e.end.y), n = Math.max(e.start.x, e.end.x), s = Math.max(e.start.y, e.end.y);
-        return { x: i, y: a, width: n - i, height: s - a };
+        const e = t, i = Math.min(e.start.x, e.end.x), a = Math.min(e.start.y, e.end.y), s = Math.max(e.start.x, e.end.x), r = Math.max(e.start.y, e.end.y);
+        return { x: i, y: a, width: s - i, height: r - a };
       }
       case "pen": {
         const e = t;
         if (e.points.length === 0) return null;
-        let i = e.points[0].x, a = e.points[0].x, n = e.points[0].y, s = e.points[0].y;
+        let i = e.points[0].x, a = e.points[0].x, s = e.points[0].y, r = e.points[0].y;
         for (const o of e.points)
-          i = Math.min(i, o.x), a = Math.max(a, o.x), n = Math.min(n, o.y), s = Math.max(s, o.y);
-        return { x: i, y: n, width: a - i, height: s - n };
+          i = Math.min(i, o.x), a = Math.max(a, o.x), s = Math.min(s, o.y), r = Math.max(r, o.y);
+        return { x: i, y: s, width: a - i, height: r - s };
       }
       case "text": {
         const e = t, i = e.text.length * e.fontSize * 0.6, a = e.fontSize * 1.2;
         return { x: e.x, y: e.y - a, width: i, height: a };
       }
       case "line": {
-        const e = t, i = Math.min(e.start.x, e.end.x), a = Math.min(e.start.y, e.end.y), n = Math.max(e.start.x, e.end.x), s = Math.max(e.start.y, e.end.y);
-        return { x: i, y: a, width: n - i || 1, height: s - a || 1 };
+        const e = t, i = Math.min(e.start.x, e.end.x), a = Math.min(e.start.y, e.end.y), s = Math.max(e.start.x, e.end.x), r = Math.max(e.start.y, e.end.y);
+        return { x: i, y: a, width: s - i || 1, height: r - a || 1 };
       }
       case "triangle": {
-        const e = t, i = e.points.map((h) => h.x), a = e.points.map((h) => h.y), n = Math.min(...i), s = Math.min(...a), o = Math.max(...i), l = Math.max(...a);
-        return { x: n, y: s, width: o - n, height: l - s };
+        const e = t, i = e.points.map((h) => h.x), a = e.points.map((h) => h.y), s = Math.min(...i), r = Math.min(...a), o = Math.max(...i), l = Math.max(...a);
+        return { x: s, y: r, width: o - s, height: l - r };
       }
     }
     return null;
   }
   /** Resize shape by scale factor */
-  resizeShape(t, e, i, a, n) {
-    const s = this.shapes.find((o) => o.id === t);
-    if (s) {
-      switch (s.type) {
+  resizeShape(t, e, i, a, s) {
+    const r = this.shapes.find((o) => o.id === t);
+    if (r) {
+      switch (r.type) {
         case "rect": {
-          const o = s, l = a + (o.x - a) * e, h = n + (o.y - n) * i;
+          const o = r, l = a + (o.x - a) * e, h = s + (o.y - s) * i;
           o.x = l, o.y = h, o.width *= e, o.height *= i;
           break;
         }
         case "circle": {
-          const o = s;
-          o.cx = a + (o.cx - a) * e, o.cy = n + (o.cy - n) * i, o.rx *= e, o.ry *= i;
+          const o = r;
+          o.cx = a + (o.cx - a) * e, o.cy = s + (o.cy - s) * i, o.rx *= e, o.ry *= i;
           break;
         }
         case "arrow":
         case "line": {
-          const o = s;
-          o.start.x = a + (o.start.x - a) * e, o.start.y = n + (o.start.y - n) * i, o.end.x = a + (o.end.x - a) * e, o.end.y = n + (o.end.y - n) * i;
+          const o = r;
+          o.start.x = a + (o.start.x - a) * e, o.start.y = s + (o.start.y - s) * i, o.end.x = a + (o.end.x - a) * e, o.end.y = s + (o.end.y - s) * i;
           break;
         }
         case "pen": {
-          s.points.forEach((l) => {
-            l.x = a + (l.x - a) * e, l.y = n + (l.y - n) * i;
+          r.points.forEach((l) => {
+            l.x = a + (l.x - a) * e, l.y = s + (l.y - s) * i;
           });
           break;
         }
         case "triangle": {
-          s.points.forEach((l) => {
-            l.x = a + (l.x - a) * e, l.y = n + (l.y - n) * i;
+          r.points.forEach((l) => {
+            l.x = a + (l.x - a) * e, l.y = s + (l.y - s) * i;
           });
           break;
         }
@@ -4213,16 +4374,16 @@ class _e {
   getControlPoints(t) {
     const e = this.getShapeBounds(t);
     if (!e) return [];
-    const { x: i, y: a, width: n, height: s } = e;
+    const { x: i, y: a, width: s, height: r } = e;
     return [
       { x: i, y: a, type: "nw" },
-      { x: i + n / 2, y: a, type: "n" },
-      { x: i + n, y: a, type: "ne" },
-      { x: i + n, y: a + s / 2, type: "e" },
-      { x: i + n, y: a + s, type: "se" },
-      { x: i + n / 2, y: a + s, type: "s" },
-      { x: i, y: a + s, type: "sw" },
-      { x: i, y: a + s / 2, type: "w" }
+      { x: i + s / 2, y: a, type: "n" },
+      { x: i + s, y: a, type: "ne" },
+      { x: i + s, y: a + r / 2, type: "e" },
+      { x: i + s, y: a + r, type: "se" },
+      { x: i + s / 2, y: a + r, type: "s" },
+      { x: i, y: a + r, type: "sw" },
+      { x: i, y: a + r / 2, type: "w" }
     ];
   }
 }
@@ -4235,7 +4396,7 @@ const Be = {
   autoHide: !0
 };
 class $e {
-  // Pure original image without any annotations (for eraser)
+  // Dropdown menu elements
   constructor(t, e, i = {}) {
     c(this, "editor");
     c(this, "options");
@@ -4298,6 +4459,13 @@ class $e {
     c(this, "dragStartPoint", { x: 0, y: 0 });
     c(this, "originalImageData", null);
     c(this, "pureImageData", null);
+    // Pure original image without any annotations (for eraser)
+    c(this, "initialPureImageData", null);
+    // Initial pure image (for filter reset, never overwritten by filters)
+    // Dropdown state (for compact layout)
+    c(this, "openDropdown", null);
+    // Currently open dropdown
+    c(this, "dropdownMenus", /* @__PURE__ */ new Map());
     c(this, "dropZone", null);
     c(this, "handleOutsideClick", (t) => {
       var i;
@@ -4305,65 +4473,103 @@ class $e {
       const e = t.target;
       !this.inlineTextInput.contains(e) && !((i = this.textStyleBar) != null && i.contains(e)) && this.confirmInlineText();
     });
-    this.editor = t, this.options = { ...Be, ...i }, this.shapeManager = new _e(), this.shapeManager.setOnChange(() => this.renderAll()), Pt(), this.wrapper = document.createElement("div"), this.wrapper.className = "ie-editor-wrapper", this.applyTheme(this.options.theme || "dark"), this.options.primaryColor && this.applyPrimaryColor(this.options.primaryColor), this.canvasContainer = document.createElement("div"), this.canvasContainer.className = "ie-canvas-container", this.viewport = document.createElement("div"), this.viewport.className = "ie-canvas-viewport";
+    this.editor = t, this.options = { ...Be, ...i }, this.shapeManager = new _e(), this.shapeManager.setOnChange(() => this.renderAll()), zt(), this.wrapper = document.createElement("div"), this.wrapper.className = "ie-editor-wrapper", this.applyTheme(this.options.theme || "dark"), this.options.primaryColor && this.applyPrimaryColor(this.options.primaryColor), this.canvasContainer = document.createElement("div"), this.canvasContainer.className = "ie-canvas-container", this.viewport = document.createElement("div"), this.viewport.className = "ie-canvas-viewport";
     const a = t.canvas;
     a.parentElement && a.parentElement.removeChild(a), this.viewport.appendChild(a), this.canvasContainer.appendChild(this.viewport), this.zoomBadge = document.createElement("div"), this.zoomBadge.className = "ie-zoom-badge", this.zoomBadge.textContent = "100%", this.canvasContainer.appendChild(this.zoomBadge), this.wrapper.appendChild(this.canvasContainer), this.toolbar = this.createToolbar(), this.wrapper.appendChild(this.toolbar), e.appendChild(this.wrapper), this.setupEvents(), this.setupEditorEvents(), this.options.autoHide && this.setToolbarVisible(!1);
   }
   createToolbar() {
     const t = document.createElement("div");
     t.className = "ie-toolbar", t.style.position = "relative";
-    const e = this.options.disabledTools || [], i = this.createGroup();
-    i.className = "ie-toolbar-group ie-zoom-group";
-    const a = this.createButton("zoomOut", w.zoomOut, () => this.zoomOut());
-    e.includes("zoomOut") && (a.style.display = "none"), i.appendChild(a), this.zoomText = document.createElement("span"), this.zoomText.className = "ie-zoom-text", this.zoomText.textContent = "100%", i.appendChild(this.zoomText);
-    const n = this.createButton("zoomIn", w.zoomIn, () => this.zoomIn());
-    e.includes("zoomIn") && (n.style.display = "none"), i.appendChild(n);
-    const s = this.createButton("reset", w.reset, () => this.resetView());
-    e.includes("reset") && (s.style.display = "none"), i.appendChild(s), this.groups.set("zoom", i), t.appendChild(i), this.dividers.push(this.createDivider()), t.appendChild(this.dividers[this.dividers.length - 1]);
-    const o = this.createGroup();
-    o.className = "ie-toolbar-group ie-tool-group";
-    const l = this.createButton("move", w.move, () => this.selectTool(null), !0);
-    e.includes("move") && (l.style.display = "none"), o.appendChild(l);
-    const h = this.createButton("pen", w.pen, () => this.selectTool("pen"));
-    e.includes("pen") && (h.style.display = "none"), o.appendChild(h);
-    const d = this.createButton("rect", w.rect, () => this.selectTool("rect"));
-    e.includes("rect") && (d.style.display = "none"), o.appendChild(d);
-    const p = this.createButton("circle", w.circle, () => this.selectTool("circle"));
-    e.includes("circle") && (p.style.display = "none"), o.appendChild(p);
-    const u = this.createButton("arrow", w.arrow, () => this.selectTool("arrow"));
-    e.includes("arrow") && (u.style.display = "none"), o.appendChild(u);
-    const v = this.createButton("line", w.line, () => this.selectTool("line"));
-    e.includes("line") && (v.style.display = "none"), o.appendChild(v);
-    const g = this.createButton("triangle", w.triangle, () => this.selectTool("triangle"));
-    e.includes("triangle") && (g.style.display = "none"), o.appendChild(g);
-    const f = this.createButton("text", w.type, () => this.selectTool("text"));
-    e.includes("text") && (f.style.display = "none"), o.appendChild(f);
-    const m = this.createButton("mosaic", w.mosaic, () => this.selectTool("mosaic"));
-    e.includes("mosaic") && (m.style.display = "none"), o.appendChild(m);
-    const S = this.createButton("eraser", w.eraser, () => this.selectTool("eraser"));
-    e.includes("eraser") && (S.style.display = "none"), o.appendChild(S), this.groups.set("tool", o), t.appendChild(o);
-    const C = this.createGroup();
-    C.className = "ie-toolbar-group ie-advanced-group";
-    const k = this.createButton("crop", w.crop, () => this.toggleCropTool());
-    e.includes("crop") && (k.style.display = "none"), C.appendChild(k);
-    const I = this.createButton("filter", w.filter, () => this.toggleFilterPanel());
-    e.includes("filter") && (I.style.display = "none"), C.appendChild(I), this.groups.set("advanced", C), t.appendChild(C), this.dividers.push(this.createDivider()), t.appendChild(this.dividers[this.dividers.length - 1]), this.createDrawPanel(t), this.createMosaicPanel(t), this.createTextPanel(t), this.createEraserPanel(t), this.createFilterPanel(t);
-    const T = this.createGroup();
-    T.className = "ie-toolbar-group ie-history-group";
-    const E = this.createButton("undo", w.undo, () => this.editor.undo(), !1, !0);
-    e.includes("undo") && (E.style.display = "none"), T.appendChild(E);
-    const M = this.createButton("redo", w.redo, () => this.editor.redo(), !1, !0);
-    e.includes("redo") && (M.style.display = "none"), T.appendChild(M), this.groups.set("history", T), t.appendChild(T), this.dividers.push(this.createDivider()), t.appendChild(this.dividers[this.dividers.length - 1]);
-    const x = document.createElement("div");
-    x.className = "ie-toolbar-group ie-crop-action-group", x.style.display = "none";
-    const y = document.createElement("button");
-    y.className = "ie-btn ie-crop-toolbar-btn ie-crop-toolbar-cancel", y.innerHTML = `${w.close}<span>取消</span>`, y.onclick = () => this.toggleCropTool(), x.appendChild(y);
-    const L = document.createElement("button");
-    L.className = "ie-btn ie-crop-toolbar-btn ie-crop-toolbar-confirm", L.innerHTML = `${w.check}<span>确认裁剪</span>`, L.onclick = () => this.applyCrop(), x.appendChild(L), this.groups.set("cropAction", x), t.appendChild(x), this.buttons.set("cropActionGroup", y), this.dividers.push(this.createDivider()), t.appendChild(this.dividers[this.dividers.length - 1]);
-    const D = this.createButton("export", w.download, () => this.exportImage());
-    D.classList.add("ie-btn-export");
-    const B = document.createElement("span");
-    return B.textContent = "导出", D.appendChild(B), e.includes("export") && (D.style.display = "none"), t.appendChild(D), this.updateDividerVisibility(e), t;
+    const e = this.options.disabledTools || [], i = this.options.layout === "compact";
+    console.log("[Toolbar.createToolbar] layout option:", this.options.layout, "isCompact:", i);
+    const a = this.createGroup();
+    a.className = "ie-toolbar-group ie-zoom-group";
+    const s = this.createButton("zoomOut", y.zoomOut, () => this.zoomOut());
+    e.includes("zoomOut") && (s.style.display = "none"), a.appendChild(s), this.zoomText = document.createElement("span"), this.zoomText.className = "ie-zoom-text", this.zoomText.textContent = "100%", a.appendChild(this.zoomText);
+    const r = this.createButton("zoomIn", y.zoomIn, () => this.zoomIn());
+    e.includes("zoomIn") && (r.style.display = "none"), a.appendChild(r);
+    const o = this.createButton("reset", y.reset, () => this.resetImage());
+    e.includes("reset") && (o.style.display = "none"), a.appendChild(o), this.groups.set("zoom", a), t.appendChild(a), this.dividers.push(this.createDivider()), t.appendChild(this.dividers[this.dividers.length - 1]);
+    const l = this.createGroup();
+    l.className = "ie-toolbar-group ie-tool-group";
+    const h = this.createButton("move", y.move, () => this.selectTool(null), !0);
+    if (e.includes("move") && (h.style.display = "none"), l.appendChild(h), i) {
+      const x = [
+        { name: "pen", icon: y.pen, onClick: () => this.selectTool("pen") },
+        { name: "rect", icon: y.rect, onClick: () => this.selectTool("rect") },
+        { name: "circle", icon: y.circle, onClick: () => this.selectTool("circle") },
+        { name: "triangle", icon: y.triangle, onClick: () => this.selectTool("triangle") },
+        { name: "line", icon: y.line, onClick: () => this.selectTool("line") },
+        { name: "arrow", icon: y.arrow, onClick: () => this.selectTool("arrow") }
+      ].filter((b) => !e.includes(b.name));
+      if (x.length > 0) {
+        const b = this.createDropdownButton("drawTools", y.pen, x, "绘图工具");
+        l.appendChild(b);
+      }
+    } else {
+      const x = this.createButton("pen", y.pen, () => this.selectTool("pen"));
+      e.includes("pen") && (x.style.display = "none"), l.appendChild(x);
+      const b = this.createButton("rect", y.rect, () => this.selectTool("rect"));
+      e.includes("rect") && (b.style.display = "none"), l.appendChild(b);
+      const L = this.createButton("circle", y.circle, () => this.selectTool("circle"));
+      e.includes("circle") && (L.style.display = "none"), l.appendChild(L);
+      const D = this.createButton("arrow", y.arrow, () => this.selectTool("arrow"));
+      e.includes("arrow") && (D.style.display = "none"), l.appendChild(D);
+      const B = this.createButton("line", y.line, () => this.selectTool("line"));
+      e.includes("line") && (B.style.display = "none"), l.appendChild(B);
+      const N = this.createButton("triangle", y.triangle, () => this.selectTool("triangle"));
+      e.includes("triangle") && (N.style.display = "none"), l.appendChild(N);
+    }
+    const d = this.createButton("text", y.type, () => this.selectTool("text"));
+    e.includes("text") && (d.style.display = "none"), l.appendChild(d);
+    const p = this.createButton("mosaic", y.mosaic, () => this.selectTool("mosaic"));
+    e.includes("mosaic") && (p.style.display = "none"), l.appendChild(p);
+    const v = this.createButton("eraser", y.eraser, () => this.selectTool("eraser"));
+    e.includes("eraser") && (v.style.display = "none"), l.appendChild(v), this.groups.set("tool", l), t.appendChild(l);
+    const f = this.createGroup();
+    f.className = "ie-toolbar-group ie-advanced-group";
+    const u = this.createButton("crop", y.crop, () => this.toggleCropTool());
+    if (e.includes("crop") && (u.style.display = "none"), f.appendChild(u), i) {
+      const x = [
+        { name: "rotateLeft", icon: y.rotateLeft, onClick: () => this.editor.rotateLeft(), isAction: !0 },
+        { name: "rotateRight", icon: y.rotateRight, onClick: () => this.editor.rotateRight(), isAction: !0 },
+        { name: "flipH", icon: y.flipH, onClick: () => this.editor.flipHorizontal(), isAction: !0 },
+        { name: "flipV", icon: y.flipV, onClick: () => this.editor.flipVertical(), isAction: !0 }
+      ].filter((b) => !e.includes(b.name));
+      if (x.length > 0) {
+        const b = this.createDropdownButton("transformTools", y.rotateRight, x, "变换");
+        f.appendChild(b);
+      }
+    } else {
+      const x = this.createButton("rotateLeft", y.rotateLeft, () => this.editor.rotateLeft());
+      e.includes("rotateLeft") && (x.style.display = "none"), f.appendChild(x);
+      const b = this.createButton("rotateRight", y.rotateRight, () => this.editor.rotateRight());
+      e.includes("rotateRight") && (b.style.display = "none"), f.appendChild(b);
+      const L = this.createButton("flipH", y.flipH, () => this.editor.flipHorizontal());
+      e.includes("flipH") && (L.style.display = "none"), f.appendChild(L);
+      const D = this.createButton("flipV", y.flipV, () => this.editor.flipVertical());
+      e.includes("flipV") && (D.style.display = "none"), f.appendChild(D);
+    }
+    const g = this.createButton("filter", y.filter, () => this.toggleFilterPanel());
+    e.includes("filter") && (g.style.display = "none"), f.appendChild(g), this.groups.set("advanced", f), t.appendChild(f), this.dividers.push(this.createDivider()), t.appendChild(this.dividers[this.dividers.length - 1]), this.createDrawPanel(t), this.createMosaicPanel(t), this.createTextPanel(t), this.createEraserPanel(t), this.createFilterPanel(t);
+    const m = this.createGroup();
+    m.className = "ie-toolbar-group ie-history-group";
+    const C = this.createButton("undo", y.undo, () => this.editor.undo(), !1, !0);
+    e.includes("undo") && (C.style.display = "none"), m.appendChild(C);
+    const S = this.createButton("redo", y.redo, () => this.editor.redo(), !1, !0);
+    e.includes("redo") && (S.style.display = "none"), m.appendChild(S), this.groups.set("history", m), t.appendChild(m), this.dividers.push(this.createDivider()), t.appendChild(this.dividers[this.dividers.length - 1]);
+    const M = document.createElement("div");
+    M.className = "ie-toolbar-group ie-crop-action-group", M.style.display = "none";
+    const I = document.createElement("button");
+    I.className = "ie-btn ie-crop-toolbar-btn ie-crop-toolbar-cancel", I.innerHTML = `${y.close}<span>取消</span>`, I.onclick = () => this.toggleCropTool(), M.appendChild(I);
+    const E = document.createElement("button");
+    E.className = "ie-btn ie-crop-toolbar-btn ie-crop-toolbar-confirm", E.innerHTML = `${y.check}<span>确认裁剪</span>`, E.onclick = () => this.applyCrop(), M.appendChild(E), this.groups.set("cropAction", M), t.appendChild(M), this.buttons.set("cropActionGroup", I), this.dividers.push(this.createDivider()), t.appendChild(this.dividers[this.dividers.length - 1]);
+    const T = this.createButton("export", y.download, () => this.exportImage());
+    T.classList.add("ie-btn-export");
+    const k = document.createElement("span");
+    return k.textContent = "导出", T.appendChild(k), e.includes("export") && (T.style.display = "none"), t.appendChild(T), this.updateDividerVisibility(e), i && document.addEventListener("click", (x) => {
+      t.contains(x.target) || this.closeDropdown();
+    }), t;
   }
   createGroup() {
     const t = document.createElement("div");
@@ -4373,50 +4579,91 @@ class $e {
     const t = document.createElement("div");
     return t.className = "ie-toolbar-divider", t;
   }
-  createButton(t, e, i, a = !1, n = !1) {
-    const s = document.createElement("button");
-    s.className = "ie-btn" + (a ? " active" : ""), s.innerHTML = e, s.onclick = i;
+  createButton(t, e, i, a = !1, s = !1) {
+    const r = document.createElement("button");
+    r.className = "ie-btn" + (a ? " active" : ""), r.innerHTML = e, r.onclick = i;
     const o = this.getTooltipInfo(t), l = document.createElement("div");
     return l.className = "ie-tooltip", l.innerHTML = `
       <div class="ie-tooltip-title">${o.title}</div>
       ${o.desc ? `<div class="ie-tooltip-desc">${o.desc}</div>` : ""}
       ${o.shortcut ? `<div class="ie-tooltip-shortcut">${o.shortcut}</div>` : ""}
-    `, s.appendChild(l), n && (s.disabled = !0), this.buttons.set(t, s), s;
+    `, r.appendChild(l), s && (r.disabled = !0), this.buttons.set(t, r), r;
   }
   getTooltipInfo(t) {
     return {
       zoomOut: { title: "缩小", desc: "缩小图片视图", shortcut: "-" },
       zoomIn: { title: "放大", desc: "放大图片视图", shortcut: "+" },
-      reset: { title: "重置视图", desc: "恢复默认缩放和位置", shortcut: "0" },
+      reset: { title: "重置", desc: "恢复图片到初始状态", shortcut: "0" },
       move: { title: "移动", desc: "拖拽平移画布，点击选中形状", shortcut: "V" },
       pen: { title: "画笔", desc: "自由绘制线条", shortcut: "P" },
       rect: { title: "矩形", desc: "绘制矩形框", shortcut: "R" },
       circle: { title: "圆形", desc: "绘制圆形/椭圆", shortcut: "O" },
       arrow: { title: "箭头", desc: "绘制带箭头的线条", shortcut: "A" },
       line: { title: "直线", desc: "绘制直线", shortcut: "L" },
-      triangle: { title: "三角形", desc: "绘制三角形" },
+      triangle: { title: "三角形", desc: "绘制三角形", shortcut: "G" },
       text: { title: "文字", desc: "添加文字标注", shortcut: "T" },
       mosaic: { title: "马赛克", desc: "模糊敏感区域", shortcut: "M" },
-      eraser: { title: "橡皮擦", desc: "擦除文字和标记", shortcut: "E" },
+      eraser: { title: "橡皮擦", desc: "擦除文字和标记", shortcut: "X" },
       crop: { title: "裁剪", desc: "裁剪图片区域", shortcut: "C" },
-      filter: { title: "滤镜", desc: "调整亮度/对比度/饱和度", shortcut: "F" },
+      rotateLeft: { title: "逆时针旋转", desc: "逆时针旋转90°", shortcut: "Shift+←" },
+      rotateRight: { title: "顺时针旋转", desc: "顺时针旋转90°", shortcut: "Shift+→" },
+      flipH: { title: "水平翻转", desc: "左右镜像翻转图片", shortcut: "Shift+H" },
+      flipV: { title: "垂直翻转", desc: "上下镜像翻转图片", shortcut: "Shift+V" },
+      filter: { title: "滤镜", desc: "调整亮度/对比度/饱和度", shortcut: "I" },
       undo: { title: "撤销", desc: "撤销上一步操作", shortcut: "Ctrl+Z" },
-      redo: { title: "重做", desc: "恢复撤销的操作", shortcut: "Ctrl+Y" },
-      export: { title: "导出", desc: "保存图片到本地", shortcut: "Ctrl+S" }
+      redo: { title: "重做", desc: "恢复撤销的操作", shortcut: "Ctrl+Shift+Z" },
+      export: { title: "导出", desc: "保存图片到本地", shortcut: "Ctrl+S" },
+      drawTools: { title: "绘图工具", desc: "画笔、形状、线条等" },
+      transformTools: { title: "变换", desc: "旋转/翻转图片" }
     }[t] || { title: t };
+  }
+  /** Create a dropdown button with menu (for compact layout) */
+  createDropdownButton(t, e, i, a) {
+    const s = document.createElement("div");
+    s.className = "ie-dropdown-container";
+    const r = document.createElement("button");
+    r.className = "ie-btn ie-dropdown-btn", r.innerHTML = `<span class="ie-dropdown-icon">${e}</span><span class="ie-dropdown-arrow">${y.chevronDown}</span>`;
+    const o = this.getTooltipInfo(t), l = document.createElement("div");
+    l.className = "ie-tooltip", l.innerHTML = `
+      <div class="ie-tooltip-title">${o.title}</div>
+      ${o.desc ? `<div class="ie-tooltip-desc">${o.desc}</div>` : ""}
+    `, r.appendChild(l), s.appendChild(r);
+    const h = document.createElement("div");
+    return h.className = "ie-dropdown-menu", h.innerHTML = `<div class="ie-dropdown-title">${a}</div>`, i.forEach((d) => {
+      const p = document.createElement("button");
+      p.className = "ie-dropdown-item", p.setAttribute("data-tool", d.name);
+      const v = this.getTooltipInfo(d.name);
+      p.innerHTML = `
+        <span class="ie-dropdown-item-icon">${d.icon}</span>
+        <span class="ie-dropdown-item-label">${v.title}</span>
+        ${v.shortcut ? `<span class="ie-dropdown-item-shortcut">${v.shortcut}</span>` : ""}
+      `, p.onclick = (f) => {
+        if (f.stopPropagation(), d.onClick(), !d.isAction) {
+          const u = r.querySelector(".ie-dropdown-icon");
+          u && (u.innerHTML = d.icon), h.querySelectorAll(".ie-dropdown-item").forEach((g) => g.classList.remove("active")), p.classList.add("active"), this.currentTool === d.name && r.classList.add("active");
+        }
+        this.closeDropdown();
+      }, h.appendChild(p), this.buttons.set(d.name, p);
+    }), s.appendChild(h), this.dropdownMenus.set(t, h), r.onclick = (d) => {
+      d.stopPropagation(), this.openDropdown === t ? this.closeDropdown() : (this.closeDropdown(), h.classList.add("open"), this.openDropdown = t);
+    }, this.buttons.set(t, r), s;
+  }
+  /** Close any open dropdown menu */
+  closeDropdown() {
+    this.dropdownMenus.forEach((t) => t.classList.remove("open")), this.openDropdown = null;
   }
   /** Create drawing tools panel (shared by pen, rect, circle, arrow) */
   createDrawPanel(t) {
-    var i, a, n;
+    var i, a, s;
     const e = document.createElement("div");
     e.className = "ie-panel", e.style.display = "none", e.innerHTML = `
       <div class="ie-panel-title">绘图设置</div>
       <div class="ie-panel-row">
         <span class="ie-panel-label">线宽</span>
         <div class="ie-size-control">
-          <button class="ie-size-btn" data-action="stroke-dec">${w.minus}</button>
+          <button class="ie-size-btn" data-action="stroke-dec">${y.minus}</button>
           <span class="ie-panel-value" data-value="stroke-width">${this.strokeWidth}px</span>
-          <button class="ie-size-btn" data-action="stroke-inc">${w.plus}</button>
+          <button class="ie-size-btn" data-action="stroke-inc">${y.plus}</button>
         </div>
       </div>
       <div class="ie-panel-row">
@@ -4430,8 +4677,8 @@ class $e {
       this.strokeWidth = Math.max(1, this.strokeWidth - 1), this.updateDrawPanelUI();
     }), (a = e.querySelector('[data-action="stroke-inc"]')) == null || a.addEventListener("click", () => {
       this.strokeWidth = Math.min(20, this.strokeWidth + 1), this.updateDrawPanelUI();
-    }), (n = e.querySelector('[data-input="stroke-color"]')) == null || n.addEventListener("input", (s) => {
-      this.strokeColor = s.target.value, this.updateDrawPanelUI();
+    }), (s = e.querySelector('[data-input="stroke-color"]')) == null || s.addEventListener("input", (r) => {
+      this.strokeColor = r.target.value, this.updateDrawPanelUI();
     }), t.appendChild(e), this.panels.set("draw", e);
   }
   updateDrawPanelUI() {
@@ -4456,17 +4703,17 @@ class $e {
         <input type="range" class="ie-range-slider" min="3" max="30" value="${this.mosaicSize}" data-slider="mosaic-block">
         <span class="ie-panel-value" data-value="mosaic-block">${this.mosaicSize}</span>
       </div>
-    `, (i = e.querySelector('[data-slider="mosaic-brush"]')) == null || i.addEventListener("input", (n) => {
-      this.strokeWidth = parseInt(n.target.value), this.updateMosaicPanelUI();
-    }), (a = e.querySelector('[data-slider="mosaic-block"]')) == null || a.addEventListener("input", (n) => {
-      this.mosaicSize = parseInt(n.target.value), this.updateMosaicPanelUI();
+    `, (i = e.querySelector('[data-slider="mosaic-brush"]')) == null || i.addEventListener("input", (s) => {
+      this.strokeWidth = parseInt(s.target.value), this.updateMosaicPanelUI();
+    }), (a = e.querySelector('[data-slider="mosaic-block"]')) == null || a.addEventListener("input", (s) => {
+      this.mosaicSize = parseInt(s.target.value), this.updateMosaicPanelUI();
     }), t.appendChild(e), this.panels.set("mosaic", e);
   }
   updateMosaicPanelUI() {
     const t = this.panels.get("mosaic");
     if (!t) return;
-    const e = t.querySelector('[data-value="mosaic-brush"]'), i = t.querySelector('[data-value="mosaic-block"]'), a = t.querySelector('[data-slider="mosaic-brush"]'), n = t.querySelector('[data-slider="mosaic-block"]');
-    e && (e.textContent = String(this.strokeWidth * 3)), i && (i.textContent = String(this.mosaicSize)), a && (a.value = String(this.strokeWidth)), n && (n.value = String(this.mosaicSize)), this.updateBrushCursorSize();
+    const e = t.querySelector('[data-value="mosaic-brush"]'), i = t.querySelector('[data-value="mosaic-block"]'), a = t.querySelector('[data-slider="mosaic-brush"]'), s = t.querySelector('[data-slider="mosaic-block"]');
+    e && (e.textContent = String(this.strokeWidth * 3)), i && (i.textContent = String(this.mosaicSize)), a && (a.value = String(this.strokeWidth)), s && (s.value = String(this.mosaicSize)), this.updateBrushCursorSize();
   }
   createTextPanel(t) {
     const e = document.createElement("div");
@@ -4512,12 +4759,11 @@ class $e {
   }
   /** Create filter panel */
   createFilterPanel(t) {
-    var i, a;
     const e = document.createElement("div");
     e.className = "ie-panel ie-panel-filter", e.style.display = "none", e.innerHTML = `
-      <div class="ie-panel-title">滤镜调整</div>
+      <div class="ie-panel-title">滤镜效果</div>
       <div class="ie-filter-presets">
-        <button class="ie-filter-preset" data-preset="none" title="原图">原图</button>
+        <button class="ie-filter-preset active" data-preset="none" title="原图">原图</button>
         <button class="ie-filter-preset" data-preset="grayscale" title="灰度">灰度</button>
         <button class="ie-filter-preset" data-preset="sepia" title="怀旧">怀旧</button>
         <button class="ie-filter-preset" data-preset="invert" title="反色">反色</button>
@@ -4525,6 +4771,10 @@ class $e {
         <button class="ie-filter-preset" data-preset="cool" title="冷色">冷色</button>
         <button class="ie-filter-preset" data-preset="vivid" title="鲜艳">鲜艳</button>
         <button class="ie-filter-preset" data-preset="vintage" title="复古">复古</button>
+        <button class="ie-filter-preset" data-preset="dramatic" title="戏剧">戏剧</button>
+        <button class="ie-filter-preset" data-preset="noir" title="黑白">黑白</button>
+        <button class="ie-filter-preset" data-preset="fade" title="褒色">褒色</button>
+        <button class="ie-filter-preset" data-preset="chrome" title="铬黄">铬黄</button>
       </div>
       <div class="ie-panel-row ie-slider-row">
         <span class="ie-panel-label">亮度</span>
@@ -4541,121 +4791,118 @@ class $e {
         <input type="range" class="ie-range-slider" min="-100" max="100" value="0" data-filter="saturation">
         <span class="ie-panel-value" data-value="saturation">0</span>
       </div>
-      <div class="ie-panel-row ie-slider-row">
-        <span class="ie-panel-label">模糊</span>
-        <input type="range" class="ie-range-slider" min="0" max="20" value="0" data-filter="blur">
-        <span class="ie-panel-value" data-value="blur">0</span>
-      </div>
-      <div class="ie-panel-row ie-btn-row">
-        <button class="ie-btn-apply" data-action="apply-filter">应用</button>
-        <button class="ie-btn-reset" data-action="reset-filter">重置</button>
-      </div>
-    `, e.querySelectorAll("[data-preset]").forEach((n) => {
-      n.addEventListener("click", (s) => {
-        const o = s.target.getAttribute("data-preset") || "none";
-        this.applyFilterPreset(o), e.querySelectorAll("[data-preset]").forEach((l) => l.classList.remove("active")), s.target.classList.add("active");
+    `, e.querySelectorAll("[data-preset]").forEach((i) => {
+      i.addEventListener("click", (a) => {
+        const s = a.target.getAttribute("data-preset") || "none";
+        e.querySelectorAll("[data-preset]").forEach((r) => r.classList.remove("active")), a.target.classList.add("active"), this.applyFilterPresetDirect(s), this.updateFilterSlidersForPreset(s);
       });
-    }), e.querySelectorAll("[data-filter]").forEach((n) => {
-      n.addEventListener("input", (s) => {
-        const o = s.target.getAttribute("data-filter"), l = s.target.value, h = e.querySelector(`[data-value="${o}"]`);
-        h && (h.textContent = l), this.previewFilter(), e.querySelectorAll("[data-preset]").forEach((d) => d.classList.remove("active"));
+    }), e.querySelectorAll("[data-filter]").forEach((i) => {
+      i.addEventListener("input", (a) => {
+        const s = a.target.getAttribute("data-filter"), r = a.target.value, o = e.querySelector(`[data-value="${s}"]`);
+        o && (o.textContent = r), this.previewFilterSliders(), e.querySelectorAll("[data-preset]").forEach((l) => l.classList.remove("active"));
+      }), i.addEventListener("change", () => {
+        this.applyFilterSliders();
       });
-    }), (i = e.querySelector('[data-action="apply-filter"]')) == null || i.addEventListener("click", () => {
-      this.applyFilter();
-    }), (a = e.querySelector('[data-action="reset-filter"]')) == null || a.addEventListener("click", () => {
-      this.resetFilterPanel();
     }), t.appendChild(e), this.panels.set("filter", e);
   }
-  getFilterValues() {
-    var e, i, a, n;
+  /** Reset filter sliders to 0 */
+  resetFilterSliders() {
     const t = this.panels.get("filter");
-    return t ? {
-      brightness: parseInt(((e = t.querySelector('[data-filter="brightness"]')) == null ? void 0 : e.value) || "0"),
-      contrast: parseInt(((i = t.querySelector('[data-filter="contrast"]')) == null ? void 0 : i.value) || "0"),
-      saturation: parseInt(((a = t.querySelector('[data-filter="saturation"]')) == null ? void 0 : a.value) || "0"),
-      blur: parseInt(((n = t.querySelector('[data-filter="blur"]')) == null ? void 0 : n.value) || "0")
-    } : { brightness: 0, contrast: 0, saturation: 0, blur: 0 };
+    t && t.querySelectorAll("[data-filter]").forEach((e) => {
+      e.value = "0";
+      const i = e.getAttribute("data-filter"), a = t.querySelector(`[data-value="${i}"]`);
+      a && (a.textContent = "0");
+    });
   }
-  previewFilter() {
-    const { brightness: t, contrast: e, saturation: i, blur: a } = this.getFilterValues(), n = this.editor.ctx, s = this.editor.canvas;
-    if (!n || !s || !this.originalImageData) return;
-    n.putImageData(this.originalImageData, 0, 0);
-    const o = [
-      `brightness(${100 + t}%)`,
-      `contrast(${100 + e}%)`,
-      `saturate(${100 + i}%)`,
-      a > 0 ? `blur(${a}px)` : ""
-    ].filter(Boolean).join(" ");
-    n.filter = o || "none", n.drawImage(s, 0, 0), n.filter = "none";
-  }
-  applyFilter() {
-    var t, e;
-    this.saveOriginalImage(), this.resetFilterPanel(), (e = (t = this.editor).saveToHistory) == null || e.call(t, "apply filter");
-  }
-  resetFilterPanel() {
-    var e, i;
-    const t = this.panels.get("filter");
-    t && (t.querySelectorAll("[data-filter]").forEach((a) => {
-      a.value = "0";
-      const n = a.getAttribute("data-filter"), s = t.querySelector(`[data-value="${n}"]`);
-      s && (s.textContent = "0");
-    }), t.querySelectorAll("[data-preset]").forEach((a) => a.classList.remove("active")), (e = t.querySelector('[data-preset="none"]')) == null || e.classList.add("active"), this.originalImageData && ((i = this.editor.ctx) == null || i.putImageData(this.originalImageData, 0, 0)));
-  }
-  /** Apply filter preset */
-  applyFilterPreset(t) {
+  /** Update filter sliders to match a preset's values */
+  updateFilterSlidersForPreset(t) {
     const e = this.panels.get("filter");
     if (!e) return;
-    const i = this.editor.ctx, a = this.editor.canvas;
-    if (!i || !a || !this.originalImageData) return;
-    i.putImageData(this.originalImageData, 0, 0);
-    const n = {
-      none: { brightness: 0, contrast: 0, saturation: 0, blur: 0 },
-      grayscale: { brightness: 0, contrast: 0, saturation: -100, blur: 0 },
-      sepia: { brightness: 0, contrast: 0, saturation: -30, blur: 0, css: "sepia(80%)" },
-      invert: { brightness: 0, contrast: 0, saturation: 0, blur: 0, css: "invert(100%)" },
-      warm: { brightness: 10, contrast: 10, saturation: 20, blur: 0, css: "sepia(20%)" },
-      cool: { brightness: 0, contrast: 10, saturation: -10, blur: 0, css: "hue-rotate(180deg) saturate(50%)" },
-      vivid: { brightness: 10, contrast: 30, saturation: 50, blur: 0 },
-      vintage: { brightness: -10, contrast: 20, saturation: -20, blur: 0, css: "sepia(40%)" }
-    }, s = n[t] || n.none, o = e.querySelector('[data-filter="brightness"]'), l = e.querySelector('[data-filter="contrast"]'), h = e.querySelector('[data-filter="saturation"]'), d = e.querySelector('[data-filter="blur"]');
+    const a = {
+      none: { brightness: 0, contrast: 0, saturation: 0 },
+      grayscale: { brightness: 0, contrast: 0, saturation: -100 },
+      sepia: { brightness: 0, contrast: 0, saturation: 0 },
+      // sepia is special
+      invert: { brightness: 0, contrast: 0, saturation: 0 },
+      // invert is special
+      warm: { brightness: 10, contrast: 0, saturation: 40 },
+      cool: { brightness: 5, contrast: 0, saturation: -30 },
+      vivid: { brightness: 5, contrast: 20, saturation: 80 },
+      vintage: { brightness: -10, contrast: -10, saturation: -20 },
+      dramatic: { brightness: -10, contrast: 50, saturation: 10 },
+      noir: { brightness: -10, contrast: 20, saturation: -100 },
+      fade: { brightness: 10, contrast: -15, saturation: -30 },
+      chrome: { brightness: 0, contrast: 10, saturation: 50 }
+    }[t] || { brightness: 0, contrast: 0, saturation: 0 }, s = e.querySelector('[data-filter="brightness"]'), r = e.querySelector('[data-filter="contrast"]'), o = e.querySelector('[data-filter="saturation"]');
+    if (s) {
+      s.value = String(a.brightness);
+      const l = e.querySelector('[data-value="brightness"]');
+      l && (l.textContent = String(a.brightness));
+    }
+    if (r) {
+      r.value = String(a.contrast);
+      const l = e.querySelector('[data-value="contrast"]');
+      l && (l.textContent = String(a.contrast));
+    }
     if (o) {
-      o.value = String(s.brightness);
-      const u = e.querySelector('[data-value="brightness"]');
-      u && (u.textContent = String(s.brightness));
+      o.value = String(a.saturation);
+      const l = e.querySelector('[data-value="saturation"]');
+      l && (l.textContent = String(a.saturation));
     }
-    if (l) {
-      l.value = String(s.contrast);
-      const u = e.querySelector('[data-value="contrast"]');
-      u && (u.textContent = String(s.contrast));
-    }
-    if (h) {
-      h.value = String(s.saturation);
-      const u = e.querySelector('[data-value="saturation"]');
-      u && (u.textContent = String(s.saturation));
-    }
-    if (d) {
-      d.value = String(s.blur);
-      const u = e.querySelector('[data-value="blur"]');
-      u && (u.textContent = String(s.blur));
-    }
-    const p = [
-      `brightness(${100 + s.brightness}%)`,
-      `contrast(${100 + s.contrast}%)`,
-      `saturate(${100 + s.saturation}%)`,
-      s.blur > 0 ? `blur(${s.blur}px)` : "",
-      s.css || ""
-    ].filter(Boolean).join(" ");
-    i.filter = p || "none", i.drawImage(a, 0, 0), i.filter = "none";
+  }
+  /** Preview filter from sliders */
+  previewFilterSliders() {
+    var l, h, d;
+    const t = this.panels.get("filter");
+    if (!t) return;
+    const e = this.editor.ctx, i = this.editor.canvas;
+    if (!e || !i || !this.initialPureImageData) return;
+    const a = parseInt(((l = t.querySelector('[data-filter="brightness"]')) == null ? void 0 : l.value) || "0"), s = parseInt(((h = t.querySelector('[data-filter="contrast"]')) == null ? void 0 : h.value) || "0"), r = parseInt(((d = t.querySelector('[data-filter="saturation"]')) == null ? void 0 : d.value) || "0");
+    e.putImageData(this.initialPureImageData, 0, 0);
+    const o = `brightness(${100 + a}%) contrast(${100 + s}%) saturate(${100 + r}%)`;
+    e.filter = o, e.drawImage(i, 0, 0), e.filter = "none";
+  }
+  /** Apply filter from sliders (save to history) */
+  applyFilterSliders() {
+    var t, e;
+    this.saveOriginalImage(), this.savePureImage(), (e = (t = this.editor).saveToHistory) == null || e.call(t, "filter adjust");
+  }
+  /** Apply filter preset directly (no preview, immediate save to history) */
+  applyFilterPresetDirect(t) {
+    var r, o;
+    const e = this.editor.ctx, i = this.editor.canvas;
+    if (!e || !i || !this.initialPureImageData) return;
+    e.putImageData(this.initialPureImageData, 0, 0);
+    const s = {
+      none: "none",
+      grayscale: "grayscale(100%)",
+      sepia: "sepia(80%)",
+      invert: "invert(100%)",
+      warm: "sepia(30%) saturate(140%) brightness(110%)",
+      cool: "hue-rotate(180deg) saturate(70%) brightness(105%)",
+      vivid: "saturate(180%) contrast(120%) brightness(105%)",
+      vintage: "sepia(50%) contrast(90%) brightness(90%)",
+      dramatic: "contrast(150%) saturate(110%) brightness(90%)",
+      noir: "grayscale(100%) contrast(120%) brightness(90%)",
+      fade: "saturate(70%) contrast(85%) brightness(110%)",
+      chrome: "sepia(20%) saturate(150%) contrast(110%)"
+    }[t] || "none";
+    e.filter = s, e.drawImage(i, 0, 0), e.filter = "none", this.saveOriginalImage(), this.savePureImage(), (o = (r = this.editor).saveToHistory) == null || o.call(r, `filter: ${t}`);
   }
   updateTextUI() {
     this.updateTextStyleBar(), this.applyTextStyle();
   }
   showPanel(t) {
     this.panels.forEach((e, i) => {
-      i === t ? (e.style.display = "block", e.classList.remove("ie-panel-hidden")) : e.style.display !== "none" && (e.classList.add("ie-panel-hidden"), setTimeout(() => {
+      i === t ? (e.style.display = "block", e.classList.remove("ie-panel-hidden"), this.positionPanelAboveToolButton(e, i)) : e.style.display !== "none" && (e.classList.add("ie-panel-hidden"), setTimeout(() => {
         e.classList.contains("ie-panel-hidden") && (e.style.display = "none");
       }, 200));
     }), this.activePanel = t;
+  }
+  /** Position a panel above its corresponding tool button */
+  positionPanelAboveToolButton(t, e) {
+    let i = null;
+    e === "draw" ? (i = this.currentTool, this.options.layout === "compact" && (i = "drawTools")) : e === "mosaic" ? i = "mosaic" : e === "text" ? i = "text" : e === "eraser" ? i = "eraser" : e === "filter" && (i = "filter"), i && this.positionPanelAboveButton(t, i);
   }
   /** Hide all panels */
   hideAllPanels() {
@@ -4687,8 +4934,8 @@ class $e {
       else if (this.isDraggingShape) {
         const i = this.shapeManager.getSelectedShape();
         if (i) {
-          const a = e.x - this.dragStartPoint.x, n = e.y - this.dragStartPoint.y;
-          this.shapeManager.moveShape(i.id, a, n), this.dragStartPoint = e;
+          const a = e.x - this.dragStartPoint.x, s = e.y - this.dragStartPoint.y;
+          this.shapeManager.moveShape(i.id, a, s), this.dragStartPoint = e;
         }
       } else if (this.isPanning)
         this.translateX += t.clientX - this.lastPanPoint.x, this.translateY += t.clientY - this.lastPanPoint.y, this.lastPanPoint = { x: t.clientX, y: t.clientY }, this.updateTransform();
@@ -4707,15 +4954,7 @@ class $e {
       if (this.currentTool !== "text" || this.isAddingText) return;
       const e = this.clientToCanvasCoords(t.clientX, t.clientY);
       this.showInlineTextInput(t.clientX, t.clientY, e);
-    }), document.addEventListener("keydown", (t) => {
-      var e, i, a, n;
-      if (t.key === "Delete" || t.key === "Backspace") {
-        if (this.isAddingText || ((e = document.activeElement) == null ? void 0 : e.tagName) === "INPUT" || ((i = document.activeElement) == null ? void 0 : i.tagName) === "TEXTAREA")
-          return;
-        const s = this.shapeManager.getSelectedShape();
-        s && (t.preventDefault(), this.shapeManager.deleteShape(s.id), (n = (a = this.editor).saveToHistory) == null || n.call(a, "delete shape"));
-      }
-    }), this.canvasContainer.addEventListener("touchstart", (t) => {
+    }), this.handleKeyDown = this.handleKeyDown.bind(this), document.addEventListener("keydown", this.handleKeyDown), this.canvasContainer.addEventListener("touchstart", (t) => {
       if (this.hasRealImage && t.touches.length === 2) {
         t.preventDefault();
         const e = t.touches[0], i = t.touches[1];
@@ -4730,14 +4969,14 @@ class $e {
     }, { passive: !1 }), this.canvasContainer.addEventListener("touchmove", (t) => {
       if (this.hasRealImage && t.touches.length === 2 && this.touchStartDistance > 0) {
         t.preventDefault();
-        const e = t.touches[0], i = t.touches[1], n = Math.hypot(
+        const e = t.touches[0], i = t.touches[1], s = Math.hypot(
           i.clientX - e.clientX,
           i.clientY - e.clientY
-        ) / this.touchStartDistance, s = Math.max(0.1, Math.min(5, this.touchStartScale * n)), o = {
+        ) / this.touchStartDistance, r = Math.max(0.1, Math.min(5, this.touchStartScale * s)), o = {
           x: (e.clientX + i.clientX) / 2,
           y: (e.clientY + i.clientY) / 2
         };
-        this.setScale(s, o.x, o.y), this.isTouchPanning && (this.translateX += o.x - this.lastTouchCenter.x, this.translateY += o.y - this.lastTouchCenter.y, this.updateTransform()), this.lastTouchCenter = o;
+        this.setScale(r, o.x, o.y), this.isTouchPanning && (this.translateX += o.x - this.lastTouchCenter.x, this.translateY += o.y - this.lastTouchCenter.y, this.updateTransform()), this.lastTouchCenter = o;
       }
     }, { passive: !1 }), this.canvasContainer.addEventListener("touchend", (t) => {
       t.touches.length < 2 && (this.touchStartDistance = 0, this.isTouchPanning = !1);
@@ -4771,9 +5010,9 @@ class $e {
       const e = this.canvasContainer.getBoundingClientRect();
       (t.clientX <= e.left || t.clientX >= e.right || t.clientY <= e.top || t.clientY >= e.bottom) && ((i = this.dropZone) == null || i.classList.remove("active"));
     }), this.canvasContainer.addEventListener("drop", (t) => {
-      var i, a, n;
+      var i, a, s;
       t.preventDefault(), t.stopPropagation(), (i = this.dropZone) == null || i.classList.remove("active");
-      const e = (n = (a = t.dataTransfer) == null ? void 0 : a.files) == null ? void 0 : n[0];
+      const e = (s = (a = t.dataTransfer) == null ? void 0 : a.files) == null ? void 0 : s[0];
       e != null && e.type.startsWith("image/") && this.loadImageFile(e);
     });
   }
@@ -4783,8 +5022,8 @@ class $e {
   loadImageFile(t) {
     const e = new FileReader();
     e.onload = (i) => {
-      var n;
-      const a = (n = i.target) == null ? void 0 : n.result;
+      var s;
+      const a = (s = i.target) == null ? void 0 : s.result;
       a && this.editor.loadImage(a);
     }, e.readAsDataURL(t);
   }
@@ -4867,7 +5106,7 @@ class $e {
         const i = this.shapeManager.getShape(this.currentShapeId);
         if (i) {
           const a = this.shapeManager.getShapeBounds(i);
-          a && a.width < 3 && a.height < 3 && this.shapeManager.deleteShape(this.currentShapeId);
+          a && a.width < 3 && a.height < 3 ? this.shapeManager.deleteShape(this.currentShapeId) : this.flattenShapes();
         }
       } else (this.currentTool === "mosaic" || this.currentTool === "eraser") && this.saveOriginalImage();
       this.isDrawing = !1, this.currentShapeId = null, (e = (t = this.editor).saveToHistory) == null || e.call(t, this.currentTool + " draw");
@@ -4875,7 +5114,7 @@ class $e {
   }
   /** Convert client coordinates to canvas coordinates */
   clientToCanvasCoords(t, e) {
-    const i = this.canvasContainer.getBoundingClientRect(), a = this.editor.canvas, n = i.width / 2, s = i.height / 2, o = (t - i.left - n - this.translateX) / this.scale + a.width / 2, l = (e - i.top - s - this.translateY) / this.scale + a.height / 2;
+    const i = this.canvasContainer.getBoundingClientRect(), a = this.editor.canvas, s = i.width / 2, r = i.height / 2, o = (t - i.left - s - this.translateX) / this.scale + a.width / 2, l = (e - i.top - r - this.translateY) / this.scale + a.height / 2;
     return { x: o, y: l };
   }
   // ============ Mosaic Tool Methods ============
@@ -4883,41 +5122,41 @@ class $e {
   applyMosaicAt(t, e) {
     const i = this.editor.ctx, a = this.editor.canvas;
     if (!i || !a) return;
-    const n = i.getImageData(0, 0, a.width, a.height), s = this.strokeWidth * 3;
-    this.applyMosaicCircle(n, t, e, s, this.mosaicSize), i.putImageData(n, 0, 0);
+    const s = i.getImageData(0, 0, a.width, a.height), r = this.strokeWidth * 3;
+    this.applyMosaicCircle(s, t, e, r, this.mosaicSize), i.putImageData(s, 0, 0);
   }
   /** Interpolate mosaic stroke */
   interpolateMosaic(t, e, i, a) {
-    const n = this.editor.ctx, s = this.editor.canvas;
-    if (!n || !s) return;
-    const o = this.strokeWidth * 3, l = Math.sqrt((i - t) ** 2 + (a - e) ** 2), h = o / 2, d = Math.max(1, Math.ceil(l / h)), p = n.getImageData(0, 0, s.width, s.height);
-    for (let u = 0; u <= d; u++) {
-      const v = u / d, g = t + (i - t) * v, f = e + (a - e) * v;
-      this.applyMosaicCircle(p, g, f, o, this.mosaicSize);
+    const s = this.editor.ctx, r = this.editor.canvas;
+    if (!s || !r) return;
+    const o = this.strokeWidth * 3, l = Math.sqrt((i - t) ** 2 + (a - e) ** 2), h = o / 2, d = Math.max(1, Math.ceil(l / h)), p = s.getImageData(0, 0, r.width, r.height);
+    for (let v = 0; v <= d; v++) {
+      const f = v / d, u = t + (i - t) * f, g = e + (a - e) * f;
+      this.applyMosaicCircle(p, u, g, o, this.mosaicSize);
     }
-    n.putImageData(p, 0, 0);
+    s.putImageData(p, 0, 0);
   }
   /** Apply mosaic effect in a circular region */
-  applyMosaicCircle(t, e, i, a, n) {
-    const { width: s, height: o, data: l } = t, h = Math.max(0, Math.floor(e - a)), d = Math.min(s - 1, Math.ceil(e + a)), p = Math.max(0, Math.floor(i - a)), u = Math.min(o - 1, Math.ceil(i + a));
-    for (let v = p; v <= u; v += n)
-      for (let g = h; g <= d; g += n) {
-        const f = g + n / 2, m = v + n / 2;
-        if (Math.sqrt((f - e) ** 2 + (m - i) ** 2) > a) continue;
-        let C = 0, k = 0, I = 0, T = 0;
-        const E = Math.min(g + n, d + 1), M = Math.min(v + n, u + 1);
-        for (let x = v; x < M; x++)
-          for (let y = g; y < E; y++) {
-            const L = (x * s + y) * 4;
-            C += l[L], k += l[L + 1], I += l[L + 2], T++;
+  applyMosaicCircle(t, e, i, a, s) {
+    const { width: r, height: o, data: l } = t, h = Math.max(0, Math.floor(e - a)), d = Math.min(r - 1, Math.ceil(e + a)), p = Math.max(0, Math.floor(i - a)), v = Math.min(o - 1, Math.ceil(i + a));
+    for (let f = p; f <= v; f += s)
+      for (let u = h; u <= d; u += s) {
+        const g = u + s / 2, m = f + s / 2;
+        if (Math.sqrt((g - e) ** 2 + (m - i) ** 2) > a) continue;
+        let S = 0, M = 0, I = 0, E = 0;
+        const T = Math.min(u + s, d + 1), k = Math.min(f + s, v + 1);
+        for (let x = f; x < k; x++)
+          for (let b = u; b < T; b++) {
+            const L = (x * r + b) * 4;
+            S += l[L], M += l[L + 1], I += l[L + 2], E++;
           }
-        if (T > 0) {
-          C = Math.round(C / T), k = Math.round(k / T), I = Math.round(I / T);
-          for (let x = v; x < M; x++)
-            for (let y = g; y < E; y++)
-              if (Math.sqrt((y - e) ** 2 + (x - i) ** 2) <= a) {
-                const D = (x * s + y) * 4;
-                l[D] = C, l[D + 1] = k, l[D + 2] = I;
+        if (E > 0) {
+          S = Math.round(S / E), M = Math.round(M / E), I = Math.round(I / E);
+          for (let x = f; x < k; x++)
+            for (let b = u; b < T; b++)
+              if (Math.sqrt((b - e) ** 2 + (x - i) ** 2) <= a) {
+                const D = (x * r + b) * 4;
+                l[D] = S, l[D + 1] = M, l[D + 2] = I;
               }
         }
       }
@@ -4961,8 +5200,8 @@ class $e {
   /** Update brush cursor position */
   updateBrushCursorPosition(t, e) {
     if (!this.brushCursor) return;
-    const i = this.canvasContainer.getBoundingClientRect(), a = t - i.left, n = e - i.top;
-    this.brushCursor.style.left = `${a}px`, this.brushCursor.style.top = `${n}px`;
+    const i = this.canvasContainer.getBoundingClientRect(), a = t - i.left, s = e - i.top;
+    this.brushCursor.style.left = `${a}px`, this.brushCursor.style.top = `${s}px`;
   }
   selectTool(t) {
     if (t === this.currentTool) {
@@ -4980,8 +5219,8 @@ class $e {
   /** Show inline text input at click position */
   showInlineTextInput(t, e, i) {
     this.isAddingText = !0, this.inlineTextInput = document.createElement("div"), this.inlineTextInput.className = "ie-inline-text-container";
-    const a = this.canvasContainer.getBoundingClientRect(), n = t - a.left, s = e - a.top;
-    this.inlineTextInput.style.left = `${n}px`, this.inlineTextInput.style.top = `${s}px`;
+    const a = this.canvasContainer.getBoundingClientRect(), s = t - a.left, r = e - a.top;
+    this.inlineTextInput.style.left = `${s}px`, this.inlineTextInput.style.top = `${r}px`;
     const o = document.createElement("div");
     o.className = "ie-inline-text-input", o.contentEditable = "true", o.style.fontSize = `${this.textSize * this.scale}px`, o.style.color = this.textColor, o.setAttribute("data-placeholder", "输入文字..."), this.inlineTextInput.appendChild(o), this.canvasContainer.appendChild(this.inlineTextInput), this.createTextStyleBar(), o.focus(), this.inlineTextInput.__canvasPos = i, o.addEventListener("keydown", (l) => {
       l.key === "Escape" ? this.cancelInlineText() : l.key === "Enter" && !l.shiftKey && (l.preventDefault(), this.confirmInlineText());
@@ -4993,7 +5232,7 @@ class $e {
   }
   /** Create floating text style bar */
   createTextStyleBar() {
-    var e, i, a, n, s, o, l;
+    var e, i, a, s, r, o, l;
     this.textStyleBar && this.textStyleBar.remove(), this.textStyleBar = document.createElement("div"), this.textStyleBar.className = "ie-text-style-bar", this.textStyleBar.innerHTML = `
       <select class="ie-style-select" data-input="font" title="字体">
         <option value="sans-serif">默认</option>
@@ -5005,17 +5244,17 @@ class $e {
         <option value="'KaiTi', serif">楷体</option>
       </select>
       <span class="ie-style-divider"></span>
-      <button class="ie-style-btn" data-action="size-dec" title="减小字号">${w.minus}</button>
+      <button class="ie-style-btn" data-action="size-dec" title="减小字号">${y.minus}</button>
       <span class="ie-style-value" data-value="size">${this.textSize}</span>
-      <button class="ie-style-btn" data-action="size-inc" title="增大字号">${w.plus}</button>
+      <button class="ie-style-btn" data-action="size-inc" title="增大字号">${y.plus}</button>
       <span class="ie-style-divider"></span>
-      <button class="ie-style-btn ${this.textBold ? "active" : ""}" data-action="bold" title="粗体">${w.bold}</button>
-      <button class="ie-style-btn ${this.textItalic ? "active" : ""}" data-action="italic" title="斜体">${w.italic}</button>
-      <button class="ie-style-btn ${this.textUnderline ? "active" : ""}" data-action="underline" title="下划线">${w.underline}</button>
+      <button class="ie-style-btn ${this.textBold ? "active" : ""}" data-action="bold" title="粗体">${y.bold}</button>
+      <button class="ie-style-btn ${this.textItalic ? "active" : ""}" data-action="italic" title="斜体">${y.italic}</button>
+      <button class="ie-style-btn ${this.textUnderline ? "active" : ""}" data-action="underline" title="下划线">${y.underline}</button>
       <span class="ie-style-divider"></span>
       <input type="color" class="ie-style-color" value="${this.textColor}" data-input="color" title="文字颜色">
       <span class="ie-style-divider"></span>
-      <button class="ie-style-btn ie-style-confirm" data-action="confirm" title="确认">${w.check}</button>
+      <button class="ie-style-btn ie-style-confirm" data-action="confirm" title="确认">${y.check}</button>
     `;
     const t = this.textStyleBar.querySelector('[data-input="font"]');
     t && (t.value = this.textFontFamily), t == null || t.addEventListener("change", (h) => {
@@ -5027,10 +5266,10 @@ class $e {
     }), (a = this.textStyleBar.querySelector('[data-action="bold"]')) == null || a.addEventListener("click", (h) => {
       var d;
       h.stopPropagation(), this.textBold = !this.textBold, (d = h.target.closest(".ie-style-btn")) == null || d.classList.toggle("active", this.textBold), this.updateTextUI();
-    }), (n = this.textStyleBar.querySelector('[data-action="italic"]')) == null || n.addEventListener("click", (h) => {
+    }), (s = this.textStyleBar.querySelector('[data-action="italic"]')) == null || s.addEventListener("click", (h) => {
       var d;
       h.stopPropagation(), this.textItalic = !this.textItalic, (d = h.target.closest(".ie-style-btn")) == null || d.classList.toggle("active", this.textItalic), this.updateTextUI();
-    }), (s = this.textStyleBar.querySelector('[data-action="underline"]')) == null || s.addEventListener("click", (h) => {
+    }), (r = this.textStyleBar.querySelector('[data-action="underline"]')) == null || r.addEventListener("click", (h) => {
       var d;
       h.stopPropagation(), this.textUnderline = !this.textUnderline, (d = h.target.closest(".ie-style-btn")) == null || d.classList.toggle("active", this.textUnderline), this.updateTextUI();
     }), (o = this.textStyleBar.querySelector('[data-input="color"]')) == null || o.addEventListener("input", (h) => {
@@ -5064,7 +5303,7 @@ class $e {
   }
   /** Confirm and add text to canvas */
   confirmInlineText() {
-    var a, n, s;
+    var a, s, r;
     if (!this.inlineTextInput) return;
     const t = this.inlineTextInput.querySelector(".ie-inline-text-input"), e = ((a = t == null ? void 0 : t.textContent) == null ? void 0 : a.trim()) || "", i = this.inlineTextInput.__canvasPos;
     if (document.removeEventListener("pointerdown", this.handleOutsideClick), e && i) {
@@ -5076,7 +5315,7 @@ class $e {
           const d = o.measureText(e);
           o.strokeStyle = this.textColor, o.lineWidth = Math.max(1, this.textSize / 15), o.beginPath(), o.moveTo(i.x, i.y + this.textSize + 2), o.lineTo(i.x + d.width, i.y + this.textSize + 2), o.stroke();
         }
-        o.restore(), this.saveOriginalImage(), (s = (n = this.editor).saveToHistory) == null || s.call(n, "add text");
+        o.restore(), this.saveOriginalImage(), (r = (s = this.editor).saveToHistory) == null || r.call(s, "add text");
       }
     }
     this.inlineTextInput && (this.inlineTextInput.remove(), this.inlineTextInput = null), this.textStyleBar && (this.textStyleBar.remove(), this.textStyleBar = null), this.isAddingText = !1;
@@ -5094,13 +5333,13 @@ class $e {
     if (this.cropOverlay) return;
     const t = this.editor.canvas;
     this.cropOverlay = document.createElement("div"), this.cropOverlay.className = "ie-crop-overlay";
-    const e = 0.1, i = t.width * (1 - e * 2), a = t.height * (1 - e * 2), n = t.width * e, s = t.height * e;
+    const e = 0.1, i = t.width * (1 - e * 2), a = t.height * (1 - e * 2), s = t.width * e, r = t.height * e;
     this.cropOverlay.innerHTML = `
       <div class="ie-crop-mask ie-crop-mask-top"></div>
       <div class="ie-crop-mask ie-crop-mask-left"></div>
       <div class="ie-crop-mask ie-crop-mask-right"></div>
       <div class="ie-crop-mask ie-crop-mask-bottom"></div>
-      <div class="ie-crop-box" style="left:${n}px;top:${s}px;width:${i}px;height:${a}px;">
+      <div class="ie-crop-box" style="left:${s}px;top:${r}px;width:${i}px;height:${a}px;">
         <div class="ie-crop-grid">
           <div class="ie-crop-grid-h"></div>
           <div class="ie-crop-grid-h"></div>
@@ -5127,32 +5366,32 @@ class $e {
   }
   /** Setup crop overlay events */
   setupCropEvents() {
-    var p, u;
+    var p, v;
     if (!this.cropOverlay) return;
     const t = this.cropOverlay.querySelector(".ie-crop-box");
-    let e = !1, i = !1, a = "", n = 0, s = 0, o = 0, l = 0, h = 0, d = 0;
-    t.addEventListener("pointerdown", (v) => {
-      v.target.classList.contains("ie-crop-handle") || (v.stopPropagation(), e = !0, n = v.clientX, s = v.clientY, o = t.offsetLeft, l = t.offsetTop, t.setPointerCapture(v.pointerId));
-    }), this.cropOverlay.querySelectorAll(".ie-crop-handle").forEach((v) => {
-      v.addEventListener("pointerdown", (g) => {
-        g.stopPropagation(), i = !0, a = g.target.getAttribute("data-handle") || "", n = g.clientX, s = g.clientY, o = t.offsetLeft, l = t.offsetTop, h = t.offsetWidth, d = t.offsetHeight, v.setPointerCapture(g.pointerId);
+    let e = !1, i = !1, a = "", s = 0, r = 0, o = 0, l = 0, h = 0, d = 0;
+    t.addEventListener("pointerdown", (f) => {
+      f.target.classList.contains("ie-crop-handle") || (f.stopPropagation(), e = !0, s = f.clientX, r = f.clientY, o = t.offsetLeft, l = t.offsetTop, t.setPointerCapture(f.pointerId));
+    }), this.cropOverlay.querySelectorAll(".ie-crop-handle").forEach((f) => {
+      f.addEventListener("pointerdown", (u) => {
+        u.stopPropagation(), i = !0, a = u.target.getAttribute("data-handle") || "", s = u.clientX, r = u.clientY, o = t.offsetLeft, l = t.offsetTop, h = t.offsetWidth, d = t.offsetHeight, f.setPointerCapture(u.pointerId);
       });
-    }), this.cropOverlay.addEventListener("pointermove", (v) => {
+    }), this.cropOverlay.addEventListener("pointermove", (f) => {
       if (!e && !i) return;
-      const g = (v.clientX - n) / this.scale, f = (v.clientY - s) / this.scale, m = this.editor.canvas;
+      const u = (f.clientX - s) / this.scale, g = (f.clientY - r) / this.scale, m = this.editor.canvas;
       if (e) {
-        let S = o + g, C = l + f;
-        S = Math.max(0, Math.min(S, m.width - t.offsetWidth)), C = Math.max(0, Math.min(C, m.height - t.offsetHeight)), t.style.left = `${S}px`, t.style.top = `${C}px`;
+        let C = o + u, S = l + g;
+        C = Math.max(0, Math.min(C, m.width - t.offsetWidth)), S = Math.max(0, Math.min(S, m.height - t.offsetHeight)), t.style.left = `${C}px`, t.style.top = `${S}px`;
       } else if (i) {
-        let S = o, C = l, k = h, I = d;
-        a.includes("e") && (k = Math.max(50, h + g)), a.includes("w") && (k = Math.max(50, h - g), S = o + g), a.includes("s") && (I = Math.max(50, d + f)), a.includes("n") && (I = Math.max(50, d - f), C = l + f), S < 0 && (k += S, S = 0), C < 0 && (I += C, C = 0), S + k > m.width && (k = m.width - S), C + I > m.height && (I = m.height - C), t.style.left = `${S}px`, t.style.top = `${C}px`, t.style.width = `${k}px`, t.style.height = `${I}px`;
+        let C = o, S = l, M = h, I = d;
+        a.includes("e") && (M = Math.max(50, h + u)), a.includes("w") && (M = Math.max(50, h - u), C = o + u), a.includes("s") && (I = Math.max(50, d + g)), a.includes("n") && (I = Math.max(50, d - g), S = l + g), C < 0 && (M += C, C = 0), S < 0 && (I += S, S = 0), C + M > m.width && (M = m.width - C), S + I > m.height && (I = m.height - S), t.style.left = `${C}px`, t.style.top = `${S}px`, t.style.width = `${M}px`, t.style.height = `${I}px`;
       }
       this.updateCropMask();
     }), this.cropOverlay.addEventListener("pointerup", () => {
       e = !1, i = !1, a = "";
     }), (p = this.cropOverlay.querySelector('[data-action="cancel"]')) == null || p.addEventListener("click", () => {
       this.toggleCropTool();
-    }), (u = this.cropOverlay.querySelector('[data-action="apply"]')) == null || u.addEventListener("click", () => {
+    }), (v = this.cropOverlay.querySelector('[data-action="apply"]')) == null || v.addEventListener("click", () => {
       this.applyCrop();
     }), this.updateCropMask();
   }
@@ -5161,8 +5400,8 @@ class $e {
     if (!this.cropOverlay) return;
     const t = this.cropOverlay.querySelector(".ie-crop-box");
     if (!t) return;
-    const e = this.editor.canvas, i = t.offsetLeft, a = t.offsetTop, n = t.offsetWidth, s = t.offsetHeight, o = this.cropOverlay.querySelector(".ie-crop-mask-top"), l = this.cropOverlay.querySelector(".ie-crop-mask-left"), h = this.cropOverlay.querySelector(".ie-crop-mask-right"), d = this.cropOverlay.querySelector(".ie-crop-mask-bottom");
-    o && (o.style.cssText = `left:0;top:0;width:${e.width}px;height:${a}px;`), l && (l.style.cssText = `left:0;top:${a}px;width:${i}px;height:${s}px;`), h && (h.style.cssText = `left:${i + n}px;top:${a}px;width:${e.width - i - n}px;height:${s}px;`), d && (d.style.cssText = `left:0;top:${a + s}px;width:${e.width}px;height:${e.height - a - s}px;`);
+    const e = this.editor.canvas, i = t.offsetLeft, a = t.offsetTop, s = t.offsetWidth, r = t.offsetHeight, o = this.cropOverlay.querySelector(".ie-crop-mask-top"), l = this.cropOverlay.querySelector(".ie-crop-mask-left"), h = this.cropOverlay.querySelector(".ie-crop-mask-right"), d = this.cropOverlay.querySelector(".ie-crop-mask-bottom");
+    o && (o.style.cssText = `left:0;top:0;width:${e.width}px;height:${a}px;`), l && (l.style.cssText = `left:0;top:${a}px;width:${i}px;height:${r}px;`), h && (h.style.cssText = `left:${i + s}px;top:${a}px;width:${e.width - i - s}px;height:${r}px;`), d && (d.style.cssText = `left:0;top:${a + r}px;width:${e.width}px;height:${e.height - a - r}px;`);
   }
   /** Apply crop to canvas */
   applyCrop() {
@@ -5170,13 +5409,13 @@ class $e {
     if (!this.cropOverlay) return;
     const t = this.cropOverlay.querySelector(".ie-crop-box");
     if (!t) return;
-    const e = t.offsetLeft, i = t.offsetTop, a = t.offsetWidth, n = t.offsetHeight, s = this.editor.ctx, o = this.editor.canvas;
-    !s || !o || ((h = (l = this.editor).saveToHistory) == null || h.call(l, "before crop"), this.cropOverlay.style.transition = "opacity 0.25s ease-out", this.cropOverlay.style.opacity = "0", setTimeout(() => {
-      var u;
-      const d = s.getImageData(e, i, a, n);
-      o.width = a, o.height = n, s.putImageData(d, 0, 0), this.saveOriginalImage(), this.savePureImage(), this.cropOverlay && (this.cropOverlay.remove(), this.cropOverlay = null), this.isCropActive = !1, (u = this.buttons.get("crop")) == null || u.classList.remove("active");
+    const e = t.offsetLeft, i = t.offsetTop, a = t.offsetWidth, s = t.offsetHeight, r = this.editor.ctx, o = this.editor.canvas;
+    !r || !o || ((h = (l = this.editor).saveToHistory) == null || h.call(l, "before crop"), this.cropOverlay.style.transition = "opacity 0.25s ease-out", this.cropOverlay.style.opacity = "0", setTimeout(() => {
+      var v;
+      const d = r.getImageData(e, i, a, s);
+      o.width = a, o.height = s, r.putImageData(d, 0, 0), this.saveOriginalImage(), this.savePureImage(), this.cropOverlay && (this.cropOverlay.remove(), this.cropOverlay = null), this.isCropActive = !1, (v = this.buttons.get("crop")) == null || v.classList.remove("active");
       const p = this.groups.get("cropAction");
-      p && (p.style.display = "none"), this.updateDividerVisibility(this.options.disabledTools || []), this.viewport.style.transition = "transform 0.3s ease-out", this.resetView(), setTimeout(() => {
+      p && (p.style.display = "none"), this.updateDividerVisibility(this.options.disabledTools || []), this.viewport.style.transition = "transform 0.3s ease-out", this.resetViewOnly(), setTimeout(() => {
         this.viewport.style.transition = "none";
       }, 300);
     }, 250));
@@ -5191,7 +5430,20 @@ class $e {
   /** Toggle filter panel */
   toggleFilterPanel() {
     var e, i;
-    this.panels.get("filter") && (this.activePanel === "filter" ? (this.showPanel(null), (e = this.buttons.get("filter")) == null || e.classList.remove("active")) : (this.showPanel("filter"), (i = this.buttons.get("filter")) == null || i.classList.add("active")));
+    const t = this.panels.get("filter");
+    t && (this.activePanel === "filter" ? (this.showPanel(null), (e = this.buttons.get("filter")) == null || e.classList.remove("active")) : (this.positionPanelAboveButton(t, "filter"), this.showPanel("filter"), (i = this.buttons.get("filter")) == null || i.classList.add("active")));
+  }
+  /** Position a panel above a specific button */
+  positionPanelAboveButton(t, e) {
+    const i = this.buttons.get(e);
+    if (!i) return;
+    const a = i.getBoundingClientRect(), s = this.toolbar.getBoundingClientRect(), r = t.offsetWidth || 300, o = a.left + a.width / 2 - s.left;
+    let l = o - r / 2;
+    l = Math.max(8, l);
+    const h = s.width - r - 8;
+    l = Math.min(h, l), t.style.left = `${l}px`, t.style.transform = "translateY(0)";
+    const d = o - l;
+    t.style.setProperty("--arrow-left", `${d}px`);
   }
   // ============ Eraser Tool ============
   /** Apply eraser at position - restores original image pixels */
@@ -5204,30 +5456,30 @@ class $e {
   }
   /** Restore original image pixels in a circular area */
   restoreOriginalPixels(t, e, i) {
-    const a = this.editor.ctx, n = this.editor.canvas, s = this.pureImageData;
-    if (!a || !n || !s) {
+    const a = this.editor.ctx, s = this.editor.canvas, r = this.pureImageData;
+    if (!a || !s || !r) {
       console.warn("[Eraser] Missing required data, skipping restore");
       return;
     }
-    const o = i * i, l = Math.max(0, Math.floor(t - i)), h = Math.min(n.width - 1, Math.ceil(t + i)), d = Math.max(0, Math.floor(e - i)), p = Math.min(n.height - 1, Math.ceil(e + i)), u = h - l + 1, v = p - d + 1;
-    if (u <= 0 || v <= 0) return;
-    const g = a.getImageData(l, d, u, v), f = g.data, m = s.data, S = s.width;
-    let C = 0;
-    for (let k = d; k <= p; k++)
+    const o = i * i, l = Math.max(0, Math.floor(t - i)), h = Math.min(s.width - 1, Math.ceil(t + i)), d = Math.max(0, Math.floor(e - i)), p = Math.min(s.height - 1, Math.ceil(e + i)), v = h - l + 1, f = p - d + 1;
+    if (v <= 0 || f <= 0) return;
+    const u = a.getImageData(l, d, v, f), g = u.data, m = r.data, C = r.width;
+    let S = 0;
+    for (let M = d; M <= p; M++)
       for (let I = l; I <= h; I++) {
-        const T = I - t, E = k - e, M = T * T + E * E;
-        if (M <= o) {
-          const x = (k * S + I) * 4, y = ((k - d) * u + (I - l)) * 4;
-          (f[y] !== m[x] || f[y + 1] !== m[x + 1] || f[y + 2] !== m[x + 2] || f[y + 3] !== m[x + 3]) && C++;
-          const L = Math.sqrt(M), D = Math.min(1, (i - L) / 2);
-          D >= 1 ? (f[y] = m[x], f[y + 1] = m[x + 1], f[y + 2] = m[x + 2], f[y + 3] = m[x + 3]) : (f[y] = Math.round(f[y] * (1 - D) + m[x] * D), f[y + 1] = Math.round(f[y + 1] * (1 - D) + m[x + 1] * D), f[y + 2] = Math.round(f[y + 2] * (1 - D) + m[x + 2] * D), f[y + 3] = Math.round(f[y + 3] * (1 - D) + m[x + 3] * D));
+        const E = I - t, T = M - e, k = E * E + T * T;
+        if (k <= o) {
+          const x = (M * C + I) * 4, b = ((M - d) * v + (I - l)) * 4;
+          (g[b] !== m[x] || g[b + 1] !== m[x + 1] || g[b + 2] !== m[x + 2] || g[b + 3] !== m[x + 3]) && S++;
+          const L = Math.sqrt(k), D = Math.min(1, (i - L) / 2);
+          D >= 1 ? (g[b] = m[x], g[b + 1] = m[x + 1], g[b + 2] = m[x + 2], g[b + 3] = m[x + 3]) : (g[b] = Math.round(g[b] * (1 - D) + m[x] * D), g[b + 1] = Math.round(g[b + 1] * (1 - D) + m[x + 1] * D), g[b + 2] = Math.round(g[b + 2] * (1 - D) + m[x + 2] * D), g[b + 3] = Math.round(g[b + 3] * (1 - D) + m[x + 3] * D));
         }
       }
-    C > 0 && console.log("[Eraser] Restoring", C, "different pixels"), a.putImageData(g, l, d);
+    S > 0 && console.log("[Eraser] Restoring", S, "different pixels"), a.putImageData(u, l, d);
   }
   /** Interpolate eraser stroke */
   interpolateEraser(t, e, i, a) {
-    const n = Math.sqrt((i - t) ** 2 + (a - e) ** 2), s = Math.max(1, this.eraserSize / 6), o = Math.max(1, Math.ceil(n / s));
+    const s = Math.sqrt((i - t) ** 2 + (a - e) ** 2), r = Math.max(1, this.eraserSize / 6), o = Math.max(1, Math.ceil(s / r));
     for (let l = 0; l <= o; l++) {
       const h = l / o, d = t + (i - t) * h, p = e + (a - e) * h;
       this.applyEraserAt(d, p);
@@ -5236,8 +5488,8 @@ class $e {
   // Zoom methods
   setScale(t, e, i) {
     if (t = Math.max(0.1, Math.min(5, t)), e !== void 0 && i !== void 0) {
-      const a = this.canvasContainer.getBoundingClientRect(), n = e - a.left - a.width / 2, s = i - a.top - a.height / 2, o = t - this.scale;
-      this.translateX -= n * o / this.scale, this.translateY -= s * o / this.scale;
+      const a = this.canvasContainer.getBoundingClientRect(), s = e - a.left - a.width / 2, r = i - a.top - a.height / 2, o = t - this.scale;
+      this.translateX -= s * o / this.scale, this.translateY -= r * o / this.scale;
     }
     this.scale = t, this.updateTransform();
   }
@@ -5252,7 +5504,17 @@ class $e {
   zoomOut() {
     this.setScale(this.scale / 1.25);
   }
-  resetView() {
+  /** Reset image to initial state (when first loaded) */
+  resetImage() {
+    const t = this.editor.getHistoryManager(), e = t.getStateAt(0);
+    if (e) {
+      const i = e.imageData, a = this.editor.canvas, s = this.editor.ctx;
+      (a.width !== i.width || a.height !== i.height) && (a.width = i.width, a.height = i.height), s.putImageData(i, 0, 0), this.saveOriginalImage(), this.savePureImage(), this.shapeManager.clear(), t.clear(), this.editor.saveToHistory("reset to initial");
+    }
+    this.resetViewOnly();
+  }
+  /** Reset view only (zoom and position, not image content) */
+  resetViewOnly() {
     this.scale = 1, this.translateX = 0, this.translateY = 0, this.updateTransform();
   }
   async exportImage() {
@@ -5275,8 +5537,8 @@ class $e {
    * Show advanced export dialog
    */
   async showExportDialog() {
-    var n;
-    const { ExportDialog: t, applyWatermark: e } = await Promise.resolve().then(() => ni), a = await new t({
+    var s;
+    const { ExportDialog: t, applyWatermark: e } = await Promise.resolve().then(() => si), a = await new t({
       width: this.editor.width,
       height: this.editor.height,
       format: "png",
@@ -5289,7 +5551,7 @@ class $e {
       try {
         if (a.action === "copy")
           return;
-        const s = {
+        const r = {
           format: a.format,
           quality: a.quality,
           width: a.width,
@@ -5298,24 +5560,24 @@ class $e {
           backgroundColor: a.backgroundColor,
           type: "base64"
         };
-        let o = await this.editor.export(s);
-        if ((n = a.watermark) != null && n.text) {
+        let o = await this.editor.export(r);
+        if ((s = a.watermark) != null && s.text) {
           const d = document.createElement("canvas");
           d.width = a.width, d.height = a.height;
           const p = d.getContext("2d");
           if (p) {
-            const u = new Image();
-            u.src = o, await new Promise((v) => {
-              u.onload = v;
-            }), p.drawImage(u, 0, 0), e(d, a.watermark), o = d.toDataURL(`image/${a.format}`, a.quality);
+            const v = new Image();
+            v.src = o, await new Promise((f) => {
+              v.onload = f;
+            }), p.drawImage(v, 0, 0), e(d, a.watermark), o = d.toDataURL(`image/${a.format}`, a.quality);
           }
         }
         const l = document.createElement("a");
         l.href = o;
         const h = a.format === "jpeg" ? "jpg" : a.format;
         l.download = `image-${Date.now()}.${h}`, l.click();
-      } catch (s) {
-        console.error("Export failed:", s);
+      } catch (r) {
+        console.error("Export failed:", r);
       }
   }
   /**
@@ -5331,8 +5593,8 @@ class $e {
         type: "base64"
       }), a = document.createElement("a");
       a.href = i;
-      const n = t === "jpeg" ? "jpg" : t;
-      a.download = `image-${Date.now()}.${n}`, a.click();
+      const s = t === "jpeg" ? "jpg" : t;
+      a.download = `image-${Date.now()}.${s}`, a.click();
     } catch (i) {
       console.error("Export failed:", i);
     }
@@ -5385,6 +5647,11 @@ class $e {
       "crop",
       "filter",
       // Drawing tools
+      "rotateLeft",
+      "rotateRight",
+      "flipH",
+      "flipV",
+      // Transform tools
       "zoomIn",
       "zoomOut",
       "reset",
@@ -5414,7 +5681,7 @@ class $e {
     const e = {
       zoom: ["zoomIn", "zoomOut", "reset"],
       tool: ["move", "pen", "rect", "circle", "arrow", "line", "triangle", "text", "mosaic", "eraser"],
-      advanced: ["crop", "filter"],
+      advanced: ["crop", "filter", "rotateLeft", "rotateRight", "flipH", "flipV"],
       history: ["undo", "redo"],
       cropAction: []
       // Special group, always hidden by default unless crop mode is active
@@ -5425,10 +5692,10 @@ class $e {
       }
       const d = e[h];
       return !d || d.length === 0 ? !1 : d.some((p) => !t.includes(p));
-    }, a = !t.includes("export"), n = i("zoom"), s = i("tool") || i("advanced");
-    this.dividers[0] && (this.dividers[0].style.display = n && s ? "" : "none");
+    }, a = !t.includes("export"), s = i("zoom"), r = i("tool") || i("advanced");
+    this.dividers[0] && (this.dividers[0].style.display = s && r ? "" : "none");
     const o = i("history");
-    this.dividers[1] && (this.dividers[1].style.display = s && o ? "" : "none");
+    this.dividers[1] && (this.dividers[1].style.display = r && o ? "" : "none");
     const l = i("cropAction");
     this.dividers[2] && (this.dividers[2].style.display = o && (l || a) ? "" : "none"), this.dividers[3] && (this.dividers[3].style.display = l && a ? "" : "none");
   }
@@ -5473,8 +5740,8 @@ class $e {
     const t = this.options.theme === "auto" ? window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light" : this.options.theme || "dark";
     let e = this.options.placeholderWidth, i = this.options.placeholderHeight;
     if (!e || !i) {
-      const n = this.canvasContainer.getBoundingClientRect();
-      e = Math.max(400, Math.round(n.width)), i = Math.max(300, Math.round(n.height));
+      const s = this.canvasContainer.getBoundingClientRect();
+      e = Math.max(400, Math.round(s.width)), i = Math.max(300, Math.round(s.height));
     }
     const a = ve({
       width: e,
@@ -5489,18 +5756,141 @@ class $e {
   }
   /** Called when a real image is loaded */
   onImageLoaded() {
-    this.hasRealImage = !0, this.options.autoHide && this.setToolbarVisible(!0), this.savePureImage(), this.saveOriginalImage();
+    this.hasRealImage = !0, this.options.autoHide && this.setToolbarVisible(!0), this.savePureImage(), this.saveOriginalImage(), this.saveInitialPureImage(), this.resetFilterUI();
+  }
+  /** Save the initial pure image (for filter reset, never overwritten by filters) */
+  saveInitialPureImage() {
+    const t = this.editor.ctx, e = this.editor.canvas;
+    t && e && (this.initialPureImageData = t.getImageData(0, 0, e.width, e.height));
+  }
+  /** Reset filter UI to default state */
+  resetFilterUI() {
+    var e;
+    const t = this.panels.get("filter");
+    t && (t.querySelectorAll("[data-preset]").forEach((i) => i.classList.remove("active")), (e = t.querySelector('[data-preset="none"]')) == null || e.classList.add("active"), this.resetFilterSliders());
+  }
+  syncImageData() {
+    this.hasRealImage && (this.savePureImage(), this.saveOriginalImage());
+  }
+  handleCanvasResize() {
+    this.hasRealImage && this.updateBrushCursorSize();
   }
   /** Save the pure original image (without any annotations) - for eraser tool */
   savePureImage() {
     const t = this.editor.ctx, e = this.editor.canvas;
     t && e && (this.pureImageData = t.getImageData(0, 0, e.width, e.height));
   }
+  // ============ Keyboard Shortcuts ============
+  /** Handle keyboard shortcuts */
+  handleKeyDown(t) {
+    var o, l;
+    const e = document.activeElement;
+    if (this.isAddingText || (e == null ? void 0 : e.tagName) === "INPUT" || (e == null ? void 0 : e.tagName) === "TEXTAREA" || e != null && e.isContentEditable) {
+      t.key === "Escape" && this.isAddingText && (t.preventDefault(), this.cancelInlineText());
+      return;
+    }
+    if (t.key === "Delete" || t.key === "Backspace") {
+      const h = this.shapeManager.getSelectedShape();
+      h && (t.preventDefault(), this.shapeManager.deleteShape(h.id), (l = (o = this.editor).saveToHistory) == null || l.call(o, "delete shape"));
+      return;
+    }
+    if (t.key === "Escape") {
+      this.isCropActive ? this.toggleCropTool() : this.activePanel ? this.hideAllPanels() : (this.shapeManager.selectShape(null), this.selectTool(null));
+      return;
+    }
+    if (!this.hasRealImage) return;
+    const i = t.key.toLowerCase(), a = t.ctrlKey || t.metaKey, s = t.shiftKey, r = this.options.disabledTools || [];
+    if (a) {
+      switch (i) {
+        case "z":
+          s ? r.includes("redo") || (t.preventDefault(), this.editor.redo()) : r.includes("undo") || (t.preventDefault(), this.editor.undo());
+          return;
+        case "s":
+          r.includes("export") || (t.preventDefault(), this.exportImage());
+          return;
+        case "y":
+          r.includes("redo") || (t.preventDefault(), this.editor.redo());
+          return;
+      }
+      return;
+    }
+    if (s) {
+      switch (i) {
+        case "h":
+          r.includes("flipH") || (t.preventDefault(), this.editor.flipHorizontal());
+          return;
+        case "v":
+          r.includes("flipV") || (t.preventDefault(), this.editor.flipVertical());
+          return;
+        case "arrowleft":
+          r.includes("rotateLeft") || (t.preventDefault(), this.editor.rotateLeft());
+          return;
+        case "arrowright":
+          r.includes("rotateRight") || (t.preventDefault(), this.editor.rotateRight());
+          return;
+      }
+      return;
+    }
+    switch (i) {
+      case "=":
+      case "+":
+        r.includes("zoomIn") || (t.preventDefault(), this.zoomIn());
+        break;
+      case "-":
+        r.includes("zoomOut") || (t.preventDefault(), this.zoomOut());
+        break;
+      case "0":
+        r.includes("reset") || (t.preventDefault(), this.resetImage());
+        break;
+      case "v":
+        r.includes("move") || (t.preventDefault(), this.selectTool(null));
+        break;
+      case "p":
+        r.includes("pen") || (t.preventDefault(), this.selectTool("pen"));
+        break;
+      case "r":
+        r.includes("rect") || (t.preventDefault(), this.selectTool("rect"));
+        break;
+      case "o":
+        r.includes("circle") || (t.preventDefault(), this.selectTool("circle"));
+        break;
+      case "a":
+        r.includes("arrow") || (t.preventDefault(), this.selectTool("arrow"));
+        break;
+      case "l":
+        r.includes("line") || (t.preventDefault(), this.selectTool("line"));
+        break;
+      case "g":
+        r.includes("triangle") || (t.preventDefault(), this.selectTool("triangle"));
+        break;
+      case "t":
+        r.includes("text") || (t.preventDefault(), this.selectTool("text"));
+        break;
+      case "m":
+        r.includes("mosaic") || (t.preventDefault(), this.selectTool("mosaic"));
+        break;
+      case "x":
+        r.includes("eraser") || (t.preventDefault(), this.selectTool("eraser"));
+        break;
+      case "c":
+        r.includes("crop") || (t.preventDefault(), this.toggleCropTool());
+        break;
+      case "i":
+        r.includes("filter") || (t.preventDefault(), this.toggleFilterPanel());
+        break;
+      case "[":
+        this.isDrawingTool(this.currentTool) && (t.preventDefault(), this.currentTool === "eraser" ? (this.eraserSize = Math.max(5, this.eraserSize - 5), this.updateEraserPanelUI()) : (this.strokeWidth = Math.max(1, this.strokeWidth - 1), this.updateDrawPanelUI(), this.updateMosaicPanelUI()));
+        break;
+      case "]":
+        this.isDrawingTool(this.currentTool) && (t.preventDefault(), this.currentTool === "eraser" ? (this.eraserSize = Math.min(100, this.eraserSize + 5), this.updateEraserPanelUI()) : (this.strokeWidth = Math.min(20, this.strokeWidth + 1), this.updateDrawPanelUI(), this.updateMosaicPanelUI()));
+        break;
+    }
+  }
   destroy() {
-    this.wrapper.remove(), this.panels.clear(), this.buttons.clear(), this.shapeManager.clear();
+    document.removeEventListener("keydown", this.handleKeyDown), this.wrapper.remove(), this.panels.clear(), this.buttons.clear(), this.shapeManager.clear();
   }
 }
-const G = class G {
+const j = class j {
   /**
    * Create a new Editor instance
    * Requirements: 1.1, 1.3 - Initialize editor with container and config
@@ -5521,11 +5911,12 @@ const G = class G {
     c(this, "_container");
     /** Built-in toolbar instance */
     c(this, "_toolbar", null);
+    c(this, "_offCanvasResize", null);
     /** Whether the editor is destroyed */
     c(this, "_destroyed", !1);
     /** Whether the editor is ready */
     c(this, "_ready", !1);
-    const e = Ht(t.container);
+    const e = Ft(t.container);
     if (!e)
       throw new Error("Container element not found");
     this._container = e;
@@ -5539,32 +5930,39 @@ const G = class G {
     };
     this._configManager = new Ee(i), this._eventManager = new Te();
     const a = this._configManager.getConfig();
-    if (this._historyManager = new De(a.historyLimit), this._canvas = new Le(this._container, a), this._pluginManager = new ze(), this._pluginManager.setContext(this.createPluginContext()), this._historyManager.onChange((s, o) => {
-      this._eventManager.emit("history-change", { canUndo: s, canRedo: o });
-    }), this._pluginManager.onChange((s, o) => {
-      this._eventManager.emit("tool-change", { tool: s || "", prevTool: o });
+    if (this._historyManager = new De(a.historyLimit), this._canvas = new Le(this._container, a), this._offCanvasResize = this._canvas.onResize((r) => {
+      this._destroyed || (this._toolbar && this._toolbar.handleCanvasResize(), this._eventManager.emit("transform", {
+        type: "resize",
+        width: r.width,
+        height: r.height
+      }));
+    }), this._pluginManager = new ze(), this._pluginManager.setContext(this.createPluginContext()), this._historyManager.onChange((r, o) => {
+      this._eventManager.emit("history-change", { canUndo: r, canRedo: o });
+    }), this._pluginManager.onChange((r, o) => {
+      this._eventManager.emit("tool-change", { tool: r || "", prevTool: o });
     }), t.plugins)
-      for (const s of t.plugins)
-        this.use(s);
-    const n = t.toolbar;
-    if (n !== !1) {
-      Pt();
-      const s = typeof n == "object" ? n : {};
+      for (const r of t.plugins)
+        this.use(r);
+    const s = t.toolbar;
+    if (s !== !1) {
+      zt();
+      const r = typeof s == "object" ? s : {};
       this._toolbar = new $e(this, this._container, {
-        zoom: s.zoom !== !1,
-        tools: s.tools !== !1,
-        history: s.history !== !1,
-        export: s.export !== !1,
-        theme: s.theme || "dark",
-        primaryColor: s.primaryColor,
-        disabledTools: s.disabledTools,
-        autoHide: s.autoHide !== !1,
-        placeholderText: s.placeholderText,
-        placeholderSubText: s.placeholderSubText
+        zoom: r.zoom !== !1,
+        tools: r.tools !== !1,
+        history: r.history !== !1,
+        export: r.export !== !1,
+        theme: r.theme || "dark",
+        primaryColor: r.primaryColor,
+        disabledTools: r.disabledTools,
+        autoHide: r.autoHide !== !1,
+        placeholderText: r.placeholderText,
+        placeholderSubText: r.placeholderSubText,
+        layout: r.layout
       });
     }
-    t.image ? this.loadImage(t.image).catch((s) => {
-      this._eventManager.emit("error", { error: s });
+    t.image ? this.loadImage(t.image).catch((r) => {
+      this._eventManager.emit("error", { error: r });
     }) : this._toolbar && this._toolbar.showPlaceholder();
   }
   /**
@@ -5646,7 +6044,7 @@ const G = class G {
       throw new Error("Editor is destroyed");
     try {
       const { width: i, height: a } = await this._canvas.loadImage(t);
-      e && this._historyManager.clear(), this.saveState("init", "Initial state"), this._ready = !0, this._eventManager.emit("image-loaded", { width: i, height: a }), this._eventManager.emit("ready", { width: i, height: a }), e && this._toolbar && this._toolbar.onImageLoaded();
+      e && this._historyManager.clear(), this.saveState("init", "Initial state"), e && (this._ready = !0, this._toolbar && this._toolbar.onImageLoaded(), this._eventManager.emit("image-loaded", { width: i, height: a }), this._eventManager.emit("ready", { width: i, height: a }));
     } catch (i) {
       const a = i instanceof Error ? i : new Error(String(i));
       throw this._eventManager.emit("error", { error: a }), a;
@@ -5671,7 +6069,7 @@ const G = class G {
   setTool(t) {
     if (this._destroyed)
       throw new Error("Editor is destroyed");
-    if (!G.BUILTIN_TOOLS.includes(t))
+    if (!j.BUILTIN_TOOLS.includes(t))
       this._pluginManager.activate(t);
     else {
       const e = this._pluginManager.getActiveName();
@@ -6003,7 +6401,7 @@ const G = class G {
   flipHorizontal() {
     if (this._destroyed)
       throw new Error("Editor is destroyed");
-    this._canvas.flip("horizontal"), this.saveState("flip", "Flip horizontal"), this._eventManager.emit("transform", { type: "flip", direction: "horizontal" }), this._toolbar && this._toolbar.saveOriginalImage();
+    this._canvas.flip("horizontal"), this.saveState("flip", "Flip horizontal"), this._eventManager.emit("transform", { type: "flip", direction: "horizontal" }), this._toolbar && this._toolbar.syncImageData();
   }
   /**
    * Flip the image vertically
@@ -6011,7 +6409,7 @@ const G = class G {
   flipVertical() {
     if (this._destroyed)
       throw new Error("Editor is destroyed");
-    this._canvas.flip("vertical"), this.saveState("flip", "Flip vertical"), this._eventManager.emit("transform", { type: "flip", direction: "vertical" }), this._toolbar && this._toolbar.saveOriginalImage();
+    this._canvas.flip("vertical"), this.saveState("flip", "Flip vertical"), this._eventManager.emit("transform", { type: "flip", direction: "vertical" }), this._toolbar && this._toolbar.syncImageData();
   }
   /**
    * Crop the image to specified region
@@ -6061,20 +6459,20 @@ const G = class G {
     if (this._destroyed)
       throw new Error("Editor is destroyed");
     const i = this._canvas.width / this._canvas.height, a = t / e;
-    let n, s;
-    i > a ? (n = t, s = Math.round(t / i)) : (s = e, n = Math.round(e * i)), this.resize(n, s);
+    let s, r;
+    i > a ? (s = t, r = Math.round(t / i)) : (r = e, s = Math.round(e * i)), this.resize(s, r);
   }
   /**
    * Destroy the editor and clean up all resources
    * Requirements: 1.5 - Clean up all event listeners and canvas resources
    */
   destroy() {
-    this._destroyed || (this._destroyed = !0, this._eventManager.emit("destroy", void 0), this._toolbar && (this._toolbar.destroy(), this._toolbar = null), this._pluginManager.destroy(), this._historyManager.destroy(), this._canvas.destroy(), this._eventManager.destroy(), this._configManager.destroy(), this._ready = !1);
+    this._destroyed || (this._destroyed = !0, this._eventManager.emit("destroy", void 0), this._offCanvasResize && (this._offCanvasResize(), this._offCanvasResize = null), this._toolbar && (this._toolbar.destroy(), this._toolbar = null), this._pluginManager.destroy(), this._historyManager.destroy(), this._canvas.destroy(), this._eventManager.destroy(), this._configManager.destroy(), this._ready = !1);
   }
 };
 /** Built-in tools that are not plugins */
-c(G, "BUILTIN_TOOLS", ["", "pen", "rect", "circle", "arrow", "line", "triangle", "mosaic", "eraser", "text", "crop", "filter"]);
-let xt = G;
+c(j, "BUILTIN_TOOLS", ["", "pen", "rect", "circle", "arrow", "line", "triangle", "mosaic", "eraser", "text", "crop", "filter"]);
+let vt = j;
 class ot {
   constructor() {
     /** Toolbar icon (optional) */
@@ -6212,82 +6610,82 @@ class ot {
   onConfigChange(t) {
   }
 }
-function yt(r, t, e, i, a, n, s) {
-  const o = r.data, l = r.width, h = r.height, d = Math.max(0, Math.floor(t)), p = Math.max(0, Math.floor(e)), u = Math.min(l, Math.ceil(t + i)), v = Math.min(h, Math.ceil(e + a)), g = Math.max(1, Math.floor(n)), f = Math.max(0, Math.min(100, s)) / 100;
-  for (let m = p; m < v; m += g)
-    for (let S = d; S < u; S += g) {
-      const C = Math.min(S + g, u), k = Math.min(m + g, v), I = C - S, T = k - m, E = I * T;
-      if (E === 0) continue;
-      let M = 0, x = 0, y = 0, L = 0;
-      for (let A = m; A < k; A++)
-        for (let F = S; F < C; F++) {
+function mt(n, t, e, i, a, s, r) {
+  const o = n.data, l = n.width, h = n.height, d = Math.max(0, Math.floor(t)), p = Math.max(0, Math.floor(e)), v = Math.min(l, Math.ceil(t + i)), f = Math.min(h, Math.ceil(e + a)), u = Math.max(1, Math.floor(s)), g = Math.max(0, Math.min(100, r)) / 100;
+  for (let m = p; m < f; m += u)
+    for (let C = d; C < v; C += u) {
+      const S = Math.min(C + u, v), M = Math.min(m + u, f), I = S - C, E = M - m, T = I * E;
+      if (T === 0) continue;
+      let k = 0, x = 0, b = 0, L = 0;
+      for (let A = m; A < M; A++)
+        for (let F = C; F < S; F++) {
           const z = (A * l + F) * 4;
-          M += o[z], x += o[z + 1], y += o[z + 2], L += o[z + 3];
+          k += o[z], x += o[z + 1], b += o[z + 2], L += o[z + 3];
         }
-      const D = Math.round(M / E), B = Math.round(x / E), Z = Math.round(y / E), K = Math.round(L / E);
-      for (let A = m; A < k; A++)
-        for (let F = S; F < C; F++) {
+      const D = Math.round(k / T), B = Math.round(x / T), N = Math.round(b / T), K = Math.round(L / T);
+      for (let A = m; A < M; A++)
+        for (let F = C; F < S; F++) {
           const z = (A * l + F) * 4;
-          o[z] = Math.round(o[z] * (1 - f) + D * f), o[z + 1] = Math.round(o[z + 1] * (1 - f) + B * f), o[z + 2] = Math.round(o[z + 2] * (1 - f) + Z * f), o[z + 3] = Math.round(o[z + 3] * (1 - f) + K * f);
+          o[z] = Math.round(o[z] * (1 - g) + D * g), o[z + 1] = Math.round(o[z + 1] * (1 - g) + B * g), o[z + 2] = Math.round(o[z + 2] * (1 - g) + N * g), o[z + 3] = Math.round(o[z + 3] * (1 - g) + K * g);
         }
     }
-  return r;
+  return n;
 }
-function ga(r, t, e, i, a) {
-  if (t.length === 0) return r;
-  const n = e / 2;
-  for (const s of t)
-    Rt(
-      r,
-      s.x,
-      s.y,
+function ga(n, t, e, i, a) {
+  if (t.length === 0) return n;
+  const s = e / 2;
+  for (const r of t)
+    Lt(
       n,
+      r.x,
+      r.y,
+      s,
       i,
       a
     );
-  return r;
+  return n;
 }
-function Rt(r, t, e, i, a, n) {
-  const s = r.data, o = r.width, l = r.height, h = Math.max(0, Math.floor(t - i)), d = Math.max(0, Math.floor(e - i)), p = Math.min(o, Math.ceil(t + i)), u = Math.min(l, Math.ceil(e + i)), v = Math.max(1, Math.floor(a)), g = Math.max(0, Math.min(100, n)) / 100, f = i * i;
-  for (let m = d; m < u; m += v)
-    for (let S = h; S < p; S += v) {
-      const C = Math.min(S + v, p), k = Math.min(m + v, u), I = S + v / 2, T = m + v / 2, E = I - t, M = T - e;
-      if (E * E + M * M > f) continue;
-      let x = 0, y = 0, L = 0, D = 0, B = 0;
-      for (let z = m; z < k; z++)
-        for (let O = S; O < C; O++) {
-          const W = O - t, U = z - e;
-          if (W * W + U * U <= f) {
+function Lt(n, t, e, i, a, s) {
+  const r = n.data, o = n.width, l = n.height, h = Math.max(0, Math.floor(t - i)), d = Math.max(0, Math.floor(e - i)), p = Math.min(o, Math.ceil(t + i)), v = Math.min(l, Math.ceil(e + i)), f = Math.max(1, Math.floor(a)), u = Math.max(0, Math.min(100, s)) / 100, g = i * i;
+  for (let m = d; m < v; m += f)
+    for (let C = h; C < p; C += f) {
+      const S = Math.min(C + f, p), M = Math.min(m + f, v), I = C + f / 2, E = m + f / 2, T = I - t, k = E - e;
+      if (T * T + k * k > g) continue;
+      let x = 0, b = 0, L = 0, D = 0, B = 0;
+      for (let z = m; z < M; z++)
+        for (let O = C; O < S; O++) {
+          const U = O - t, X = z - e;
+          if (U * U + X * X <= g) {
             const _ = (z * o + O) * 4;
-            x += s[_], y += s[_ + 1], L += s[_ + 2], D += s[_ + 3], B++;
+            x += r[_], b += r[_ + 1], L += r[_ + 2], D += r[_ + 3], B++;
           }
         }
       if (B === 0) continue;
-      const Z = Math.round(x / B), K = Math.round(y / B), A = Math.round(L / B), F = Math.round(D / B);
-      for (let z = m; z < k; z++)
-        for (let O = S; O < C; O++) {
-          const W = O - t, U = z - e;
-          if (W * W + U * U <= f) {
+      const N = Math.round(x / B), K = Math.round(b / B), A = Math.round(L / B), F = Math.round(D / B);
+      for (let z = m; z < M; z++)
+        for (let O = C; O < S; O++) {
+          const U = O - t, X = z - e;
+          if (U * U + X * X <= g) {
             const _ = (z * o + O) * 4;
-            s[_] = Math.round(s[_] * (1 - g) + Z * g), s[_ + 1] = Math.round(s[_ + 1] * (1 - g) + K * g), s[_ + 2] = Math.round(s[_ + 2] * (1 - g) + A * g), s[_ + 3] = Math.round(s[_ + 3] * (1 - g) + F * g);
+            r[_] = Math.round(r[_] * (1 - u) + N * u), r[_ + 1] = Math.round(r[_ + 1] * (1 - u) + K * u), r[_ + 2] = Math.round(r[_ + 2] * (1 - u) + A * u), r[_ + 3] = Math.round(r[_ + 3] * (1 - u) + F * u);
           }
         }
     }
-  return r;
+  return n;
 }
-function Ae(r, t, e, i, a) {
-  const n = [], s = e - r, o = i - t, l = Math.sqrt(s * s + o * o);
+function Ae(n, t, e, i, a) {
+  const s = [], r = e - n, o = i - t, l = Math.sqrt(r * r + o * o);
   if (l < a)
-    return n.push({ x: e, y: i }), n;
+    return s.push({ x: e, y: i }), s;
   const h = Math.ceil(l / a);
   for (let d = 0; d <= h; d++) {
     const p = d / h;
-    n.push({
-      x: r + s * p,
+    s.push({
+      x: n + r * p,
       y: t + o * p
     });
   }
-  return n;
+  return s;
 }
 class fa extends ot {
   constructor() {
@@ -6378,20 +6776,20 @@ class fa extends ot {
    * Requirements: 3.3 - Touch event support
    */
   setupEventListeners(e) {
-    const i = Mt("auto"), a = It();
+    const i = Ct("auto"), a = Mt();
     if (i === "mobile") {
-      const n = this.handleTouchStart.bind(this), s = this.handleTouchMove.bind(this), o = this.handleTouchEnd.bind(this);
-      e.addEventListener("touchstart", n, a), e.addEventListener("touchmove", s, a), e.addEventListener("touchend", o), e.addEventListener("touchcancel", o), this.cleanupFunctions.push(
-        () => e.removeEventListener("touchstart", n),
-        () => e.removeEventListener("touchmove", s),
+      const s = this.handleTouchStart.bind(this), r = this.handleTouchMove.bind(this), o = this.handleTouchEnd.bind(this);
+      e.addEventListener("touchstart", s, a), e.addEventListener("touchmove", r, a), e.addEventListener("touchend", o), e.addEventListener("touchcancel", o), this.cleanupFunctions.push(
+        () => e.removeEventListener("touchstart", s),
+        () => e.removeEventListener("touchmove", r),
         () => e.removeEventListener("touchend", o),
         () => e.removeEventListener("touchcancel", o)
       );
     } else {
-      const n = this.handleMouseDown.bind(this), s = this.handleMouseMove.bind(this), o = this.handleMouseUp.bind(this);
-      e.addEventListener("mousedown", n), e.addEventListener("mousemove", s), e.addEventListener("mouseup", o), e.addEventListener("mouseleave", o), this.cleanupFunctions.push(
-        () => e.removeEventListener("mousedown", n),
-        () => e.removeEventListener("mousemove", s),
+      const s = this.handleMouseDown.bind(this), r = this.handleMouseMove.bind(this), o = this.handleMouseUp.bind(this);
+      e.addEventListener("mousedown", s), e.addEventListener("mousemove", r), e.addEventListener("mouseup", o), e.addEventListener("mouseleave", o), this.cleanupFunctions.push(
+        () => e.removeEventListener("mousedown", s),
+        () => e.removeEventListener("mousemove", r),
         () => e.removeEventListener("mouseup", o),
         () => e.removeEventListener("mouseleave", o)
       );
@@ -6483,7 +6881,7 @@ class fa extends ot {
       startY: i,
       lastX: e,
       lastY: i,
-      originalImageData: St(a)
+      originalImageData: wt(a)
     }, this.config.mode === "free" && this.applyMosaicAtPoint(e, i));
   }
   /**
@@ -6499,8 +6897,8 @@ class fa extends ot {
           i,
           this.config.brushSize / 4
         );
-        for (const n of a)
-          this.applyMosaicAtPoint(n.x, n.y);
+        for (const s of a)
+          this.applyMosaicAtPoint(s.x, s.y);
         this.drawingState.lastX = e, this.drawingState.lastY = i;
       } else
         this.previewRectMosaic(e, i);
@@ -6521,58 +6919,58 @@ class fa extends ot {
    * Requirements: 3.1, 3.5
    */
   applyMosaicAtPoint(e, i) {
-    const a = this.getContext(), n = this.getCanvas();
-    if (!a || !n) return;
-    const s = a.getImageData(0, 0, n.width, n.height);
-    Rt(
-      s,
+    const a = this.getContext(), s = this.getCanvas();
+    if (!a || !s) return;
+    const r = a.getImageData(0, 0, s.width, s.height);
+    Lt(
+      r,
       e,
       i,
       this.config.brushSize / 2,
       this.config.blockSize,
       this.config.intensity
-    ), a.putImageData(s, 0, 0);
+    ), a.putImageData(r, 0, 0);
   }
   /**
    * Preview rect mosaic (during drag)
    * Requirements: 3.5
    */
   previewRectMosaic(e, i) {
-    const a = this.getContext(), n = this.getCanvas();
-    if (!a || !n || !this.drawingState.originalImageData) return;
+    const a = this.getContext(), s = this.getCanvas();
+    if (!a || !s || !this.drawingState.originalImageData) return;
     a.putImageData(this.drawingState.originalImageData, 0, 0);
-    const s = a.getImageData(0, 0, n.width, n.height), o = Math.min(this.drawingState.startX, e), l = Math.min(this.drawingState.startY, i), h = Math.abs(e - this.drawingState.startX), d = Math.abs(i - this.drawingState.startY);
-    yt(
-      s,
+    const r = a.getImageData(0, 0, s.width, s.height), o = Math.min(this.drawingState.startX, e), l = Math.min(this.drawingState.startY, i), h = Math.abs(e - this.drawingState.startX), d = Math.abs(i - this.drawingState.startY);
+    mt(
+      r,
       o,
       l,
       h,
       d,
       this.config.blockSize,
       this.config.intensity
-    ), a.putImageData(s, 0, 0), this.drawingState.lastX = e, this.drawingState.lastY = i;
+    ), a.putImageData(r, 0, 0), this.drawingState.lastX = e, this.drawingState.lastY = i;
   }
   /**
    * Apply final rect mosaic
    * Requirements: 3.1, 3.5
    */
-  applyRectMosaic(e, i, a, n) {
-    const s = this.getContext(), o = this.getCanvas();
-    if (!s || !o || !this.drawingState.originalImageData) return;
-    s.putImageData(this.drawingState.originalImageData, 0, 0);
-    const l = s.getImageData(0, 0, o.width, o.height), h = Math.min(e, a), d = Math.min(i, n), p = Math.abs(a - e), u = Math.abs(n - i);
-    yt(
+  applyRectMosaic(e, i, a, s) {
+    const r = this.getContext(), o = this.getCanvas();
+    if (!r || !o || !this.drawingState.originalImageData) return;
+    r.putImageData(this.drawingState.originalImageData, 0, 0);
+    const l = r.getImageData(0, 0, o.width, o.height), h = Math.min(e, a), d = Math.min(i, s), p = Math.abs(a - e), v = Math.abs(s - i);
+    mt(
       l,
       h,
       d,
       p,
-      u,
+      v,
       this.config.blockSize,
       this.config.intensity
-    ), s.putImageData(l, 0, 0);
+    ), r.putImageData(l, 0, 0);
   }
 }
-const _t = {
+const Pt = {
   fontSize: 16,
   fontFamily: "Arial",
   color: "#000000",
@@ -6602,14 +7000,14 @@ class Oe {
    * @returns Created text layer
    */
   createLayer(t, e, i, a) {
-    const n = {
+    const s = {
       id: Fe(),
       text: t,
       x: e,
       y: i,
-      config: { ..._t, ...a }
+      config: { ...Pt, ...a }
     };
-    return this.layers.set(n.id, n), n;
+    return this.layers.set(s.id, s), s;
   }
   /**
    * Get a text layer by ID
@@ -6712,87 +7110,87 @@ class Oe {
     return this.layers.size;
   }
 }
-function Bt(r) {
+function Rt(n) {
   const t = [];
-  return r.italic && t.push("italic"), r.bold && t.push("bold"), t.push(`${r.fontSize}px`), t.push(r.fontFamily), t.join(" ");
+  return n.italic && t.push("italic"), n.bold && t.push("bold"), t.push(`${n.fontSize}px`), t.push(n.fontFamily), t.join(" ");
 }
-function He(r, t, e) {
-  const i = r.font;
-  r.font = Bt(e);
+function He(n, t, e) {
+  const i = n.font;
+  n.font = Rt(e);
   const a = t.split(`
-`), n = e.fontSize * e.lineHeight;
-  let s = 0;
+`), s = e.fontSize * e.lineHeight;
+  let r = 0;
   for (const o of a) {
-    const l = r.measureText(o);
-    s = Math.max(s, l.width);
+    const l = n.measureText(o);
+    r = Math.max(r, l.width);
   }
-  return r.font = i, {
-    width: s,
-    height: a.length * n
+  return n.font = i, {
+    width: r,
+    height: a.length * s
   };
 }
-function $t(r, t) {
-  const e = He(t, r.text, r.config);
-  let i = r.x;
-  return r.config.align === "center" ? i -= e.width / 2 : r.config.align === "right" && (i -= e.width), {
+function _t(n, t) {
+  const e = He(t, n.text, n.config);
+  let i = n.x;
+  return n.config.align === "center" ? i -= e.width / 2 : n.config.align === "right" && (i -= e.width), {
     x: i,
-    y: r.y - r.config.fontSize,
+    y: n.y - n.config.fontSize,
     width: e.width,
     height: e.height
   };
 }
-function Ne(r, t, e, i, a = 5) {
-  const n = $t(e, i);
-  return r >= n.x - a && r <= n.x + n.width + a && t >= n.y - a && t <= n.y + n.height + a;
+function Ne(n, t, e, i, a = 5) {
+  const s = _t(e, i);
+  return n >= s.x - a && n <= s.x + s.width + a && t >= s.y - a && t <= s.y + s.height + a;
 }
-function bt(r, t, e, i) {
+function xt(n, t, e, i) {
   for (let a = e.length - 1; a >= 0; a--)
-    if (Ne(r, t, e[a], i))
+    if (Ne(n, t, e[a], i))
       return e[a];
 }
-function qe(r, t, e = !1) {
-  const { text: i, x: a, y: n, config: s } = t;
-  r.save(), r.font = Bt(s), r.fillStyle = s.color, r.textAlign = s.align, r.textBaseline = "alphabetic";
+function qe(n, t, e = !1) {
+  const { text: i, x: a, y: s, config: r } = t;
+  n.save(), n.font = Rt(r), n.fillStyle = r.color, n.textAlign = r.align, n.textBaseline = "alphabetic";
   const o = i.split(`
-`), l = s.fontSize * s.lineHeight;
+`), l = r.fontSize * r.lineHeight;
   for (let h = 0; h < o.length; h++) {
-    const d = n + h * l;
-    r.fillText(o[h], a, d), s.underline && We(r, o[h], a, d, s);
+    const d = s + h * l;
+    n.fillText(o[h], a, d), r.underline && We(n, o[h], a, d, r);
   }
-  e && Ue(r, t), r.restore();
+  e && Ue(n, t), n.restore();
 }
-function We(r, t, e, i, a) {
-  const n = r.measureText(t), s = i + a.fontSize * 0.1, o = Math.max(1, a.fontSize / 12);
+function We(n, t, e, i, a) {
+  const s = n.measureText(t), r = i + a.fontSize * 0.1, o = Math.max(1, a.fontSize / 12);
   let l = e;
-  a.align === "center" ? l = e - n.width / 2 : a.align === "right" && (l = e - n.width), r.strokeStyle = a.color, r.lineWidth = o, r.beginPath(), r.moveTo(l, s), r.lineTo(l + n.width, s), r.stroke();
+  a.align === "center" ? l = e - s.width / 2 : a.align === "right" && (l = e - s.width), n.strokeStyle = a.color, n.lineWidth = o, n.beginPath(), n.moveTo(l, r), n.lineTo(l + s.width, r), n.stroke();
 }
-function Ue(r, t) {
-  const e = $t(t, r), i = 4;
-  r.strokeStyle = "#0066ff", r.lineWidth = 1, r.setLineDash([4, 4]), r.strokeRect(
+function Ue(n, t) {
+  const e = _t(t, n), i = 4;
+  n.strokeStyle = "#0066ff", n.lineWidth = 1, n.setLineDash([4, 4]), n.strokeRect(
     e.x - i,
     e.y - i,
     e.width + i * 2,
     e.height + i * 2
-  ), r.setLineDash([]);
+  ), n.setLineDash([]);
   const a = 6;
-  r.fillStyle = "#0066ff";
-  const n = [
+  n.fillStyle = "#0066ff";
+  const s = [
     { x: e.x - i, y: e.y - i },
     { x: e.x + e.width + i, y: e.y - i },
     { x: e.x - i, y: e.y + e.height + i },
     { x: e.x + e.width + i, y: e.y + e.height + i }
   ];
-  for (const s of n)
-    r.fillRect(
-      s.x - a / 2,
-      s.y - a / 2,
+  for (const r of s)
+    n.fillRect(
+      r.x - a / 2,
+      r.y - a / 2,
       a,
       a
     );
 }
-function wt(r, t, e) {
+function yt(n, t, e) {
   for (const i of t)
-    qe(r, i, i.id === e);
+    qe(n, i, i.id === e);
 }
 class va extends ot {
   constructor() {
@@ -6821,7 +7219,7 @@ class va extends ot {
    * Requirements: 4.2, 4.3, 4.5, 4.6
    */
   getDefaultConfig() {
-    return { ..._t };
+    return { ...Pt };
   }
   /**
    * Add text at specified position
@@ -6833,8 +7231,8 @@ class va extends ot {
    */
   addText(e, i, a) {
     this.baseImageData || this.saveBaseImage();
-    const n = this.layerManager.createLayer(e, i, a, this.config);
-    return this.layerManager.selectLayer(n.id), this.renderLayers(), this.saveState(), n;
+    const s = this.layerManager.createLayer(e, i, a, this.config);
+    return this.layerManager.selectLayer(s.id), this.renderLayers(), this.saveState(), s;
   }
   /**
    * Update text content of a layer
@@ -6927,28 +7325,28 @@ class va extends ot {
     const e = this.getContext(), i = this.getCanvas();
     if (!e || !i) return;
     this.baseImageData && e.putImageData(this.baseImageData, 0, 0);
-    const a = this.layerManager.getAllLayers(), n = this.layerManager.getSelectedLayerId();
-    wt(e, a, n);
+    const a = this.layerManager.getAllLayers(), s = this.layerManager.getSelectedLayerId();
+    yt(e, a, s);
   }
   /**
    * Set up mouse and touch event listeners
    * Requirements: 4.4 - Touch event support for dragging
    */
   setupEventListeners(e) {
-    const i = Mt("auto"), a = It();
+    const i = Ct("auto"), a = Mt();
     if (i === "mobile") {
-      const n = this.handleTouchStart.bind(this), s = this.handleTouchMove.bind(this), o = this.handleTouchEnd.bind(this);
-      e.addEventListener("touchstart", n, a), e.addEventListener("touchmove", s, a), e.addEventListener("touchend", o), e.addEventListener("touchcancel", o), this.cleanupFunctions.push(
-        () => e.removeEventListener("touchstart", n),
-        () => e.removeEventListener("touchmove", s),
+      const s = this.handleTouchStart.bind(this), r = this.handleTouchMove.bind(this), o = this.handleTouchEnd.bind(this);
+      e.addEventListener("touchstart", s, a), e.addEventListener("touchmove", r, a), e.addEventListener("touchend", o), e.addEventListener("touchcancel", o), this.cleanupFunctions.push(
+        () => e.removeEventListener("touchstart", s),
+        () => e.removeEventListener("touchmove", r),
         () => e.removeEventListener("touchend", o),
         () => e.removeEventListener("touchcancel", o)
       );
     } else {
-      const n = this.handleMouseDown.bind(this), s = this.handleMouseMove.bind(this), o = this.handleMouseUp.bind(this), l = this.handleDoubleClick.bind(this);
-      e.addEventListener("mousedown", n), e.addEventListener("mousemove", s), e.addEventListener("mouseup", o), e.addEventListener("mouseleave", o), e.addEventListener("dblclick", l), this.cleanupFunctions.push(
-        () => e.removeEventListener("mousedown", n),
-        () => e.removeEventListener("mousemove", s),
+      const s = this.handleMouseDown.bind(this), r = this.handleMouseMove.bind(this), o = this.handleMouseUp.bind(this), l = this.handleDoubleClick.bind(this);
+      e.addEventListener("mousedown", s), e.addEventListener("mousemove", r), e.addEventListener("mouseup", o), e.addEventListener("mouseleave", o), e.addEventListener("dblclick", l), this.cleanupFunctions.push(
+        () => e.removeEventListener("mousedown", s),
+        () => e.removeEventListener("mousemove", r),
         () => e.removeEventListener("mouseup", o),
         () => e.removeEventListener("mouseleave", o),
         () => e.removeEventListener("dblclick", l)
@@ -6982,8 +7380,8 @@ class va extends ot {
   handleMouseDown(e) {
     const i = this.getCanvas(), a = this.getContext();
     if (!i || !a) return;
-    const n = H(e, i, "start");
-    this.startInteraction(n.x, n.y, a);
+    const s = H(e, i, "start");
+    this.startInteraction(s.x, s.y, a);
   }
   /**
    * Handle mouse move event
@@ -7007,8 +7405,8 @@ class va extends ot {
   handleDoubleClick(e) {
     const i = this.getCanvas(), a = this.getContext();
     if (!i || !a) return;
-    const n = H(e, i, "start"), s = this.layerManager.getAllLayers();
-    bt(n.x, n.y, s, a) || this.addText("Double click to edit", n.x, n.y);
+    const s = H(e, i, "start"), r = this.layerManager.getAllLayers();
+    xt(s.x, s.y, r, a) || this.addText("Double click to edit", s.x, s.y);
   }
   /**
    * Handle touch start event
@@ -7017,8 +7415,8 @@ class va extends ot {
     e.preventDefault();
     const i = this.getCanvas(), a = this.getContext();
     if (!i || !a) return;
-    const n = H(e, i, "start");
-    this.startInteraction(n.x, n.y, a);
+    const s = H(e, i, "start");
+    this.startInteraction(s.x, s.y, a);
   }
   /**
    * Handle touch move event
@@ -7040,14 +7438,14 @@ class va extends ot {
    * Start interaction (select or drag)
    */
   startInteraction(e, i, a) {
-    const n = this.layerManager.getAllLayers(), s = bt(e, i, n, a);
-    s ? (this.layerManager.selectLayer(s.id), this.dragState = {
+    const s = this.layerManager.getAllLayers(), r = xt(e, i, s, a);
+    r ? (this.layerManager.selectLayer(r.id), this.dragState = {
       isDragging: !0,
-      layerId: s.id,
+      layerId: r.id,
       startX: e,
       startY: i,
-      offsetX: e - s.x,
-      offsetY: i - s.y
+      offsetX: e - r.x,
+      offsetY: i - r.y
     }, this.renderLayers()) : (this.layerManager.selectLayer(null), this.renderLayers());
   }
   /**
@@ -7056,8 +7454,8 @@ class va extends ot {
    */
   continueDrag(e, i) {
     if (!this.dragState.isDragging || !this.dragState.layerId) return;
-    const a = e - this.dragState.offsetX, n = i - this.dragState.offsetY;
-    this.layerManager.updatePosition(this.dragState.layerId, a, n), this.renderLayers();
+    const a = e - this.dragState.offsetX, s = i - this.dragState.offsetY;
+    this.layerManager.updatePosition(this.dragState.layerId, a, s), this.renderLayers();
   }
   /**
    * End drag operation
@@ -7075,7 +7473,7 @@ class va extends ot {
     if (!e || !i) return;
     this.baseImageData && e.putImageData(this.baseImageData, 0, 0);
     const a = this.layerManager.getAllLayers();
-    wt(e, a, null), this.baseImageData = e.getImageData(0, 0, i.width, i.height), this.layerManager.clearAll();
+    yt(e, a, null), this.baseImageData = e.getImageData(0, 0, i.width, i.height), this.layerManager.clearAll();
   }
   /**
    * Update base image (call after external canvas changes)
@@ -7084,96 +7482,96 @@ class va extends ot {
     this.saveBaseImage(), this.renderLayers();
   }
 }
-function Ye(r, t) {
+function Xe(n, t) {
   if (t === 0) return;
-  const e = r.data, i = t / 100 * 255;
+  const e = n.data, i = t / 100 * 255;
   for (let a = 0; a < e.length; a += 4)
     e[a] = J(e[a] + i), e[a + 1] = J(e[a + 1] + i), e[a + 2] = J(e[a + 2] + i);
 }
-function J(r) {
-  return Math.max(0, Math.min(255, Math.round(r)));
+function J(n) {
+  return Math.max(0, Math.min(255, Math.round(n)));
 }
-function Xe(r, t) {
+function Ye(n, t) {
   if (t === 0) return;
-  const e = r.data, i = 259 * (t + 255) / (255 * (259 - t));
+  const e = n.data, i = 259 * (t + 255) / (255 * (259 - t));
   for (let a = 0; a < e.length; a += 4)
     e[a] = Q(i * (e[a] - 128) + 128), e[a + 1] = Q(i * (e[a + 1] - 128) + 128), e[a + 2] = Q(i * (e[a + 2] - 128) + 128);
 }
-function Q(r) {
-  return Math.max(0, Math.min(255, Math.round(r)));
+function Q(n) {
+  return Math.max(0, Math.min(255, Math.round(n)));
 }
-function Ve(r, t) {
+function Ve(n, t) {
   if (t === 0) return;
-  const e = r.data, i = 1 + t / 100;
+  const e = n.data, i = 1 + t / 100;
   for (let a = 0; a < e.length; a += 4) {
-    const n = e[a], s = e[a + 1], o = e[a + 2], l = 0.2126 * n + 0.7152 * s + 0.0722 * o;
-    e[a] = tt(l + (n - l) * i), e[a + 1] = tt(l + (s - l) * i), e[a + 2] = tt(l + (o - l) * i);
+    const s = e[a], r = e[a + 1], o = e[a + 2], l = 0.2126 * s + 0.7152 * r + 0.0722 * o;
+    e[a] = tt(l + (s - l) * i), e[a + 1] = tt(l + (r - l) * i), e[a + 2] = tt(l + (o - l) * i);
   }
 }
-function tt(r) {
-  return Math.max(0, Math.min(255, Math.round(r)));
+function tt(n) {
+  return Math.max(0, Math.min(255, Math.round(n)));
 }
-function Ge(r, t) {
+function Ge(n, t) {
   if (t === 0) return;
-  const { width: e, height: i, data: a } = r, n = Math.round(t / 100 * 10);
-  if (n === 0) return;
-  const s = new Uint8ClampedArray(a), o = new Uint8ClampedArray(a.length);
-  je(s, o, e, i, n), Ze(o, a, e, i, n);
+  const { width: e, height: i, data: a } = n, s = Math.round(t / 100 * 10);
+  if (s === 0) return;
+  const r = new Uint8ClampedArray(a), o = new Uint8ClampedArray(a.length);
+  je(r, o, e, i, s), Ze(o, a, e, i, s);
 }
-function je(r, t, e, i, a) {
-  const n = a * 2 + 1;
-  for (let s = 0; s < i; s++) {
+function je(n, t, e, i, a) {
+  const s = a * 2 + 1;
+  for (let r = 0; r < i; r++) {
     let o = 0, l = 0, h = 0, d = 0;
     for (let p = -a; p <= a; p++) {
-      const u = Math.max(0, Math.min(e - 1, p)), v = (s * e + u) * 4;
-      o += r[v], l += r[v + 1], h += r[v + 2], d += r[v + 3];
+      const v = Math.max(0, Math.min(e - 1, p)), f = (r * e + v) * 4;
+      o += n[f], l += n[f + 1], h += n[f + 2], d += n[f + 3];
     }
     for (let p = 0; p < e; p++) {
-      const u = (s * e + p) * 4;
-      t[u] = Math.round(o / n), t[u + 1] = Math.round(l / n), t[u + 2] = Math.round(h / n), t[u + 3] = Math.round(d / n);
-      const v = Math.max(0, p - a), g = Math.min(e - 1, p + a + 1), f = (s * e + v) * 4, m = (s * e + g) * 4;
-      o += r[m] - r[f], l += r[m + 1] - r[f + 1], h += r[m + 2] - r[f + 2], d += r[m + 3] - r[f + 3];
+      const v = (r * e + p) * 4;
+      t[v] = Math.round(o / s), t[v + 1] = Math.round(l / s), t[v + 2] = Math.round(h / s), t[v + 3] = Math.round(d / s);
+      const f = Math.max(0, p - a), u = Math.min(e - 1, p + a + 1), g = (r * e + f) * 4, m = (r * e + u) * 4;
+      o += n[m] - n[g], l += n[m + 1] - n[g + 1], h += n[m + 2] - n[g + 2], d += n[m + 3] - n[g + 3];
     }
   }
 }
-function Ze(r, t, e, i, a) {
-  const n = a * 2 + 1;
-  for (let s = 0; s < e; s++) {
+function Ze(n, t, e, i, a) {
+  const s = a * 2 + 1;
+  for (let r = 0; r < e; r++) {
     let o = 0, l = 0, h = 0, d = 0;
     for (let p = -a; p <= a; p++) {
-      const v = (Math.max(0, Math.min(i - 1, p)) * e + s) * 4;
-      o += r[v], l += r[v + 1], h += r[v + 2], d += r[v + 3];
+      const f = (Math.max(0, Math.min(i - 1, p)) * e + r) * 4;
+      o += n[f], l += n[f + 1], h += n[f + 2], d += n[f + 3];
     }
     for (let p = 0; p < i; p++) {
-      const u = (p * e + s) * 4;
-      t[u] = Math.round(o / n), t[u + 1] = Math.round(l / n), t[u + 2] = Math.round(h / n), t[u + 3] = Math.round(d / n);
-      const v = Math.max(0, p - a), g = Math.min(i - 1, p + a + 1), f = (v * e + s) * 4, m = (g * e + s) * 4;
-      o += r[m] - r[f], l += r[m + 1] - r[f + 1], h += r[m + 2] - r[f + 2], d += r[m + 3] - r[f + 3];
+      const v = (p * e + r) * 4;
+      t[v] = Math.round(o / s), t[v + 1] = Math.round(l / s), t[v + 2] = Math.round(h / s), t[v + 3] = Math.round(d / s);
+      const f = Math.max(0, p - a), u = Math.min(i - 1, p + a + 1), g = (f * e + r) * 4, m = (u * e + r) * 4;
+      o += n[m] - n[g], l += n[m + 1] - n[g + 1], h += n[m + 2] - n[g + 2], d += n[m + 3] - n[g + 3];
     }
   }
 }
-function Ke(r, t) {
+function Ke(n, t) {
   if (t === 0) return;
-  const e = r.data, i = t / 100;
+  const e = n.data, i = t / 100;
   for (let a = 0; a < e.length; a += 4) {
-    const n = e[a], s = e[a + 1], o = e[a + 2], l = 0.2126 * n + 0.7152 * s + 0.0722 * o;
-    e[a] = Math.round(n + (l - n) * i), e[a + 1] = Math.round(s + (l - s) * i), e[a + 2] = Math.round(o + (l - o) * i);
+    const s = e[a], r = e[a + 1], o = e[a + 2], l = 0.2126 * s + 0.7152 * r + 0.0722 * o;
+    e[a] = Math.round(s + (l - s) * i), e[a + 1] = Math.round(r + (l - r) * i), e[a + 2] = Math.round(o + (l - o) * i);
   }
 }
-function Je(r, t) {
+function Je(n, t) {
   if (t === 0) return;
-  const e = r.data, i = t / 100;
+  const e = n.data, i = t / 100;
   for (let a = 0; a < e.length; a += 4) {
-    const n = e[a], s = e[a + 1], o = e[a + 2], l = Math.min(255, 0.393 * n + 0.769 * s + 0.189 * o), h = Math.min(255, 0.349 * n + 0.686 * s + 0.168 * o), d = Math.min(255, 0.272 * n + 0.534 * s + 0.131 * o);
-    e[a] = Math.round(n + (l - n) * i), e[a + 1] = Math.round(s + (h - s) * i), e[a + 2] = Math.round(o + (d - o) * i);
+    const s = e[a], r = e[a + 1], o = e[a + 2], l = Math.min(255, 0.393 * s + 0.769 * r + 0.189 * o), h = Math.min(255, 0.349 * s + 0.686 * r + 0.168 * o), d = Math.min(255, 0.272 * s + 0.534 * r + 0.131 * o);
+    e[a] = Math.round(s + (l - s) * i), e[a + 1] = Math.round(r + (h - r) * i), e[a + 2] = Math.round(o + (d - o) * i);
   }
 }
-function Qe(r, t) {
+function Qe(n, t) {
   if (t === 0) return;
-  const e = r.data, i = t / 100;
+  const e = n.data, i = t / 100;
   for (let a = 0; a < e.length; a += 4) {
-    const n = e[a], s = e[a + 1], o = e[a + 2], l = 255 - n, h = 255 - s, d = 255 - o;
-    e[a] = Math.round(n + (l - n) * i), e[a + 1] = Math.round(s + (h - s) * i), e[a + 2] = Math.round(o + (d - o) * i);
+    const s = e[a], r = e[a + 1], o = e[a + 2], l = 255 - s, h = 255 - r, d = 255 - o;
+    e[a] = Math.round(s + (l - s) * i), e[a + 1] = Math.round(r + (h - r) * i), e[a + 2] = Math.round(o + (d - o) * i);
   }
 }
 const ti = {
@@ -7217,7 +7615,7 @@ class ma extends ot {
    */
   storeOriginalImageData() {
     const e = this.getImageData();
-    e && (this.originalImageData = X(e));
+    e && (this.originalImageData = V(e));
   }
   /**
    * Update original image data (call after external changes)
@@ -7296,7 +7694,7 @@ class ma extends ot {
    */
   reset() {
     if (this.config = this.getDefaultConfig(), this.originalImageData) {
-      const e = X(this.originalImageData);
+      const e = V(this.originalImageData);
       this.putImageData(e);
     }
   }
@@ -7312,7 +7710,7 @@ class ma extends ot {
         throw new Error("No image data available");
       return i;
     }
-    const e = X(this.originalImageData);
+    const e = V(this.originalImageData);
     return this.applyFiltersToImageData(e), e;
   }
   /**
@@ -7322,7 +7720,7 @@ class ma extends ot {
   applyAllFilters() {
     if (!this.originalImageData)
       return;
-    const e = X(this.originalImageData);
+    const e = V(this.originalImageData);
     this.applyFiltersToImageData(e), this.putImageData(e);
   }
   /**
@@ -7332,7 +7730,7 @@ class ma extends ot {
    */
   applyFiltersToImageData(e) {
     const i = this.config;
-    i.brightness !== 0 && Ye(e, i.brightness), i.contrast !== 0 && Xe(e, i.contrast), i.saturation !== 0 && Ve(e, i.saturation), i.grayscale !== 0 && Ke(e, i.grayscale), i.sepia !== 0 && Je(e, i.sepia), i.invert !== 0 && Qe(e, i.invert), i.blur !== 0 && Ge(e, i.blur);
+    i.brightness !== 0 && Xe(e, i.brightness), i.contrast !== 0 && Ye(e, i.contrast), i.saturation !== 0 && Ve(e, i.saturation), i.grayscale !== 0 && Ke(e, i.grayscale), i.sepia !== 0 && Je(e, i.sepia), i.invert !== 0 && Qe(e, i.invert), i.blur !== 0 && Ge(e, i.blur);
   }
   /**
    * Commit current filter state to history
@@ -7356,20 +7754,20 @@ class ma extends ot {
     this.originalImageData = null;
   }
 }
-function P(r, t, e) {
-  return Math.max(t, Math.min(e, r));
+function P(n, t, e) {
+  return Math.max(t, Math.min(e, n));
 }
-function X(r) {
-  const t = new Uint8ClampedArray(r.data);
+function V(n) {
+  const t = new Uint8ClampedArray(n.data);
   if (typeof ImageData < "u")
     try {
-      return new ImageData(t, r.width, r.height);
+      return new ImageData(t, n.width, n.height);
     } catch {
     }
   return {
     data: t,
-    width: r.width,
-    height: r.height,
+    width: n.width,
+    height: n.height,
     colorSpace: "srgb"
   };
 }
@@ -7651,7 +8049,7 @@ const it = {
   "zh-CN": it,
   "en-US": ei
 };
-class Ct {
+class bt {
   constructor(t = "zh-CN") {
     c(this, "locale");
     c(this, "messages");
@@ -7666,8 +8064,8 @@ class Ct {
    */
   t(t, e) {
     let i = this.messages[t] || this.fallbackMessages[t] || t;
-    return e && Object.entries(e).forEach(([a, n]) => {
-      i = i.replace(new RegExp(`\\{${a}\\}`, "g"), String(n));
+    return e && Object.entries(e).forEach(([a, s]) => {
+      i = i.replace(new RegExp(`\\{${a}\\}`, "g"), String(s));
     }), i;
   }
   /**
@@ -7721,12 +8119,12 @@ class Ct {
     return e === "zh" ? "zh-CN" : e === "en" ? "en-US" : "zh-CN";
   }
 }
-let V = null;
-function lt(r) {
-  return V ? r && V.setLocale(r) : V = new Ct(r || Ct.detectLocale()), V;
+let G = null;
+function lt(n) {
+  return G ? n && G.setLocale(n) : G = new bt(n || bt.detectLocale()), G;
 }
-function xa(r, t) {
-  return lt().t(r, t);
+function xa(n, t) {
+  return lt().t(n, t);
 }
 const ii = 20;
 class ya {
@@ -7849,7 +8247,7 @@ class ya {
   createControlPanel() {
     const t = document.createElement("div");
     t.className = "ie-crop-panel";
-    const e = (n) => this.i18n.t(n), i = document.createElement("div");
+    const e = (s) => this.i18n.t(s), i = document.createElement("div");
     if (i.className = "ie-crop-group", i.innerHTML = `
       <span class="ie-crop-label">${e("crop.ratio")}</span>
       <div class="ie-crop-buttons ie-crop-ratio-buttons">
@@ -7860,27 +8258,27 @@ class ya {
         <button class="ie-crop-btn ${this.currentRatio === "3:2" ? "active" : ""}" data-ratio="3:2">3:2</button>
       </div>
     `, t.appendChild(i), this.options.enableRotation || this.options.enableFlip) {
-      const n = document.createElement("div");
-      n.className = "ie-crop-group", n.innerHTML = `
+      const s = document.createElement("div");
+      s.className = "ie-crop-group", s.innerHTML = `
         <span class="ie-crop-label">${e("crop.rotate")}</span>
         <div class="ie-crop-buttons">
           ${this.options.enableRotation ? `
-            <button class="ie-crop-btn ie-crop-btn-icon" data-action="rotate-left" title="${e("crop.rotateLeft")}">${w.rotateLeft}</button>
-            <button class="ie-crop-btn ie-crop-btn-icon" data-action="rotate-right" title="${e("crop.rotateRight")}">${w.rotateRight}</button>
+            <button class="ie-crop-btn ie-crop-btn-icon" data-action="rotate-left" title="${e("crop.rotateLeft")}">${y.rotateLeft}</button>
+            <button class="ie-crop-btn ie-crop-btn-icon" data-action="rotate-right" title="${e("crop.rotateRight")}">${y.rotateRight}</button>
           ` : ""}
           ${this.options.enableFlip ? `
-            <button class="ie-crop-btn ie-crop-btn-icon" data-action="flip-h" title="${e("crop.flipH")}">${w.flipH}</button>
-            <button class="ie-crop-btn ie-crop-btn-icon" data-action="flip-v" title="${e("crop.flipV")}">${w.flipV}</button>
+            <button class="ie-crop-btn ie-crop-btn-icon" data-action="flip-h" title="${e("crop.flipH")}">${y.flipH}</button>
+            <button class="ie-crop-btn ie-crop-btn-icon" data-action="flip-v" title="${e("crop.flipV")}">${y.flipV}</button>
           ` : ""}
         </div>
-      `, t.appendChild(n);
+      `, t.appendChild(s);
     }
     const a = document.createElement("div");
     return a.className = "ie-crop-group ie-crop-actions", a.innerHTML = `
       <button class="ie-crop-btn ie-crop-btn-cancel" data-action="cancel">${e("crop.cancel")}</button>
-      <button class="ie-crop-btn ie-crop-btn-apply" data-action="apply">${w.check} ${e("crop.apply")}</button>
-    `, t.appendChild(a), t.addEventListener("click", (n) => {
-      const o = n.target.closest("[data-ratio], [data-action]");
+      <button class="ie-crop-btn ie-crop-btn-apply" data-action="apply">${y.check} ${e("crop.apply")}</button>
+    `, t.appendChild(a), t.addEventListener("click", (s) => {
+      const o = s.target.closest("[data-ratio], [data-action]");
       if (!o) return;
       const l = o.dataset.ratio, h = o.dataset.action;
       if (l)
@@ -7912,12 +8310,12 @@ class ya {
    * Initialize crop rect to cover most of image
    */
   initCropRect() {
-    const t = this.canvas.getBoundingClientRect(), e = this.container.getBoundingClientRect(), i = t.left - e.left, a = t.top - e.top, n = 0.1;
+    const t = this.canvas.getBoundingClientRect(), e = this.container.getBoundingClientRect(), i = t.left - e.left, a = t.top - e.top, s = 0.1;
     this.cropRect = {
-      x: i + t.width * n,
-      y: a + t.height * n,
-      width: t.width * (1 - 2 * n),
-      height: t.height * (1 - 2 * n)
+      x: i + t.width * s,
+      y: a + t.height * s,
+      width: t.width * (1 - 2 * s),
+      height: t.height * (1 - 2 * s)
     }, this.applyRatioConstraint();
   }
   /**
@@ -7925,9 +8323,9 @@ class ya {
    */
   applyRatioConstraint() {
     if (this.currentRatio === "free") return;
-    const [t, e] = this.currentRatio.split(":").map(Number), i = t / e, a = this.cropRect.x + this.cropRect.width / 2, n = this.cropRect.y + this.cropRect.height / 2;
-    let s = this.cropRect.width, o = this.cropRect.height;
-    s / o > i ? s = o * i : o = s / i, this.cropRect.width = s, this.cropRect.height = o, this.cropRect.x = a - s / 2, this.cropRect.y = n - o / 2;
+    const [t, e] = this.currentRatio.split(":").map(Number), i = t / e, a = this.cropRect.x + this.cropRect.width / 2, s = this.cropRect.y + this.cropRect.height / 2;
+    let r = this.cropRect.width, o = this.cropRect.height;
+    r / o > i ? r = o * i : o = r / i, this.cropRect.width = r, this.cropRect.height = o, this.cropRect.x = a - r / 2, this.cropRect.y = s - o / 2;
   }
   /**
    * Update crop box position/size
@@ -7972,37 +8370,37 @@ class ya {
    */
   resizeCropBox(t, e) {
     if (!this.activeHandle) return;
-    const { x: i, y: a, width: n, height: s } = this.cropStart, o = this.options.minSize;
-    let l = i, h = a, d = n, p = s;
+    const { x: i, y: a, width: s, height: r } = this.cropStart, o = this.options.minSize;
+    let l = i, h = a, d = s, p = r;
     switch (this.activeHandle) {
       case "nw":
-        l = i + t, h = a + e, d = n - t, p = s - e;
+        l = i + t, h = a + e, d = s - t, p = r - e;
         break;
       case "n":
-        h = a + e, p = s - e;
+        h = a + e, p = r - e;
         break;
       case "ne":
-        h = a + e, d = n + t, p = s - e;
+        h = a + e, d = s + t, p = r - e;
         break;
       case "e":
-        d = n + t;
+        d = s + t;
         break;
       case "se":
-        d = n + t, p = s + e;
+        d = s + t, p = r + e;
         break;
       case "s":
-        p = s + e;
+        p = r + e;
         break;
       case "sw":
-        l = i + t, d = n - t, p = s + e;
+        l = i + t, d = s - t, p = r + e;
         break;
       case "w":
-        l = i + t, d = n - t;
+        l = i + t, d = s - t;
         break;
     }
-    if (d < o && (this.activeHandle.includes("w") && (l = i + n - o), d = o), p < o && (this.activeHandle.includes("n") && (h = a + s - o), p = o), this.currentRatio !== "free") {
-      const [u, v] = this.currentRatio.split(":").map(Number), g = u / v;
-      ["n", "s"].includes(this.activeHandle) ? d = p * g : ["e", "w"].includes(this.activeHandle) ? p = d / g : d / p > g ? d = p * g : p = d / g;
+    if (d < o && (this.activeHandle.includes("w") && (l = i + s - o), d = o), p < o && (this.activeHandle.includes("n") && (h = a + r - o), p = o), this.currentRatio !== "free") {
+      const [v, f] = this.currentRatio.split(":").map(Number), u = v / f;
+      ["n", "s"].includes(this.activeHandle) ? d = p * u : ["e", "w"].includes(this.activeHandle) ? p = d / u : d / p > u ? d = p * u : p = d / u;
     }
     this.cropRect = { x: l, y: h, width: d, height: p }, this.constrainToContainer();
   }
@@ -8010,19 +8408,19 @@ class ya {
    * Constrain crop rect to container bounds
    */
   constrainToContainer() {
-    const t = this.canvas.getBoundingClientRect(), e = this.container.getBoundingClientRect(), i = t.left - e.left, a = t.top - e.top, n = i + t.width, s = a + t.height;
-    this.cropRect.x = Math.max(i, Math.min(n - this.cropRect.width, this.cropRect.x)), this.cropRect.y = Math.max(a, Math.min(s - this.cropRect.height, this.cropRect.y)), this.cropRect.width = Math.min(this.cropRect.width, n - this.cropRect.x), this.cropRect.height = Math.min(this.cropRect.height, s - this.cropRect.y);
+    const t = this.canvas.getBoundingClientRect(), e = this.container.getBoundingClientRect(), i = t.left - e.left, a = t.top - e.top, s = i + t.width, r = a + t.height;
+    this.cropRect.x = Math.max(i, Math.min(s - this.cropRect.width, this.cropRect.x)), this.cropRect.y = Math.max(a, Math.min(r - this.cropRect.height, this.cropRect.y)), this.cropRect.width = Math.min(this.cropRect.width, s - this.cropRect.x), this.cropRect.height = Math.min(this.cropRect.height, r - this.cropRect.y);
   }
   /**
    * Convert screen rect to canvas coordinates
    */
   toCanvasCoords() {
-    const t = this.canvas.getBoundingClientRect(), e = this.container.getBoundingClientRect(), i = t.left - e.left, a = t.top - e.top, n = this.canvas.width / t.width, s = this.canvas.height / t.height;
+    const t = this.canvas.getBoundingClientRect(), e = this.container.getBoundingClientRect(), i = t.left - e.left, a = t.top - e.top, s = this.canvas.width / t.width, r = this.canvas.height / t.height;
     return {
-      x: (this.cropRect.x - i) * n,
-      y: (this.cropRect.y - a) * s,
-      width: this.cropRect.width * n,
-      height: this.cropRect.height * s
+      x: (this.cropRect.x - i) * s,
+      y: (this.cropRect.y - a) * r,
+      width: this.cropRect.width * s,
+      height: this.cropRect.height * r
     };
   }
   /**
@@ -8057,18 +8455,18 @@ class ya {
     this.hide(), this.onApplyCallback = null, this.onCancelCallback = null;
   }
 }
-function ba(r, t, e, i, a) {
-  const n = r.getContext("2d");
-  if (!n) return r;
-  let s = t.width, o = t.height;
-  (e === 90 || e === 270) && ([s, o] = [o, s]);
+function ba(n, t, e, i, a) {
+  const s = n.getContext("2d");
+  if (!s) return n;
+  let r = t.width, o = t.height;
+  (e === 90 || e === 270) && ([r, o] = [o, r]);
   const l = document.createElement("canvas");
-  l.width = s, l.height = o;
+  l.width = r, l.height = o;
   const h = l.getContext("2d");
-  h.save(), h.translate(s / 2, o / 2), e && h.rotate(e * Math.PI / 180), i && h.scale(-1, 1), a && h.scale(1, -1);
+  h.save(), h.translate(r / 2, o / 2), e && h.rotate(e * Math.PI / 180), i && h.scale(-1, 1), a && h.scale(1, -1);
   let d = t.width, p = t.height;
   return (e === 90 || e === 270) && ([d, p] = [p, d]), h.drawImage(
-    r,
+    n,
     t.x,
     t.y,
     t.width,
@@ -8077,7 +8475,7 @@ function ba(r, t, e, i, a) {
     -p / 2,
     d,
     p
-  ), h.restore(), r.width = s, r.height = o, n.drawImage(l, 0, 0), r;
+  ), h.restore(), n.width = r, n.height = o, s.drawImage(l, 0, 0), n;
 }
 class wa {
   constructor(t) {
@@ -8138,8 +8536,8 @@ class wa {
    */
   positionMenu(t, e) {
     if (!this.menu) return;
-    const i = this.menu.getBoundingClientRect(), a = window.innerWidth, n = window.innerHeight;
-    t + i.width > a && (t = a - i.width - 5), e + i.height > n && (e = n - i.height - 5), this.menu.style.left = `${Math.max(5, t)}px`, this.menu.style.top = `${Math.max(5, e)}px`;
+    const i = this.menu.getBoundingClientRect(), a = window.innerWidth, s = window.innerHeight;
+    t + i.width > a && (t = a - i.width - 5), e + i.height > s && (e = s - i.height - 5), this.menu.style.left = `${Math.max(5, t)}px`, this.menu.style.top = `${Math.max(5, e)}px`;
   }
   /**
    * Handle click outside menu
@@ -8154,50 +8552,50 @@ class wa {
     this.hide(), this.items = [];
   }
 }
-function Ca(r, t) {
+function Ca(n, t) {
   const e = (t == null ? void 0 : t.t.bind(t)) || ((a) => a), i = [];
-  return r.copy && i.push({
+  return n.copy && i.push({
     id: "copy",
     label: e("context.copy"),
-    icon: w.copy,
+    icon: y.copy,
     shortcut: "Ctrl+C",
-    action: r.copy
-  }), r.paste && i.push({
+    action: n.copy
+  }), n.paste && i.push({
     id: "paste",
     label: e("context.paste"),
-    icon: w.paste,
+    icon: y.paste,
     shortcut: "Ctrl+V",
-    action: r.paste
-  }), r.duplicate && i.push({
+    action: n.paste
+  }), n.duplicate && i.push({
     id: "duplicate",
     label: e("context.duplicate"),
-    icon: w.copy,
+    icon: y.copy,
     shortcut: "Ctrl+D",
-    action: r.duplicate
-  }), r.delete && i.push({
+    action: n.duplicate
+  }), n.delete && i.push({
     id: "delete",
     label: e("context.delete"),
-    icon: w.trash,
+    icon: y.trash,
     shortcut: "Del",
-    action: r.delete
-  }), i.length > 0 && (r.bringToFront || r.sendToBack) && i.push({ id: "divider1", label: "", divider: !0 }), r.bringToFront && i.push({
+    action: n.delete
+  }), i.length > 0 && (n.bringToFront || n.sendToBack) && i.push({ id: "divider1", label: "", divider: !0 }), n.bringToFront && i.push({
     id: "bringToFront",
     label: e("context.bringToFront"),
-    icon: w.layers,
-    action: r.bringToFront
-  }), r.bringForward && i.push({
+    icon: y.layers,
+    action: n.bringToFront
+  }), n.bringForward && i.push({
     id: "bringForward",
     label: e("context.bringForward"),
-    action: r.bringForward
-  }), r.sendBackward && i.push({
+    action: n.bringForward
+  }), n.sendBackward && i.push({
     id: "sendBackward",
     label: e("context.sendBackward"),
-    action: r.sendBackward
-  }), r.sendToBack && i.push({
+    action: n.sendBackward
+  }), n.sendToBack && i.push({
     id: "sendToBack",
     label: e("context.sendToBack"),
-    icon: w.layers,
-    action: r.sendToBack
+    icon: y.layers,
+    action: n.sendToBack
   }), i;
 }
 class ai {
@@ -8247,7 +8645,7 @@ class ai {
     this.overlay = document.createElement("div"), this.overlay.className = "ie-export-overlay", this.dialog = document.createElement("div"), this.dialog.className = "ie-export-dialog", this.dialog.innerHTML = `
       <div class="ie-export-header">
         <span class="ie-export-title">${t("export.title")}</span>
-        <button class="ie-export-close" data-action="close">${w.close}</button>
+        <button class="ie-export-close" data-action="close">${y.close}</button>
       </div>
       
       <div class="ie-export-body">
@@ -8282,7 +8680,7 @@ class ai {
             <span style="color:var(--ie-text-muted)">×</span>
             <input type="number" class="ie-export-input" data-input="height" value="${this.height}" min="1" max="10000">
             <button class="ie-export-link-btn ${this.keepRatio ? "active" : ""}" data-action="toggle-ratio" title="${t("export.keepRatio")}">
-              ${w.layers}
+              ${y.layers}
             </button>
           </div>
         </div>
@@ -8329,7 +8727,7 @@ class ai {
           ${t("export.copy") || "Copy"}
         </button>
         ` : ""}
-        <button class="ie-export-download" data-action="export">${w.download} ${t("export.download")}</button>
+        <button class="ie-export-download" data-action="export">${y.download} ${t("export.download")}</button>
       </div>
     `, this.overlay.appendChild(this.dialog), document.body.appendChild(this.overlay), this.setupEvents();
   }
@@ -8337,17 +8735,17 @@ class ai {
    * Setup event listeners
    */
   setupEvents() {
-    var a, n, s, o, l, h, d, p, u, v;
+    var a, s, r, o, l, h, d, p, v, f;
     if (!this.dialog) return;
     (a = this.dialog.querySelector('[data-action="close"]')) == null || a.addEventListener("click", () => {
       this.cancel();
-    }), (n = this.dialog.querySelector('[data-action="cancel"]')) == null || n.addEventListener("click", () => {
+    }), (s = this.dialog.querySelector('[data-action="cancel"]')) == null || s.addEventListener("click", () => {
       this.cancel();
-    }), (s = this.dialog.querySelector('[data-action="export"]')) == null || s.addEventListener("click", () => {
+    }), (r = this.dialog.querySelector('[data-action="export"]')) == null || r.addEventListener("click", () => {
       this.confirm();
-    }), this.dialog.querySelectorAll("[data-format]").forEach((g) => {
-      g.addEventListener("click", () => {
-        this.setFormat(g.getAttribute("data-format"));
+    }), this.dialog.querySelectorAll("[data-format]").forEach((u) => {
+      u.addEventListener("click", () => {
+        this.setFormat(u.getAttribute("data-format"));
       });
     });
     const t = this.dialog.querySelector('[data-input="width"]'), e = this.dialog.querySelector('[data-input="height"]');
@@ -8355,30 +8753,30 @@ class ai {
       this.width = parseInt(t.value) || this.options.width, this.keepRatio && (this.height = Math.round(this.width / this.aspectRatio), e.value = String(this.height)), this.updatePreview();
     }), e == null || e.addEventListener("input", () => {
       this.height = parseInt(e.value) || this.options.height, this.keepRatio && (this.width = Math.round(this.height * this.aspectRatio), t.value = String(this.width)), this.updatePreview();
-    }), (o = this.dialog.querySelector('[data-action="toggle-ratio"]')) == null || o.addEventListener("click", (g) => {
-      this.keepRatio = !this.keepRatio, g.currentTarget.classList.toggle("active", this.keepRatio);
+    }), (o = this.dialog.querySelector('[data-action="toggle-ratio"]')) == null || o.addEventListener("click", (u) => {
+      this.keepRatio = !this.keepRatio, u.currentTarget.classList.toggle("active", this.keepRatio);
     });
     const i = this.dialog.querySelector('[data-slider="quality"]');
     i == null || i.addEventListener("input", () => {
       this.quality = parseFloat(i.value);
-      const g = this.dialog.querySelector('[data-value="quality"]');
-      g && (g.textContent = `${Math.round(this.quality * 100)}%`), this.updateEstimatedSize();
-    }), (l = this.dialog.querySelector('[data-check="transparency"]')) == null || l.addEventListener("change", (g) => {
-      this.preserveTransparency = g.target.checked;
-      const f = this.dialog.querySelector(".ie-bg-color-row");
-      f && (f.style.display = this.preserveTransparency ? "none" : "flex"), this.updateEstimatedSize();
-    }), (h = this.dialog.querySelector('[data-input="bg-color"]')) == null || h.addEventListener("input", (g) => {
-      this.backgroundColor = g.target.value;
+      const u = this.dialog.querySelector('[data-value="quality"]');
+      u && (u.textContent = `${Math.round(this.quality * 100)}%`), this.updateEstimatedSize();
+    }), (l = this.dialog.querySelector('[data-check="transparency"]')) == null || l.addEventListener("change", (u) => {
+      this.preserveTransparency = u.target.checked;
+      const g = this.dialog.querySelector(".ie-bg-color-row");
+      g && (g.style.display = this.preserveTransparency ? "none" : "flex"), this.updateEstimatedSize();
+    }), (h = this.dialog.querySelector('[data-input="bg-color"]')) == null || h.addEventListener("input", (u) => {
+      this.backgroundColor = u.target.value;
     }), (d = this.dialog.querySelector('[data-action="copy"]')) == null || d.addEventListener("click", () => {
       this.copyToClipboard();
-    }), (p = this.dialog.querySelector('[data-check="watermark"]')) == null || p.addEventListener("change", (g) => {
-      this.watermarkEnabled = g.target.checked;
-      const f = this.dialog.querySelector(".ie-watermark-options");
-      f && (f.style.display = this.watermarkEnabled ? "block" : "none");
-    }), (u = this.dialog.querySelector('[data-input="watermark-text"]')) == null || u.addEventListener("input", (g) => {
-      this.watermarkText = g.target.value;
-    }), (v = this.overlay) == null || v.addEventListener("click", (g) => {
-      g.target === this.overlay && this.cancel();
+    }), (p = this.dialog.querySelector('[data-check="watermark"]')) == null || p.addEventListener("change", (u) => {
+      this.watermarkEnabled = u.target.checked;
+      const g = this.dialog.querySelector(".ie-watermark-options");
+      g && (g.style.display = this.watermarkEnabled ? "block" : "none");
+    }), (v = this.dialog.querySelector('[data-input="watermark-text"]')) == null || v.addEventListener("input", (u) => {
+      this.watermarkText = u.target.value;
+    }), (f = this.overlay) == null || f.addEventListener("click", (u) => {
+      u.target === this.overlay && this.cancel();
     }), document.addEventListener("keydown", this.handleKeyDown);
   }
   /**
@@ -8391,13 +8789,13 @@ class ai {
    * Set export format
    */
   setFormat(t) {
-    var a, n, s;
+    var a, s, r;
     this.format = t, (a = this.dialog) == null || a.querySelectorAll("[data-format]").forEach((o) => {
       o.classList.toggle("active", o.getAttribute("data-format") === t);
     });
-    const e = (n = this.dialog) == null ? void 0 : n.querySelector(".ie-quality-section");
+    const e = (s = this.dialog) == null ? void 0 : s.querySelector(".ie-quality-section");
     e && (e.style.display = t === "png" || t === "gif" ? "none" : "block");
-    const i = (s = this.dialog) == null ? void 0 : s.querySelector(".ie-transparency-section");
+    const i = (r = this.dialog) == null ? void 0 : r.querySelector(".ie-transparency-section");
     i && (i.style.display = this.supportsTransparency() ? "block" : "none"), this.updateEstimatedSize();
   }
   /**
@@ -8426,13 +8824,13 @@ class ai {
       const i = e.getContext("2d");
       if (!i) return;
       (!this.supportsTransparency() || !this.preserveTransparency) && (i.fillStyle = this.backgroundColor, i.fillRect(0, 0, this.width, this.height)), i.drawImage(this.options.canvas, 0, 0, this.width, this.height);
-      const a = this.format === "jpg" ? "jpeg" : this.format, n = await new Promise((s) => {
-        e.toBlob(s, `image/${a}`, this.quality);
+      const a = this.format === "jpg" ? "jpeg" : this.format, s = await new Promise((r) => {
+        e.toBlob(r, `image/${a}`, this.quality);
       });
-      if (n) {
-        this.estimatedSize = this.formatSize(n.size);
-        const s = (t = this.dialog) == null ? void 0 : t.querySelector('[data-value="file-size"]');
-        s && (s.textContent = `~${this.estimatedSize}`);
+      if (s) {
+        this.estimatedSize = this.formatSize(s.size);
+        const r = (t = this.dialog) == null ? void 0 : t.querySelector('[data-value="file-size"]');
+        r && (r.textContent = `~${this.estimatedSize}`);
       }
     } catch (e) {
       console.warn("Failed to estimate file size:", e);
@@ -8460,9 +8858,9 @@ class ai {
           ]);
           const a = (t = this.dialog) == null ? void 0 : t.querySelector('[data-action="copy"]');
           if (a) {
-            const n = a.innerHTML;
+            const s = a.innerHTML;
             a.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Copied!', a.style.background = "var(--ie-success, #22c55e)", setTimeout(() => {
-              a.innerHTML = n, a.style.background = "";
+              a.innerHTML = s, a.style.background = "";
             }, 2e3);
           }
         }
@@ -8512,39 +8910,39 @@ class ai {
     document.removeEventListener("keydown", this.handleKeyDown), this.hide(), this.resolvePromise = null;
   }
 }
-function ri(r, t) {
-  const e = r.getContext("2d");
+function ni(n, t) {
+  const e = n.getContext("2d");
   if (!e || !t.text) return;
   e.save();
-  const i = Math.max(12, Math.min(r.width, r.height) * 0.03);
+  const i = Math.max(12, Math.min(n.width, n.height) * 0.03);
   e.font = `${i}px sans-serif`, e.fillStyle = `rgba(255, 255, 255, ${t.opacity || 0.5})`, e.strokeStyle = `rgba(0, 0, 0, ${(t.opacity || 0.5) * 0.5})`, e.lineWidth = 1;
-  const a = e.measureText(t.text), n = i;
-  let s, o;
+  const a = e.measureText(t.text), s = i;
+  let r, o;
   switch (t.position) {
     case "top-left":
-      s = n, o = n + i;
+      r = s, o = s + i;
       break;
     case "top-right":
-      s = r.width - a.width - n, o = n + i;
+      r = n.width - a.width - s, o = s + i;
       break;
     case "bottom-left":
-      s = n, o = r.height - n;
+      r = s, o = n.height - s;
       break;
     case "center":
-      s = (r.width - a.width) / 2, o = r.height / 2;
+      r = (n.width - a.width) / 2, o = n.height / 2;
       break;
     case "bottom-right":
     default:
-      s = r.width - a.width - n, o = r.height - n;
+      r = n.width - a.width - s, o = n.height - s;
       break;
   }
-  e.strokeText(t.text, s, o), e.fillText(t.text, s, o), e.restore();
+  e.strokeText(t.text, r, o), e.fillText(t.text, r, o), e.restore();
 }
-const ni = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const si = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   ExportDialog: ai,
-  applyWatermark: ri
-}, Symbol.toStringTag, { value: "Module" })), si = {
+  applyWatermark: ni
+}, Symbol.toStringTag, { value: "Module" })), ri = {
   showHorizontal: !0,
   showVertical: !0,
   showGrid: !1,
@@ -8567,7 +8965,7 @@ class oi {
     c(this, "offsetY", 0);
     c(this, "canvasWidth", 0);
     c(this, "canvasHeight", 0);
-    this.container = t, this.options = { ...si, ...e }, this.init();
+    this.container = t, this.options = { ...ri, ...e }, this.init();
   }
   init() {
     if (this.options.showHorizontal && (this.horizontalRuler = document.createElement("canvas"), this.horizontalRuler.className = "ie-ruler ie-ruler-horizontal", this.horizontalRuler.style.cssText = `
@@ -8613,8 +9011,8 @@ class oi {
       `, this.container.appendChild(this.gridOverlay)), this.updateRulers();
   }
   /** Update view state */
-  updateView(t, e, i, a, n) {
-    this.scale = t, this.offsetX = e, this.offsetY = i, this.canvasWidth = a, this.canvasHeight = n, this.updateRulers();
+  updateView(t, e, i, a, s) {
+    this.scale = t, this.offsetX = e, this.offsetY = i, this.canvasWidth = a, this.canvasHeight = s, this.updateRulers();
   }
   /** Update ruler drawings */
   updateRulers() {
@@ -8627,9 +9025,9 @@ class oi {
     const i = t.getContext("2d");
     if (!i) return;
     i.scale(window.devicePixelRatio, window.devicePixelRatio), i.clearRect(0, 0, e.width, e.height), i.fillStyle = this.options.rulerColor, i.font = "10px sans-serif", i.textAlign = "center";
-    const a = this.getTickInterval(), s = e.width / 2 + this.offsetX - this.canvasWidth * this.scale / 2;
+    const a = this.getTickInterval(), r = e.width / 2 + this.offsetX - this.canvasWidth * this.scale / 2;
     for (let o = 0; o <= this.canvasWidth; o += a) {
-      const l = s + o * this.scale;
+      const l = r + o * this.scale;
       if (l < 0 || l > e.width) continue;
       const h = o % (a * 5) === 0, d = h ? 12 : 6;
       i.beginPath(), i.moveTo(l, e.height), i.lineTo(l, e.height - d), i.stroke(), h && i.fillText(String(o), l, e.height - 14);
@@ -8642,9 +9040,9 @@ class oi {
     const i = t.getContext("2d");
     if (!i) return;
     i.scale(window.devicePixelRatio, window.devicePixelRatio), i.clearRect(0, 0, e.width, e.height), i.fillStyle = this.options.rulerColor, i.font = "10px sans-serif", i.textAlign = "right";
-    const a = this.getTickInterval(), s = e.height / 2 + this.offsetY - this.canvasHeight * this.scale / 2;
+    const a = this.getTickInterval(), r = e.height / 2 + this.offsetY - this.canvasHeight * this.scale / 2;
     for (let o = 0; o <= this.canvasHeight; o += a) {
-      const l = s + o * this.scale;
+      const l = r + o * this.scale;
       if (l < 0 || l > e.height) continue;
       const h = o % (a * 5) === 0, d = h ? 12 : 6;
       i.beginPath(), i.moveTo(e.width, l), i.lineTo(e.width - d, l), i.stroke(), h && (i.save(), i.translate(e.width - 14, l), i.rotate(-Math.PI / 2), i.textAlign = "center", i.fillText(String(o), 0, 0), i.restore());
@@ -8657,14 +9055,14 @@ class oi {
     const i = t.getContext("2d");
     if (!i) return;
     i.scale(window.devicePixelRatio, window.devicePixelRatio), i.clearRect(0, 0, e.width, e.height), i.strokeStyle = this.options.gridColor, i.lineWidth = 1;
-    const a = e.width / 2, n = e.height / 2, s = a + this.offsetX - this.canvasWidth * this.scale / 2, o = n + this.offsetY - this.canvasHeight * this.scale / 2, l = s + this.canvasWidth * this.scale, h = o + this.canvasHeight * this.scale;
+    const a = e.width / 2, s = e.height / 2, r = a + this.offsetX - this.canvasWidth * this.scale / 2, o = s + this.offsetY - this.canvasHeight * this.scale / 2, l = r + this.canvasWidth * this.scale, h = o + this.canvasHeight * this.scale;
     for (let d = 0; d <= this.canvasWidth; d += this.options.gridSize) {
-      const p = s + d * this.scale;
+      const p = r + d * this.scale;
       p < 0 || p > e.width || (i.beginPath(), i.moveTo(p, Math.max(0, o)), i.lineTo(p, Math.min(e.height, h)), i.stroke());
     }
     for (let d = 0; d <= this.canvasHeight; d += this.options.gridSize) {
       const p = o + d * this.scale;
-      p < 0 || p > e.height || (i.beginPath(), i.moveTo(Math.max(0, s), p), i.lineTo(Math.min(e.width, l), p), i.stroke());
+      p < 0 || p > e.height || (i.beginPath(), i.moveTo(Math.max(0, r), p), i.lineTo(Math.min(e.width, l), p), i.stroke());
     }
   }
   /** Get tick interval based on scale */
@@ -8693,8 +9091,8 @@ class oi {
     (t = this.horizontalRuler) == null || t.remove(), (e = this.verticalRuler) == null || e.remove(), (i = this.gridOverlay) == null || i.remove(), (a = this.container.querySelector(".ie-ruler-corner")) == null || a.remove();
   }
 }
-function Sa(r, t) {
-  return new oi(r, t);
+function Sa(n, t) {
+  return new oi(n, t);
 }
 const Ma = "0.2.0";
 export {
@@ -8705,18 +9103,18 @@ export {
   wa as ContextMenu,
   ya as CropTool,
   ct as DEFAULT_EDITOR_CONFIG,
-  Ot as DEFAULT_EXPORT_OPTIONS,
+  At as DEFAULT_EXPORT_OPTIONS,
   di as DEFAULT_FILTER_CONFIG,
   ci as DEFAULT_MOSAIC_CONFIG,
-  _t as DEFAULT_TEXT_CONFIG,
+  Pt as DEFAULT_TEXT_CONFIG,
   hi as DEFAULT_TEXT_STYLE,
   pi as EDITOR_EVENTS,
-  xt as Editor,
+  vt as Editor,
   Te as EventManager,
   ai as ExportDialog,
   ma as FilterPlugin,
   De as HistoryManager,
-  Ct as I18n,
+  bt as I18n,
   pa as KeyboardManager,
   fa as MosaicPlugin,
   ui as PLUGIN_EVENTS,
@@ -8731,27 +9129,27 @@ export {
   be as angle,
   Fi as angleDegrees,
   Ge as applyBlur,
-  Ye as applyBrightness,
-  Xe as applyContrast,
+  Xe as applyBrightness,
+  Ye as applyContrast,
   ba as applyCropToCanvas,
   Ke as applyGrayscale,
   Qe as applyInvert,
   ga as applyMosaicAlongPath,
-  Rt as applyMosaicToCircularRegion,
-  yt as applyMosaicToRegion,
+  Lt as applyMosaicToCircularRegion,
+  mt as applyMosaicToRegion,
   Ve as applySaturation,
   Je as applySepia,
-  ri as applyWatermark,
+  ni as applyWatermark,
   fe as blobToDataUrl,
-  Bt as buildFontString,
-  pt as calculateAspectRatioFit,
-  N as canvasToBlob,
-  q as canvasToDataURL,
+  Rt as buildFontString,
+  jt as calculateAspectRatioFit,
+  q as canvasToBlob,
+  W as canvasToDataURL,
   R as clamp,
   ht as clearCanvas,
-  St as cloneImageData,
+  wt as cloneImageData,
   ce as copyImageToClipboard,
-  Nt as createCanvas,
+  Ot as createCanvas,
   ua as createEditorShortcuts,
   xi as createImageData,
   Mi as createPanEvent,
@@ -8761,62 +9159,62 @@ export {
   yi as createScaledCanvas,
   Ca as createShapeMenuItems,
   bi as cropCanvas,
-  na as darken,
+  sa as darken,
   ge as dataUrlToBlob,
   Ii as debounce,
   Oi as degreesToRadians,
-  sa as desaturate,
+  ra as desaturate,
   ie as detectDeviceType,
   Ai as distance,
   ye as distanceSquared,
-  Yi as doRectsIntersect,
+  Xi as doRectsIntersect,
   le as downloadImage,
-  ut as drawImageToCanvas,
+  dt as drawImageToCanvas,
   ei as enUS,
   he as estimateFileSize,
-  nt as exportImage,
-  se as exportToJPEG,
-  ne as exportToPNG,
+  st as exportImage,
+  re as exportToJPEG,
+  se as exportToPNG,
   oe as exportToWebP,
-  Yt as fillCanvas,
-  bt as findTextLayerAtPoint,
+  Wt as fillCanvas,
+  xt as findTextLayerAtPoint,
   Ci as flipCanvas,
   de as formatFileSize,
   oa as getComplementary,
-  qt as getContext2D,
+  Ht as getContext2D,
   la as getContrastRatio,
   ca as getContrastingTextColor,
   Pi as getDevicePixelRatio,
-  Ht as getElement,
-  Wt as getElementRect,
+  Ft as getElement,
+  Nt as getElementRect,
   lt as getI18n,
   Zt as getImageData,
-  dt as getImageDimensions,
+  Gt as getImageDimensions,
   pe as getImageInfo,
   et as getLuminance,
-  rt as getMimeType,
-  It as getNonPassiveOptions,
+  nt as getMimeType,
+  Mt as getNonPassiveOptions,
   Ri as getPassiveOptions,
-  Xi as getRectsIntersection,
+  Yi as getRectsIntersection,
   fi as getRelativeCoordinates,
-  Mt as getResolvedDeviceType,
+  Ct as getResolvedDeviceType,
   ue as getSupportedFormats,
-  $t as getTextBoundingBox,
+  _t as getTextBoundingBox,
   Qt as getTouchCenter,
   Jt as getTouchDistance,
   Bi as getViewportDimensions,
   Se as hexToRgb,
-  gt as hexToRgba,
-  j as hslToRgb,
+  pt as hexToRgba,
+  Z as hslToRgb,
   ea as hsvToRgb,
-  w as icons,
-  Pt as injectStyles,
+  y as icons,
+  zt as injectStyles,
   Ae as interpolatePoints,
   xe as inverseLerp,
   da as invertColor,
   Li as isAndroidDevice,
-  zt as isClipboardSupported,
-  Lt as isFormatSupported,
+  Et as isClipboardSupported,
+  Dt as isFormatSupported,
   zi as isIOSDevice,
   vi as isInViewport,
   Ie as isLightColor,
@@ -8827,10 +9225,10 @@ export {
   te as isTouchDevice,
   me as lerp,
   Me as lighten,
-  jt as loadImage,
+  Vt as loadImage,
   He as measureText,
   Ni as midpoint,
-  ra as mixColors,
+  na as mixColors,
   Hi as normalizeAngle,
   H as normalizePointerEvent,
   ia as parseColor,
@@ -8840,11 +9238,11 @@ export {
   ji as randomInt,
   Ce as randomRange,
   $i as remap,
-  Vt as removeElement,
-  wt as renderAllTextLayers,
+  Xt as removeElement,
+  yt as renderAllTextLayers,
   qe as renderTextLayer,
   Ji as rgbToHex,
-  st as rgbToHsl,
+  rt as rgbToHsl,
   ta as rgbToHsv,
   aa as rgbaToCss,
   Qi as rgbaToHex,
@@ -8854,15 +9252,15 @@ export {
   mi as safeCalculateAspectRatioFit,
   ke as saturate,
   Vi as scaleRectFromCenter,
-  Ut as setCanvasSize,
-  Xt as setStyles,
+  qt as setCanvasSize,
+  Ut as setStyles,
   Ki as smootherstep,
   Zi as smoothstep,
   Ei as stopPropagation,
-  kt as supportsPassiveEvents,
+  St as supportsPassiveEvents,
   _i as supportsPointerEvents,
-  Dt as supportsQuality,
-  Et as supportsTransparency,
+  Tt as supportsQuality,
+  It as supportsTransparency,
   xa as t,
   ki as throttle,
   ha as toGrayscale,

@@ -11,7 +11,7 @@
  * - Toolbar configuration props
  */
 
-import { ref, watch, onMounted, onUnmounted, provide, computed } from 'vue';
+import { ref, watch, onMounted, onUnmounted, provide, computed, nextTick } from 'vue';
 import type { PluginConstructor, ExportOptions } from '@ldesign/image-editor';
 import { useImageEditor } from '../../composables/useImageEditor';
 import { useEditorEvents } from '../../composables/useEditorEvents';
@@ -19,7 +19,7 @@ import { useEditorToolbar } from '../../composables/useEditorToolbar';
 import { useEditorTransform } from '../../composables/useEditorTransform';
 import { useEditorExport } from '../../composables/useEditorExport';
 import { EditorInjectionKey } from '../../types';
-import type { ToolbarTheme, ToolbarOptions } from '../../types';
+import type { ToolbarTheme, ToolbarOptions, ToolbarLayout } from '../../types';
 
 /**
  * Additional editor options type (excluding props that are passed separately)
@@ -63,6 +63,8 @@ const props = withDefaults(defineProps<{
   responsive?: boolean;
   /** Default tool to select when image is loaded (e.g., 'pen', 'mosaic', 'rect') */
   defaultTool?: string;
+  /** Toolbar layout mode: 'expanded' (all tools visible) or 'compact' (grouped in dropdowns) */
+  toolbarLayout?: ToolbarLayout;
 }>(), {
   image: undefined,
   width: undefined,
@@ -77,6 +79,7 @@ const props = withDefaults(defineProps<{
   backgroundColor: undefined,
   responsive: undefined,
   defaultTool: undefined,
+  toolbarLayout: undefined,
 });
 
 /**
@@ -117,6 +120,7 @@ const mergedOptions = computed(() => {
     ...(props.primaryColor && { primaryColor: props.primaryColor }),
     ...(props.disabledTools && { disabledTools: props.disabledTools }),
     ...(props.defaultTool && { defaultTool: props.defaultTool }),
+    ...(props.toolbarLayout && { layout: props.toolbarLayout }),
   };
 
   return {
@@ -147,7 +151,7 @@ const {
   setTool,
   destroy,
 } = useImageEditor({
-  image: props.image,
+  // Note: image is NOT passed here - loading is handled via onMounted + watch
   width: props.width,
   height: props.height,
   plugins: props.plugins,
@@ -225,16 +229,30 @@ onAfterExport((data) => emit('after-export', data));
 onDestroy(() => emit('destroy'));
 
 // Initialize editor on mount
-onMounted(() => {
+onMounted(async () => {
   if (containerRef.value) {
     init(containerRef.value);
+    
+    // Load initial image after editor is initialized
+    // Use nextTick to ensure editor.value is set after init()
+    await nextTick();
+    
+    if (props.image && editor.value) {
+      try {
+        await loadImage(props.image);
+      } catch (err) {
+        // Error is already emitted via event
+      }
+    }
   }
 });
 
 // Watch for image prop changes
+// Use immediate: false to skip initial trigger, and handle all subsequent changes
 watch(
   () => props.image,
   async (newImage) => {
+    // Load image when it has a value and editor is initialized
     if (newImage && editor.value) {
       try {
         await loadImage(newImage);
@@ -242,7 +260,8 @@ watch(
         // Error is already emitted via event
       }
     }
-  }
+  },
+  { immediate: false }
 );
 
 // Watch for toolbar props changes

@@ -52,6 +52,10 @@ const toolbarConfig = [
   { group: '图像工具', items: [
     { id: 'crop', name: '裁剪' },
     { id: 'filter', name: '滤镜' },
+    { id: 'rotateLeft', name: '逆时针旋转' },
+    { id: 'rotateRight', name: '顺时针旋转' },
+    { id: 'flipH', name: '水平翻转' },
+    { id: 'flipV', name: '垂直翻转' },
   ]},
   { group: '历史记录', items: [
     { id: 'undo', name: '撤销' },
@@ -66,7 +70,7 @@ const toolbarConfig = [
 const enabledTools = ref<string[]>([
   'zoomOut', 'zoomIn', 'reset',
   'move', 'pen', 'rect', 'circle', 'arrow', 'line', 'triangle', 'mosaic', 'eraser',
-  'crop', 'filter',
+  'crop', 'filter', 'rotateLeft', 'rotateRight', 'flipH', 'flipV',
   'undo', 'redo',
   'export',
 ]);
@@ -77,7 +81,15 @@ const editorSettings = ref({
   historyLimit: 50,
   responsive: true,
   primaryColor: '#667eea',
+  toolbarLayout: 'expanded' as 'expanded' | 'compact',
 });
+
+const containerWidth = ref(900);
+const containerHeight = ref(600);
+const containerStyle = computed(() => ({
+  width: `${containerWidth.value}px`,
+  height: `${containerHeight.value}px`,
+}));
 
 // Plugins
 const allPlugins = [MosaicPlugin, TextPlugin, FilterPlugin];
@@ -103,35 +115,68 @@ const getDisabledTools = (): ToolName[] => {
   const allToolIds: ToolName[] = [
     'zoomOut', 'zoomIn', 'reset',
     'move', 'pen', 'rect', 'circle', 'arrow', 'line', 'triangle', 'text', 'mosaic', 'eraser',
-    'crop', 'filter',
+    'crop', 'filter', 'rotateLeft', 'rotateRight', 'flipH', 'flipV',
     'undo', 'redo',
     'export',
   ];
   return allToolIds.filter(id => !enabledTools.value.includes(id));
 };
 
-const initEditor = () => {
+// Store current image data for reinit
+let currentImageData: string | null = null;
+
+const initEditor = async () => {
   if (!containerRef.value) return;
+  
+  console.log('[initEditor] layout:', editorSettings.value.toolbarLayout);
+  
+  // Save current image before destroying
+  if (editor && toolbar?.hasImage()) {
+    try {
+      currentImageData = await editor.export({ format: 'png', type: 'base64' }) as string;
+      console.log('[initEditor] saved image, length:', currentImageData.length);
+    } catch (e) {
+      console.error('[initEditor] export error:', e);
+      currentImageData = null;
+    }
+  }
   
   // Destroy existing editor
   if (editor) {
     editor.destroy();
+    editor = null;
+    toolbar = null;
   }
+  
+  // Clear container (in case destroy didn't fully clean up)
+  containerRef.value.innerHTML = '';
+  
+  // Wait for next tick to ensure DOM is ready
+  await nextTick();
   
   // Create editor - load all plugins, use disabledTools to control UI visibility
   editor = new Editor({
     container: containerRef.value,
     plugins: allPlugins,
-    historyLimit: 50,
-    responsive: true,
+    historyLimit: editorSettings.value.historyLimit,
+    responsive: editorSettings.value.responsive,
     toolbar: {
       theme: currentTheme.value,
-      autoHide: true,
+      autoHide: editorSettings.value.autoHide,
       disabledTools: getDisabledTools(),
+      layout: editorSettings.value.toolbarLayout,
     },
   });
   
   toolbar = (editor as any)._toolbar;
+  console.log('[initEditor] created editor with layout:', editorSettings.value.toolbarLayout);
+  
+  // Restore image if we had one
+  if (currentImageData) {
+    await editor.loadImage(currentImageData);
+    currentImageData = null;
+    console.log('[initEditor] restored image');
+  }
 };
 
 onMounted(() => {
@@ -572,6 +617,20 @@ const response = await fetch('/api/upload', {
             </div>
             <div class="panel-body">
               <div class="setting-item">
+                <span class="setting-label">容器宽度</span>
+                <div class="range-row">
+                  <input type="range" v-model.number="containerWidth" min="320" max="1400" step="10" class="range-slider" />
+                  <span class="range-value">{{ containerWidth }}px</span>
+                </div>
+              </div>
+              <div class="setting-item">
+                <span class="setting-label">容器高度</span>
+                <div class="range-row">
+                  <input type="range" v-model.number="containerHeight" min="240" max="900" step="10" class="range-slider" />
+                  <span class="range-value">{{ containerHeight }}px</span>
+                </div>
+              </div>
+              <div class="setting-item">
                 <span class="setting-label">主题色</span>
                 <div class="color-picker-row">
                   <input type="color" v-model="editorSettings.primaryColor" @input="updatePrimaryColor(editorSettings.primaryColor)" class="color-input" />
@@ -595,6 +654,21 @@ const response = await fetch('/api/upload', {
                 <div class="range-row">
                   <input type="range" v-model.number="editorSettings.historyLimit" min="10" max="100" step="10" class="range-slider" />
                   <span class="range-value">{{ editorSettings.historyLimit }}</span>
+                </div>
+              </div>
+              <div class="setting-item">
+                <span class="setting-label">工具栏布局</span>
+                <div class="layout-selector">
+                  <button 
+                    class="layout-btn" 
+                    :class="{ active: editorSettings.toolbarLayout === 'expanded' }"
+                    @click="editorSettings.toolbarLayout = 'expanded'; initEditor()"
+                  >展开</button>
+                  <button 
+                    class="layout-btn" 
+                    :class="{ active: editorSettings.toolbarLayout === 'compact' }"
+                    @click="editorSettings.toolbarLayout = 'compact'; initEditor()"
+                  >紧凑</button>
                 </div>
               </div>
               <div class="setting-hint">部分属性需重新初始化才能生效</div>
@@ -769,12 +843,16 @@ const response = await fetch('/api/upload', {
       </div>
     </Teleport>
     
-    <main
-      ref="containerRef"
-      class="editor-container"
-      @drop.prevent="handleDrop"
-      @dragover.prevent
-    />
+    <main class="editor-container">
+      <div class="editor-resize-wrapper" :style="containerStyle">
+        <div
+          ref="containerRef"
+          class="editor-container-inner"
+          @drop.prevent="handleDrop"
+          @dragover.prevent
+        />
+      </div>
+    </main>
   </div>
 </template>
 
@@ -1188,6 +1266,42 @@ const response = await fetch('/api/upload', {
   text-align: center;
 }
 
+/* Layout Selector */
+.layout-selector {
+  display: flex;
+  gap: 4px;
+  background: rgba(128, 128, 128, 0.15);
+  border-radius: 6px;
+  padding: 2px;
+}
+
+.layout-btn {
+  padding: 6px 12px;
+  font-size: 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s;
+  background: transparent;
+}
+
+.config-panel.theme-dark .layout-btn {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.config-panel.theme-light .layout-btn {
+  color: rgba(0, 0, 0, 0.7);
+}
+
+.layout-btn:hover {
+  background: rgba(128, 128, 128, 0.2);
+}
+
+.layout-btn.active {
+  background: #667eea;
+  color: #fff;
+}
+
 /* Panel transition */
 .panel-fade-enter-active,
 .panel-fade-leave-active {
@@ -1206,6 +1320,19 @@ const response = await fetch('/api/upload', {
   overflow: hidden;
   /* Default to dark theme to prevent flash */
   background: #1a1a1a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.editor-resize-wrapper {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.editor-container-inner {
+  width: 100%;
+  height: 100%;
 }
 
 .editor-page.theme-light .editor-container {

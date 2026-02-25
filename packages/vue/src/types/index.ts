@@ -24,6 +24,8 @@ export type ToolbarTheme = 'light' | 'dark' | 'auto';
 /**
  * Toolbar configuration options
  */
+export type ToolbarLayout = 'expanded' | 'compact';
+
 export interface ToolbarOptions {
   /** Theme: 'light' | 'dark' | 'auto' */
   theme?: ToolbarTheme;
@@ -47,6 +49,8 @@ export interface ToolbarOptions {
   placeholderSubText?: string;
   /** Default tool to select when image is loaded (e.g., 'pen', 'mosaic', 'rect') */
   defaultTool?: string;
+  /** Toolbar layout mode: 'expanded' (all tools visible) or 'compact' (grouped in dropdowns) */
+  layout?: ToolbarLayout;
 }
 
 // ============================================================================
@@ -84,6 +88,8 @@ export interface ImageEditorProps {
   responsive?: boolean;
   /** Default tool to select when image is loaded (e.g., 'pen', 'mosaic', 'rect') */
   defaultTool?: string;
+  /** Toolbar layout mode (shortcut): 'expanded' or 'compact' */
+  toolbarLayout?: ToolbarLayout;
 }
 
 // ============================================================================

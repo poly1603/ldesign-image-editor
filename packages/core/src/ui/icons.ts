@@ -313,6 +313,11 @@ export const icons = {
     <circle cx="19" cy="12" r="1"/>
     <circle cx="5" cy="12" r="1"/>
   `),
+  
+  // Chevron Down (for dropdown)
+  chevronDown: createSvg(`
+    <path d="m6 9 6 6 6-6"/>
+  `, 12),
 };
 
 export type IconName = keyof typeof icons;

@@ -74,12 +74,14 @@ export function useImageEditor(options: UseImageEditorOptions = {}): {
 
     try {
       // Build editor options - spread all options including toolbar config
+      // Note: Do NOT pass image here - let the Vue component handle image loading via watch
+      // This prevents double loading when both constructor and watch try to load the same image
       const editorOptions: EditorOptions = {
         container,
         width: options.width,
         height: options.height,
         plugins: options.plugins,
-        image: options.image,
+        // image is intentionally NOT passed here
         ...options.options,
       };
 
@@ -128,6 +130,13 @@ export function useImageEditor(options: UseImageEditorOptions = {}): {
     editorInstance.on('image-loaded', (data) => {
       width.value = data.width;
       height.value = data.height;
+    });
+
+    editorInstance.on('transform', (data) => {
+      if (data.type === 'resize' && typeof data.width === 'number' && typeof data.height === 'number') {
+        width.value = data.width;
+        height.value = data.height;
+      }
     });
   }
 

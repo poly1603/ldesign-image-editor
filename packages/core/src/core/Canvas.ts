@@ -186,9 +186,13 @@ export class Canvas {
   /**
    * Handle container resize
    * Requirements: 8.2 - Maintain aspect ratio on resize
+   * 
+   * Note: When the container size changes, we do NOT resize the canvas or redraw
+   * the image. This preserves all user edits (drawings, zoom, position, etc.).
+   * Instead, we only notify listeners so the Toolbar can adjust the view.
    */
   private handleContainerResize(): void {
-    if (this._destroyed || !this._originalImage) {
+    if (this._destroyed) {
       return;
     }
 
@@ -200,30 +204,17 @@ export class Canvas {
       return;
     }
 
-    const { width: imgWidth, height: imgHeight } = getImageDimensions(this._originalImage);
     const previousWidth = this.width;
     const previousHeight = this.height;
 
-    // Calculate new dimensions maintaining aspect ratio
-    const { width: newWidth, height: newHeight } = calculateAspectRatioFit(
-      imgWidth,
-      imgHeight,
-      containerWidth,
-      containerHeight
-    );
-
-    // Only resize if dimensions changed
-    if (newWidth !== previousWidth || newHeight !== previousHeight) {
-      this.resize(newWidth, newHeight, true);
-
-      // Notify listeners
-      this.notifyResizeListeners({
-        width: newWidth,
-        height: newHeight,
-        previousWidth,
-        previousHeight,
-      });
-    }
+    // Only notify listeners - DON'T resize canvas or redraw image
+    // This preserves all user edits and annotations
+    this.notifyResizeListeners({
+      width: this.width,
+      height: this.height,
+      previousWidth,
+      previousHeight,
+    });
   }
 
 
@@ -287,6 +278,7 @@ export class Canvas {
     if (preserveContent && this._originalImage) {
       // Redraw original image at new size
       drawImageToCanvas(this._ctx, this._originalImage, 0, 0, width, height);
+      this._originalImageData = this.getImageData();
     }
   }
 

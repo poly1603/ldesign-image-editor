@@ -30,11 +30,14 @@ export function createCanvas(
 
 /**
  * Get 2D rendering context from canvas
+ * @param canvas - Canvas element
+ * @param willReadFrequently - Hint that getImageData will be called frequently (improves performance)
  */
 export function getContext2D(
-  canvas: HTMLCanvasElement
+  canvas: HTMLCanvasElement,
+  willReadFrequently = true
 ): CanvasRenderingContext2D {
-  const ctx = canvas.getContext('2d');
+  const ctx = canvas.getContext('2d', { willReadFrequently });
   if (!ctx) {
     throw new Error('Failed to get 2D context from canvas');
   }

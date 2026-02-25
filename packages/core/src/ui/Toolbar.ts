@@ -11,6 +11,7 @@ import { createPlaceholder } from '../utils/placeholder';
 /** Available tool/button names that can be disabled */
 export type ToolName = 
   | 'move' | 'pen' | 'rect' | 'circle' | 'arrow' | 'line' | 'triangle' | 'text' | 'mosaic' | 'eraser' | 'crop' | 'filter'  // Drawing tools
+  | 'flipH' | 'flipV' | 'rotateLeft' | 'rotateRight' // Transform tools
   | 'zoomIn' | 'zoomOut' | 'reset'  // Zoom controls
   | 'undo' | 'redo'  // History controls  
   | 'export';  // Export button
@@ -50,6 +51,8 @@ export interface ToolbarOptions {
   enableWatermark?: boolean;
   /** Default tool to select when image is loaded */
   defaultTool?: ToolName;
+  /** Toolbar layout mode: 'expanded' (all tools visible) or 'compact' (grouped in dropdowns) */
+  layout?: 'expanded' | 'compact';
 }
 
 const defaultOptions: ToolbarOptions & { zoom: boolean; tools: boolean; history: boolean; export: boolean; theme: 'light' | 'dark' | 'auto'; autoHide: boolean } = {
@@ -131,6 +134,11 @@ export class Toolbar {
   private dragStartPoint = { x: 0, y: 0 };
   private originalImageData: ImageData | null = null;
   private pureImageData: ImageData | null = null;  // Pure original image without any annotations (for eraser)
+  private initialPureImageData: ImageData | null = null;  // Initial pure image (for filter reset, never overwritten by filters)
+  
+  // Dropdown state (for compact layout)
+  private openDropdown: string | null = null;  // Currently open dropdown
+  private dropdownMenus: Map<string, HTMLElement> = new Map();  // Dropdown menu elements
 
   constructor(editor: Editor, container: HTMLElement, options: ToolbarOptions = {}) {
     this.editor = editor;
@@ -198,6 +206,8 @@ export class Toolbar {
     toolbar.className = 'ie-toolbar';
     toolbar.style.position = 'relative';
     const disabled = this.options.disabledTools || [];
+    const isCompact = this.options.layout === 'compact';
+    console.log('[Toolbar.createToolbar] layout option:', this.options.layout, 'isCompact:', isCompact);
     
     // Zoom controls (always create, respect disabledTools)
     const zoomGroup = this.createGroup();
@@ -216,7 +226,7 @@ export class Toolbar {
     if (disabled.includes('zoomIn')) zoomInBtn.style.display = 'none';
     zoomGroup.appendChild(zoomInBtn);
     
-    const resetBtn = this.createButton('reset', icons.reset, () => this.resetView());
+    const resetBtn = this.createButton('reset', icons.reset, () => this.resetImage());
     if (disabled.includes('reset')) resetBtn.style.display = 'none';
     zoomGroup.appendChild(resetBtn);
     
@@ -225,38 +235,58 @@ export class Toolbar {
     this.dividers.push(this.createDivider());
     toolbar.appendChild(this.dividers[this.dividers.length - 1]);
     
-    // Tool controls (always create, respect disabledTools)
+    // Tool controls - different layout for compact vs expanded
     const toolGroup = this.createGroup();
     toolGroup.className = 'ie-toolbar-group ie-tool-group';
     
+    // Move button (always individual)
     const moveBtn = this.createButton('move', icons.move, () => this.selectTool(null), true);
     if (disabled.includes('move')) moveBtn.style.display = 'none';
     toolGroup.appendChild(moveBtn);
     
-    const penBtn = this.createButton('pen', icons.pen, () => this.selectTool('pen'));
-    if (disabled.includes('pen')) penBtn.style.display = 'none';
-    toolGroup.appendChild(penBtn);
+    if (isCompact) {
+      // Compact mode: Drawing tools in dropdown
+      const drawingTools = [
+        { name: 'pen', icon: icons.pen, onClick: () => this.selectTool('pen') },
+        { name: 'rect', icon: icons.rect, onClick: () => this.selectTool('rect') },
+        { name: 'circle', icon: icons.circle, onClick: () => this.selectTool('circle') },
+        { name: 'triangle', icon: icons.triangle, onClick: () => this.selectTool('triangle') },
+        { name: 'line', icon: icons.line, onClick: () => this.selectTool('line') },
+        { name: 'arrow', icon: icons.arrow, onClick: () => this.selectTool('arrow') },
+      ].filter(t => !disabled.includes(t.name as ToolName));
+      
+      if (drawingTools.length > 0) {
+        const drawDropdown = this.createDropdownButton('drawTools', icons.pen, drawingTools, '绘图工具');
+        toolGroup.appendChild(drawDropdown);
+      }
+    } else {
+      // Expanded mode: All drawing tools visible
+      const penBtn = this.createButton('pen', icons.pen, () => this.selectTool('pen'));
+      if (disabled.includes('pen')) penBtn.style.display = 'none';
+      toolGroup.appendChild(penBtn);
+      
+      const rectBtn = this.createButton('rect', icons.rect, () => this.selectTool('rect'));
+      if (disabled.includes('rect')) rectBtn.style.display = 'none';
+      toolGroup.appendChild(rectBtn);
+      
+      const circleBtn = this.createButton('circle', icons.circle, () => this.selectTool('circle'));
+      if (disabled.includes('circle')) circleBtn.style.display = 'none';
+      toolGroup.appendChild(circleBtn);
+      
+      const arrowBtn = this.createButton('arrow', icons.arrow, () => this.selectTool('arrow'));
+      if (disabled.includes('arrow')) arrowBtn.style.display = 'none';
+      toolGroup.appendChild(arrowBtn);
+      
+      const lineBtn = this.createButton('line', icons.line, () => this.selectTool('line'));
+      if (disabled.includes('line')) lineBtn.style.display = 'none';
+      toolGroup.appendChild(lineBtn);
+      
+      const triangleBtn = this.createButton('triangle', icons.triangle, () => this.selectTool('triangle'));
+      if (disabled.includes('triangle')) triangleBtn.style.display = 'none';
+      toolGroup.appendChild(triangleBtn);
+    }
     
-    const rectBtn = this.createButton('rect', icons.rect, () => this.selectTool('rect'));
-    if (disabled.includes('rect')) rectBtn.style.display = 'none';
-    toolGroup.appendChild(rectBtn);
-    
-    const circleBtn = this.createButton('circle', icons.circle, () => this.selectTool('circle'));
-    if (disabled.includes('circle')) circleBtn.style.display = 'none';
-    toolGroup.appendChild(circleBtn);
-    
-    const arrowBtn = this.createButton('arrow', icons.arrow, () => this.selectTool('arrow'));
-    if (disabled.includes('arrow')) arrowBtn.style.display = 'none';
-    toolGroup.appendChild(arrowBtn);
-    
-    const lineBtn = this.createButton('line', icons.line, () => this.selectTool('line'));
-    if (disabled.includes('line')) lineBtn.style.display = 'none';
-    toolGroup.appendChild(lineBtn);
-    
-    const triangleBtn = this.createButton('triangle', icons.triangle, () => this.selectTool('triangle'));
-    if (disabled.includes('triangle')) triangleBtn.style.display = 'none';
-    toolGroup.appendChild(triangleBtn);
-    
+    // Text, mosaic, eraser (always individual)
     const textBtn = this.createButton('text', icons.type, () => this.selectTool('text'));
     if (disabled.includes('text')) textBtn.style.display = 'none';
     toolGroup.appendChild(textBtn);
@@ -272,13 +302,45 @@ export class Toolbar {
     this.groups.set('tool', toolGroup);
     toolbar.appendChild(toolGroup);
     
-    // Crop and filter tools
+    // Create advanced controls group
     const advancedGroup = this.createGroup();
     advancedGroup.className = 'ie-toolbar-group ie-advanced-group';
     
     const cropBtn = this.createButton('crop', icons.crop, () => this.toggleCropTool());
     if (disabled.includes('crop')) cropBtn.style.display = 'none';
     advancedGroup.appendChild(cropBtn);
+
+    if (isCompact) {
+      // Compact mode: Transform tools (flip and rotate) in dropdown
+      const transformTools = [
+        { name: 'rotateLeft', icon: icons.rotateLeft, onClick: () => this.editor.rotateLeft(), isAction: true },
+        { name: 'rotateRight', icon: icons.rotateRight, onClick: () => this.editor.rotateRight(), isAction: true },
+        { name: 'flipH', icon: icons.flipH, onClick: () => this.editor.flipHorizontal(), isAction: true },
+        { name: 'flipV', icon: icons.flipV, onClick: () => this.editor.flipVertical(), isAction: true },
+      ].filter(t => !disabled.includes(t.name as ToolName));
+      
+      if (transformTools.length > 0) {
+        const transformDropdown = this.createDropdownButton('transformTools', icons.rotateRight, transformTools, '变换');
+        advancedGroup.appendChild(transformDropdown);
+      }
+    } else {
+      // Expanded mode: Transform buttons visible
+      const rotateLeftBtn = this.createButton('rotateLeft', icons.rotateLeft, () => this.editor.rotateLeft());
+      if (disabled.includes('rotateLeft')) rotateLeftBtn.style.display = 'none';
+      advancedGroup.appendChild(rotateLeftBtn);
+
+      const rotateRightBtn = this.createButton('rotateRight', icons.rotateRight, () => this.editor.rotateRight());
+      if (disabled.includes('rotateRight')) rotateRightBtn.style.display = 'none';
+      advancedGroup.appendChild(rotateRightBtn);
+
+      const flipHBtn = this.createButton('flipH', icons.flipH, () => this.editor.flipHorizontal());
+      if (disabled.includes('flipH')) flipHBtn.style.display = 'none';
+      advancedGroup.appendChild(flipHBtn);
+
+      const flipVBtn = this.createButton('flipV', icons.flipV, () => this.editor.flipVertical());
+      if (disabled.includes('flipV')) flipVBtn.style.display = 'none';
+      advancedGroup.appendChild(flipVBtn);
+    }
     
     const filterBtn = this.createButton('filter', icons.filter, () => this.toggleFilterPanel());
     if (disabled.includes('filter')) filterBtn.style.display = 'none';
@@ -350,6 +412,15 @@ export class Toolbar {
     // Initialize divider visibility based on disabled tools
     this.updateDividerVisibility(disabled);
     
+    // Close dropdowns when clicking outside
+    if (isCompact) {
+      document.addEventListener('click', (e) => {
+        if (!toolbar.contains(e.target as Node)) {
+          this.closeDropdown();
+        }
+      });
+    }
+    
     return toolbar;
   }
 
@@ -400,24 +471,131 @@ export class Toolbar {
     const tooltips: Record<string, { title: string; desc?: string; shortcut?: string }> = {
       zoomOut: { title: '缩小', desc: '缩小图片视图', shortcut: '-' },
       zoomIn: { title: '放大', desc: '放大图片视图', shortcut: '+' },
-      reset: { title: '重置视图', desc: '恢复默认缩放和位置', shortcut: '0' },
+      reset: { title: '重置', desc: '恢复图片到初始状态', shortcut: '0' },
       move: { title: '移动', desc: '拖拽平移画布，点击选中形状', shortcut: 'V' },
       pen: { title: '画笔', desc: '自由绘制线条', shortcut: 'P' },
       rect: { title: '矩形', desc: '绘制矩形框', shortcut: 'R' },
       circle: { title: '圆形', desc: '绘制圆形/椭圆', shortcut: 'O' },
       arrow: { title: '箭头', desc: '绘制带箭头的线条', shortcut: 'A' },
       line: { title: '直线', desc: '绘制直线', shortcut: 'L' },
-      triangle: { title: '三角形', desc: '绘制三角形' },
+      triangle: { title: '三角形', desc: '绘制三角形', shortcut: 'G' },
       text: { title: '文字', desc: '添加文字标注', shortcut: 'T' },
       mosaic: { title: '马赛克', desc: '模糊敏感区域', shortcut: 'M' },
-      eraser: { title: '橡皮擦', desc: '擦除文字和标记', shortcut: 'E' },
+      eraser: { title: '橡皮擦', desc: '擦除文字和标记', shortcut: 'X' },
       crop: { title: '裁剪', desc: '裁剪图片区域', shortcut: 'C' },
-      filter: { title: '滤镜', desc: '调整亮度/对比度/饱和度', shortcut: 'F' },
+      rotateLeft: { title: '逆时针旋转', desc: '逆时针旋转90°', shortcut: 'Shift+←' },
+      rotateRight: { title: '顺时针旋转', desc: '顺时针旋转90°', shortcut: 'Shift+→' },
+      flipH: { title: '水平翻转', desc: '左右镜像翻转图片', shortcut: 'Shift+H' },
+      flipV: { title: '垂直翻转', desc: '上下镜像翻转图片', shortcut: 'Shift+V' },
+      filter: { title: '滤镜', desc: '调整亮度/对比度/饱和度', shortcut: 'I' },
       undo: { title: '撤销', desc: '撤销上一步操作', shortcut: 'Ctrl+Z' },
-      redo: { title: '重做', desc: '恢复撤销的操作', shortcut: 'Ctrl+Y' },
+      redo: { title: '重做', desc: '恢复撤销的操作', shortcut: 'Ctrl+Shift+Z' },
       export: { title: '导出', desc: '保存图片到本地', shortcut: 'Ctrl+S' },
+      drawTools: { title: '绘图工具', desc: '画笔、形状、线条等' },
+      transformTools: { title: '变换', desc: '旋转/翻转图片' },
     };
     return tooltips[name] || { title: name };
+  }
+  
+  /** Create a dropdown button with menu (for compact layout) */
+  private createDropdownButton(
+    name: string,
+    defaultIcon: string,
+    items: Array<{ name: string; icon: string; onClick: () => void; isAction?: boolean }>,
+    groupTitle: string
+  ): HTMLElement {
+    const container = document.createElement('div');
+    container.className = 'ie-dropdown-container';
+    
+    // Main button
+    const btn = document.createElement('button');
+    btn.className = 'ie-btn ie-dropdown-btn';
+    btn.innerHTML = `<span class="ie-dropdown-icon">${defaultIcon}</span><span class="ie-dropdown-arrow">${icons.chevronDown}</span>`;
+    
+    // Add tooltip
+    const tooltipInfo = this.getTooltipInfo(name);
+    const tooltip = document.createElement('div');
+    tooltip.className = 'ie-tooltip';
+    tooltip.innerHTML = `
+      <div class="ie-tooltip-title">${tooltipInfo.title}</div>
+      ${tooltipInfo.desc ? `<div class="ie-tooltip-desc">${tooltipInfo.desc}</div>` : ''}
+    `;
+    btn.appendChild(tooltip);
+    
+    container.appendChild(btn);
+    
+    // Dropdown menu
+    const menu = document.createElement('div');
+    menu.className = 'ie-dropdown-menu';
+    menu.innerHTML = `<div class="ie-dropdown-title">${groupTitle}</div>`;
+    
+    items.forEach(item => {
+      const menuItem = document.createElement('button');
+      menuItem.className = 'ie-dropdown-item';
+      menuItem.setAttribute('data-tool', item.name);
+      
+      const itemTooltip = this.getTooltipInfo(item.name);
+      menuItem.innerHTML = `
+        <span class="ie-dropdown-item-icon">${item.icon}</span>
+        <span class="ie-dropdown-item-label">${itemTooltip.title}</span>
+        ${itemTooltip.shortcut ? `<span class="ie-dropdown-item-shortcut">${itemTooltip.shortcut}</span>` : ''}
+      `;
+      
+      menuItem.onclick = (e) => {
+        e.stopPropagation();
+        item.onClick();
+        
+        // For action buttons (like flip), don't update the dropdown icon
+        if (!item.isAction) {
+          // Update button icon to show selected tool
+          const iconEl = btn.querySelector('.ie-dropdown-icon');
+          if (iconEl) iconEl.innerHTML = item.icon;
+          
+          // Update active state in menu
+          menu.querySelectorAll('.ie-dropdown-item').forEach(el => el.classList.remove('active'));
+          menuItem.classList.add('active');
+          
+          // Update button active state based on current tool
+          if (this.currentTool === item.name) {
+            btn.classList.add('active');
+          }
+        }
+        
+        // Close menu
+        this.closeDropdown();
+      };
+      
+      menu.appendChild(menuItem);
+      
+      // Store reference to buttons within dropdown
+      this.buttons.set(item.name, menuItem as HTMLButtonElement);
+    });
+    
+    container.appendChild(menu);
+    this.dropdownMenus.set(name, menu);
+    
+    // Toggle menu on button click
+    btn.onclick = (e) => {
+      e.stopPropagation();
+      if (this.openDropdown === name) {
+        this.closeDropdown();
+      } else {
+        this.closeDropdown();
+        menu.classList.add('open');
+        this.openDropdown = name;
+      }
+    };
+    
+    // Store the main button
+    this.buttons.set(name, btn);
+    
+    return container;
+  }
+  
+  /** Close any open dropdown menu */
+  private closeDropdown(): void {
+    this.dropdownMenus.forEach(menu => menu.classList.remove('open'));
+    this.openDropdown = null;
   }
 
   /** Create drawing tools panel (shared by pen, rect, circle, arrow) */
@@ -608,9 +786,9 @@ export class Toolbar {
     panel.className = 'ie-panel ie-panel-filter';
     panel.style.display = 'none';
     panel.innerHTML = `
-      <div class="ie-panel-title">滤镜调整</div>
+      <div class="ie-panel-title">滤镜效果</div>
       <div class="ie-filter-presets">
-        <button class="ie-filter-preset" data-preset="none" title="原图">原图</button>
+        <button class="ie-filter-preset active" data-preset="none" title="原图">原图</button>
         <button class="ie-filter-preset" data-preset="grayscale" title="灰度">灰度</button>
         <button class="ie-filter-preset" data-preset="sepia" title="怀旧">怀旧</button>
         <button class="ie-filter-preset" data-preset="invert" title="反色">反色</button>
@@ -618,6 +796,10 @@ export class Toolbar {
         <button class="ie-filter-preset" data-preset="cool" title="冷色">冷色</button>
         <button class="ie-filter-preset" data-preset="vivid" title="鲜艳">鲜艳</button>
         <button class="ie-filter-preset" data-preset="vintage" title="复古">复古</button>
+        <button class="ie-filter-preset" data-preset="dramatic" title="戏剧">戏剧</button>
+        <button class="ie-filter-preset" data-preset="noir" title="黑白">黑白</button>
+        <button class="ie-filter-preset" data-preset="fade" title="褒色">褒色</button>
+        <button class="ie-filter-preset" data-preset="chrome" title="铬黄">铬黄</button>
       </div>
       <div class="ie-panel-row ie-slider-row">
         <span class="ie-panel-label">亮度</span>
@@ -634,183 +816,167 @@ export class Toolbar {
         <input type="range" class="ie-range-slider" min="-100" max="100" value="0" data-filter="saturation">
         <span class="ie-panel-value" data-value="saturation">0</span>
       </div>
-      <div class="ie-panel-row ie-slider-row">
-        <span class="ie-panel-label">模糊</span>
-        <input type="range" class="ie-range-slider" min="0" max="20" value="0" data-filter="blur">
-        <span class="ie-panel-value" data-value="blur">0</span>
-      </div>
-      <div class="ie-panel-row ie-btn-row">
-        <button class="ie-btn-apply" data-action="apply-filter">应用</button>
-        <button class="ie-btn-reset" data-action="reset-filter">重置</button>
-      </div>
     `;
     
-    // Events for filter presets
+    // Events for filter presets - click directly applies the filter
     panel.querySelectorAll('[data-preset]').forEach(btn => {
       btn.addEventListener('click', (e) => {
         const preset = (e.target as HTMLElement).getAttribute('data-preset') || 'none';
-        this.applyFilterPreset(preset);
         // Highlight active preset
         panel.querySelectorAll('[data-preset]').forEach(b => b.classList.remove('active'));
         (e.target as HTMLElement).classList.add('active');
+        // Apply filter directly and update sliders to match preset
+        this.applyFilterPresetDirect(preset);
+        this.updateFilterSlidersForPreset(preset);
       });
     });
     
-    // Events for sliders
+    // Events for sliders - apply filter on change end
     panel.querySelectorAll('[data-filter]').forEach(slider => {
       slider.addEventListener('input', (e) => {
         const filterName = (e.target as HTMLInputElement).getAttribute('data-filter');
         const value = (e.target as HTMLInputElement).value;
         const valueEl = panel.querySelector(`[data-value="${filterName}"]`);
         if (valueEl) valueEl.textContent = value;
-        this.previewFilter();
+        // Preview filter
+        this.previewFilterSliders();
         // Clear preset highlight when manually adjusting
         panel.querySelectorAll('[data-preset]').forEach(b => b.classList.remove('active'));
       });
-    });
-    
-    // Apply button
-    panel.querySelector('[data-action="apply-filter"]')?.addEventListener('click', () => {
-      this.applyFilter();
-    });
-    
-    // Reset button
-    panel.querySelector('[data-action="reset-filter"]')?.addEventListener('click', () => {
-      this.resetFilterPanel();
+      // Apply on mouse up / change end
+      slider.addEventListener('change', () => {
+        this.applyFilterSliders();
+      });
     });
     
     toolbar.appendChild(panel);
     this.panels.set('filter', panel);
   }
   
-  private getFilterValues(): { brightness: number; contrast: number; saturation: number; blur: number } {
-    const panel = this.panels.get('filter');
-    if (!panel) return { brightness: 0, contrast: 0, saturation: 0, blur: 0 };
-    
-    return {
-      brightness: parseInt((panel.querySelector('[data-filter="brightness"]') as HTMLInputElement)?.value || '0'),
-      contrast: parseInt((panel.querySelector('[data-filter="contrast"]') as HTMLInputElement)?.value || '0'),
-      saturation: parseInt((panel.querySelector('[data-filter="saturation"]') as HTMLInputElement)?.value || '0'),
-      blur: parseInt((panel.querySelector('[data-filter="blur"]') as HTMLInputElement)?.value || '0'),
-    };
-  }
-  
-  private previewFilter(): void {
-    const { brightness, contrast, saturation, blur } = this.getFilterValues();
-    const ctx = this.editor.ctx;
-    const canvas = this.editor.canvas;
-    if (!ctx || !canvas || !this.originalImageData) return;
-    
-    // Restore original image
-    ctx.putImageData(this.originalImageData, 0, 0);
-    
-    // Apply CSS filters for preview
-    const filters = [
-      `brightness(${100 + brightness}%)`,
-      `contrast(${100 + contrast}%)`,
-      `saturate(${100 + saturation}%)`,
-      blur > 0 ? `blur(${blur}px)` : '',
-    ].filter(Boolean).join(' ');
-    
-    ctx.filter = filters || 'none';
-    ctx.drawImage(canvas, 0, 0);
-    ctx.filter = 'none';
-  }
-  
-  private applyFilter(): void {
-    // The preview already drew the filtered result, just save it
-    this.saveOriginalImage();
-    this.resetFilterPanel();
-    (this.editor as any).saveToHistory?.('apply filter');
-  }
-  
-  private resetFilterPanel(): void {
+  /** Reset filter sliders to 0 */
+  private resetFilterSliders(): void {
     const panel = this.panels.get('filter');
     if (!panel) return;
-    
-    // Reset all sliders
     panel.querySelectorAll<HTMLInputElement>('[data-filter]').forEach(slider => {
       slider.value = '0';
       const filterName = slider.getAttribute('data-filter');
       const valueEl = panel.querySelector(`[data-value="${filterName}"]`);
       if (valueEl) valueEl.textContent = '0';
     });
-    
-    // Reset preset buttons
-    panel.querySelectorAll('[data-preset]').forEach(b => b.classList.remove('active'));
-    panel.querySelector('[data-preset="none"]')?.classList.add('active');
-    
-    // Restore original image
-    if (this.originalImageData) {
-      this.editor.ctx?.putImageData(this.originalImageData, 0, 0);
-    }
   }
   
-  /** Apply filter preset */
-  private applyFilterPreset(preset: string): void {
+  /** Update filter sliders to match a preset's values */
+  private updateFilterSlidersForPreset(preset: string): void {
     const panel = this.panels.get('filter');
     if (!panel) return;
     
-    const ctx = this.editor.ctx;
-    const canvas = this.editor.canvas;
-    if (!ctx || !canvas || !this.originalImageData) return;
-    
-    // Restore original image first
-    ctx.putImageData(this.originalImageData, 0, 0);
-    
-    // Get preset values
-    const presets: Record<string, { brightness: number; contrast: number; saturation: number; blur: number; css?: string }> = {
-      none: { brightness: 0, contrast: 0, saturation: 0, blur: 0 },
-      grayscale: { brightness: 0, contrast: 0, saturation: -100, blur: 0 },
-      sepia: { brightness: 0, contrast: 0, saturation: -30, blur: 0, css: 'sepia(80%)' },
-      invert: { brightness: 0, contrast: 0, saturation: 0, blur: 0, css: 'invert(100%)' },
-      warm: { brightness: 10, contrast: 10, saturation: 20, blur: 0, css: 'sepia(20%)' },
-      cool: { brightness: 0, contrast: 10, saturation: -10, blur: 0, css: 'hue-rotate(180deg) saturate(50%)' },
-      vivid: { brightness: 10, contrast: 30, saturation: 50, blur: 0 },
-      vintage: { brightness: -10, contrast: 20, saturation: -20, blur: 0, css: 'sepia(40%)' },
+    // Define slider values for each preset
+    const presetSliderValues: Record<string, { brightness: number; contrast: number; saturation: number }> = {
+      none: { brightness: 0, contrast: 0, saturation: 0 },
+      grayscale: { brightness: 0, contrast: 0, saturation: -100 },
+      sepia: { brightness: 0, contrast: 0, saturation: 0 },  // sepia is special
+      invert: { brightness: 0, contrast: 0, saturation: 0 },  // invert is special
+      warm: { brightness: 10, contrast: 0, saturation: 40 },
+      cool: { brightness: 5, contrast: 0, saturation: -30 },
+      vivid: { brightness: 5, contrast: 20, saturation: 80 },
+      vintage: { brightness: -10, contrast: -10, saturation: -20 },
+      dramatic: { brightness: -10, contrast: 50, saturation: 10 },
+      noir: { brightness: -10, contrast: 20, saturation: -100 },
+      fade: { brightness: 10, contrast: -15, saturation: -30 },
+      chrome: { brightness: 0, contrast: 10, saturation: 50 },
     };
     
-    const settings = presets[preset] || presets.none;
+    const values = presetSliderValues[preset] || { brightness: 0, contrast: 0, saturation: 0 };
     
-    // Update sliders
-    const brightnessSlider = panel.querySelector('[data-filter="brightness"]') as HTMLInputElement;
-    const contrastSlider = panel.querySelector('[data-filter="contrast"]') as HTMLInputElement;
-    const saturationSlider = panel.querySelector('[data-filter="saturation"]') as HTMLInputElement;
-    const blurSlider = panel.querySelector('[data-filter="blur"]') as HTMLInputElement;
+    // Update each slider
+    const brightnessSlider = panel.querySelector<HTMLInputElement>('[data-filter="brightness"]');
+    const contrastSlider = panel.querySelector<HTMLInputElement>('[data-filter="contrast"]');
+    const saturationSlider = panel.querySelector<HTMLInputElement>('[data-filter="saturation"]');
     
     if (brightnessSlider) {
-      brightnessSlider.value = String(settings.brightness);
-      const val = panel.querySelector('[data-value="brightness"]');
-      if (val) val.textContent = String(settings.brightness);
+      brightnessSlider.value = String(values.brightness);
+      const valueEl = panel.querySelector('[data-value="brightness"]');
+      if (valueEl) valueEl.textContent = String(values.brightness);
     }
     if (contrastSlider) {
-      contrastSlider.value = String(settings.contrast);
-      const val = panel.querySelector('[data-value="contrast"]');
-      if (val) val.textContent = String(settings.contrast);
+      contrastSlider.value = String(values.contrast);
+      const valueEl = panel.querySelector('[data-value="contrast"]');
+      if (valueEl) valueEl.textContent = String(values.contrast);
     }
     if (saturationSlider) {
-      saturationSlider.value = String(settings.saturation);
-      const val = panel.querySelector('[data-value="saturation"]');
-      if (val) val.textContent = String(settings.saturation);
+      saturationSlider.value = String(values.saturation);
+      const valueEl = panel.querySelector('[data-value="saturation"]');
+      if (valueEl) valueEl.textContent = String(values.saturation);
     }
-    if (blurSlider) {
-      blurSlider.value = String(settings.blur);
-      const val = panel.querySelector('[data-value="blur"]');
-      if (val) val.textContent = String(settings.blur);
-    }
+  }
+  
+  /** Preview filter from sliders */
+  private previewFilterSliders(): void {
+    const panel = this.panels.get('filter');
+    if (!panel) return;
+    const ctx = this.editor.ctx;
+    const canvas = this.editor.canvas;
+    // Use initial pure image to prevent stacking
+    if (!ctx || !canvas || !this.initialPureImageData) return;
     
-    // Apply preview with CSS filter
-    const filters = [
-      `brightness(${100 + settings.brightness}%)`,
-      `contrast(${100 + settings.contrast}%)`,
-      `saturate(${100 + settings.saturation}%)`,
-      settings.blur > 0 ? `blur(${settings.blur}px)` : '',
-      settings.css || '',
-    ].filter(Boolean).join(' ');
+    const brightness = parseInt((panel.querySelector('[data-filter="brightness"]') as HTMLInputElement)?.value || '0');
+    const contrast = parseInt((panel.querySelector('[data-filter="contrast"]') as HTMLInputElement)?.value || '0');
+    const saturation = parseInt((panel.querySelector('[data-filter="saturation"]') as HTMLInputElement)?.value || '0');
     
-    ctx.filter = filters || 'none';
+    // Restore initial pure image and apply filter
+    ctx.putImageData(this.initialPureImageData, 0, 0);
+    const filterStr = `brightness(${100 + brightness}%) contrast(${100 + contrast}%) saturate(${100 + saturation}%)`;
+    ctx.filter = filterStr;
     ctx.drawImage(canvas, 0, 0);
     ctx.filter = 'none';
+  }
+  
+  /** Apply filter from sliders (save to history) */
+  private applyFilterSliders(): void {
+    // Current canvas already has the filter applied from preview
+    // Just save to history (but NOT initialPureImageData)
+    this.saveOriginalImage();
+    this.savePureImage();
+    (this.editor as any).saveToHistory?.('filter adjust');
+  }
+  
+  /** Apply filter preset directly (no preview, immediate save to history) */
+  private applyFilterPresetDirect(preset: string): void {
+    const ctx = this.editor.ctx;
+    const canvas = this.editor.canvas;
+    // Always apply from the initial pure image to prevent stacking
+    if (!ctx || !canvas || !this.initialPureImageData) return;
+    
+    // Restore initial pure image first (the original loaded image, without any filters)
+    ctx.putImageData(this.initialPureImageData, 0, 0);
+    
+    // Get preset CSS filter
+    const presetFilters: Record<string, string> = {
+      none: 'none',
+      grayscale: 'grayscale(100%)',
+      sepia: 'sepia(80%)',
+      invert: 'invert(100%)',
+      warm: 'sepia(30%) saturate(140%) brightness(110%)',
+      cool: 'hue-rotate(180deg) saturate(70%) brightness(105%)',
+      vivid: 'saturate(180%) contrast(120%) brightness(105%)',
+      vintage: 'sepia(50%) contrast(90%) brightness(90%)',
+      dramatic: 'contrast(150%) saturate(110%) brightness(90%)',
+      noir: 'grayscale(100%) contrast(120%) brightness(90%)',
+      fade: 'saturate(70%) contrast(85%) brightness(110%)',
+      chrome: 'sepia(20%) saturate(150%) contrast(110%)',
+    };
+    
+    const filterValue = presetFilters[preset] || 'none';
+    
+    // Apply filter
+    ctx.filter = filterValue;
+    ctx.drawImage(canvas, 0, 0);
+    ctx.filter = 'none';
+    
+    // Save to original image data and history (but NOT initialPureImageData)
+    this.saveOriginalImage();
+    this.savePureImage();
+    (this.editor as any).saveToHistory?.(`filter: ${preset}`);
   }
 
   private updateTextUI(): void {
@@ -826,6 +992,8 @@ export class Toolbar {
         // Show with animation
         panel.style.display = 'block';
         panel.classList.remove('ie-panel-hidden');
+        // Position panel above the corresponding button
+        this.positionPanelAboveToolButton(panel, key);
       } else if (panel.style.display !== 'none') {
         // Hide with animation
         panel.classList.add('ie-panel-hidden');
@@ -838,6 +1006,33 @@ export class Toolbar {
       }
     });
     this.activePanel = name;
+  }
+  
+  /** Position a panel above its corresponding tool button */
+  private positionPanelAboveToolButton(panel: HTMLElement, panelName: string): void {
+    // Determine which button to position above
+    let buttonName: string | null = null;
+    
+    if (panelName === 'draw') {
+      // For draw panel, position above the current drawing tool
+      buttonName = this.currentTool;
+      // In compact mode, if there's a drawTools dropdown, position above it
+      if (this.options.layout === 'compact') {
+        buttonName = 'drawTools';
+      }
+    } else if (panelName === 'mosaic') {
+      buttonName = 'mosaic';
+    } else if (panelName === 'text') {
+      buttonName = 'text';
+    } else if (panelName === 'eraser') {
+      buttonName = 'eraser';
+    } else if (panelName === 'filter') {
+      buttonName = 'filter';
+    }
+    
+    if (buttonName) {
+      this.positionPanelAboveButton(panel, buttonName);
+    }
   }
   
   /** Hide all panels */
@@ -956,21 +1151,9 @@ export class Toolbar {
       this.showInlineTextInput(e.clientX, e.clientY, pos);
     });
     
-    // Keyboard events for delete
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Delete' || e.key === 'Backspace') {
-        // Don't delete if we're editing text
-        if (this.isAddingText || document.activeElement?.tagName === 'INPUT' || document.activeElement?.tagName === 'TEXTAREA') {
-          return;
-        }
-        const selected = this.shapeManager.getSelectedShape();
-        if (selected) {
-          e.preventDefault();
-          this.shapeManager.deleteShape(selected.id);
-          (this.editor as any).saveToHistory?.('delete shape');
-        }
-      }
-    });
+    // Keyboard shortcuts
+    this.handleKeyDown = this.handleKeyDown.bind(this);
+    document.addEventListener('keydown', this.handleKeyDown);
     
     // Touch events for pinch-to-zoom and two-finger pan
     this.canvasContainer.addEventListener('touchstart', (e) => {
@@ -1272,6 +1455,9 @@ export class Toolbar {
         // Delete shape if it's too small (less than 3px in any dimension)
         if (bounds && bounds.width < 3 && bounds.height < 3) {
           this.shapeManager.deleteShape(this.currentShapeId);
+        } else {
+          // Flatten the shape to canvas so it gets saved in history
+          this.flattenShapes();
         }
       }
     } else if (this.currentTool === 'mosaic' || this.currentTool === 'eraser') {
@@ -2051,9 +2237,9 @@ export class Toolbar {
       // Update divider visibility
       this.updateDividerVisibility(this.options.disabledTools || []);
       
-      // Reset view with animation
+      // Reset view (zoom and position only) with animation
       this.viewport.style.transition = 'transform 0.3s ease-out';
-      this.resetView();
+      this.resetViewOnly();
       
       // Remove transition after animation
       setTimeout(() => {
@@ -2089,9 +2275,42 @@ export class Toolbar {
       this.showPanel(null);
       this.buttons.get('filter')?.classList.remove('active');
     } else {
+      // Position panel above the filter button
+      this.positionPanelAboveButton(filterPanel, 'filter');
       this.showPanel('filter');
       this.buttons.get('filter')?.classList.add('active');
     }
+  }
+  
+  /** Position a panel above a specific button */
+  private positionPanelAboveButton(panel: HTMLElement, buttonName: string): void {
+    const button = this.buttons.get(buttonName);
+    if (!button) return;
+    
+    const buttonRect = button.getBoundingClientRect();
+    const toolbarRect = this.toolbar.getBoundingClientRect();
+    const panelWidth = panel.offsetWidth || 300; // fallback width
+    
+    // Calculate the button center position relative to the toolbar
+    const buttonCenterX = buttonRect.left + buttonRect.width / 2 - toolbarRect.left;
+    
+    // Calculate left position so panel is centered above button
+    let leftPos = buttonCenterX - panelWidth / 2;
+    
+    // Ensure panel doesn't overflow left edge
+    leftPos = Math.max(8, leftPos);
+    
+    // Ensure panel doesn't overflow right edge
+    const maxLeft = toolbarRect.width - panelWidth - 8;
+    leftPos = Math.min(maxLeft, leftPos);
+    
+    // Set position
+    panel.style.left = `${leftPos}px`;
+    panel.style.transform = 'translateY(0)';
+    
+    // Update the arrow position to point to the button
+    const arrowOffset = buttonCenterX - leftPos;
+    panel.style.setProperty('--arrow-left', `${arrowOffset}px`);
   }
 
   // ============ Eraser Tool ============
@@ -2237,7 +2456,45 @@ export class Toolbar {
     this.setScale(this.scale / 1.25);
   }
 
-  private resetView(): void {
+  /** Reset image to initial state (when first loaded) */
+  private resetImage(): void {
+    // Get initial state from history (index 0)
+    const historyManager = this.editor.getHistoryManager();
+    const initialState = historyManager.getStateAt(0);
+    
+    if (initialState) {
+      // Restore to initial state
+      const imageData = initialState.imageData;
+      const canvas = this.editor.canvas;
+      const ctx = this.editor.ctx;
+      
+      // Restore canvas size if changed
+      if (canvas.width !== imageData.width || canvas.height !== imageData.height) {
+        canvas.width = imageData.width;
+        canvas.height = imageData.height;
+      }
+      
+      // Restore image data
+      ctx.putImageData(imageData, 0, 0);
+      
+      // Update toolbar state
+      this.saveOriginalImage();
+      this.savePureImage();
+      
+      // Clear shapes
+      this.shapeManager.clear();
+      
+      // Clear history and save current state as new initial
+      historyManager.clear();
+      this.editor.saveToHistory('reset to initial');
+    }
+    
+    // Also reset view (zoom and position)
+    this.resetViewOnly();
+  }
+  
+  /** Reset view only (zoom and position, not image content) */
+  private resetViewOnly(): void {
     this.scale = 1;
     this.translateX = 0;
     this.translateY = 0;
@@ -2416,6 +2673,7 @@ export class Toolbar {
     // All toggleable buttons
     const allToggleableButtons: ToolName[] = [
       'move', 'pen', 'rect', 'circle', 'arrow', 'line', 'triangle', 'text', 'mosaic', 'eraser', 'crop', 'filter',  // Drawing tools
+      'rotateLeft', 'rotateRight', 'flipH', 'flipV',  // Transform tools
       'zoomIn', 'zoomOut', 'reset',  // Zoom controls
       'undo', 'redo',  // History controls
       'export',  // Export button
@@ -2468,7 +2726,7 @@ export class Toolbar {
     const groupTools: Record<string, ToolName[]> = {
       zoom: ['zoomIn', 'zoomOut', 'reset'],
       tool: ['move', 'pen', 'rect', 'circle', 'arrow', 'line', 'triangle', 'text', 'mosaic', 'eraser'],
-      advanced: ['crop', 'filter'],
+      advanced: ['crop', 'filter', 'rotateLeft', 'rotateRight', 'flipH', 'flipV'],
       history: ['undo', 'redo'],
       cropAction: [], // Special group, always hidden by default unless crop mode is active
     };
@@ -2633,6 +2891,44 @@ export class Toolbar {
     // Save pure image data first (before any annotations)
     this.savePureImage();
     this.saveOriginalImage();
+    // Save initial pure image for filter reset (this never gets overwritten by filters)
+    this.saveInitialPureImage();
+    // Reset filter UI
+    this.resetFilterUI();
+  }
+  
+  /** Save the initial pure image (for filter reset, never overwritten by filters) */
+  private saveInitialPureImage(): void {
+    const ctx = this.editor.ctx;
+    const canvas = this.editor.canvas;
+    if (ctx && canvas) {
+      this.initialPureImageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    }
+  }
+  
+  /** Reset filter UI to default state */
+  private resetFilterUI(): void {
+    const panel = this.panels.get('filter');
+    if (!panel) return;
+    // Reset preset selection
+    panel.querySelectorAll('[data-preset]').forEach(b => b.classList.remove('active'));
+    panel.querySelector('[data-preset="none"]')?.classList.add('active');
+    // Reset sliders
+    this.resetFilterSliders();
+  }
+
+  syncImageData(): void {
+    if (!this.hasRealImage) return;
+    this.savePureImage();
+    this.saveOriginalImage();
+  }
+
+  handleCanvasResize(): void {
+    if (!this.hasRealImage) return;
+    // Do NOT reset view or sync image data
+    // This preserves all user edits, zoom level, and position when container size changes
+    // Only update brush cursor size to match current scale
+    this.updateBrushCursorSize();
   }
   
   /** Save the pure original image (without any annotations) - for eraser tool */
@@ -2644,7 +2940,261 @@ export class Toolbar {
     }
   }
 
+  // ============ Keyboard Shortcuts ============
+  
+  /** Handle keyboard shortcuts */
+  private handleKeyDown(e: KeyboardEvent): void {
+    // Skip if editing text or input is focused
+    const activeEl = document.activeElement;
+    if (this.isAddingText || 
+        activeEl?.tagName === 'INPUT' || 
+        activeEl?.tagName === 'TEXTAREA' ||
+        (activeEl as HTMLElement)?.isContentEditable) {
+      // Allow Escape to cancel text editing
+      if (e.key === 'Escape' && this.isAddingText) {
+        e.preventDefault();
+        this.cancelInlineText();
+      }
+      return;
+    }
+    
+    // Delete/Backspace - delete selected shape
+    if (e.key === 'Delete' || e.key === 'Backspace') {
+      const selected = this.shapeManager.getSelectedShape();
+      if (selected) {
+        e.preventDefault();
+        this.shapeManager.deleteShape(selected.id);
+        (this.editor as any).saveToHistory?.('delete shape');
+      }
+      return;
+    }
+    
+    // Escape - cancel current operation or deselect
+    if (e.key === 'Escape') {
+      if (this.isCropActive) {
+        this.toggleCropTool();
+      } else if (this.activePanel) {
+        this.hideAllPanels();
+      } else {
+        this.shapeManager.selectShape(null);
+        this.selectTool(null); // Switch to move tool
+      }
+      return;
+    }
+    
+    // Don't process shortcuts if no image is loaded
+    if (!this.hasRealImage) return;
+    
+    const key = e.key.toLowerCase();
+    const ctrl = e.ctrlKey || e.metaKey;
+    const shift = e.shiftKey;
+    
+    // Check if tool is disabled
+    const disabled = this.options.disabledTools || [];
+    
+    // Ctrl shortcuts
+    if (ctrl) {
+      switch (key) {
+        case 'z':
+          if (shift) {
+            // Ctrl+Shift+Z = Redo
+            if (!disabled.includes('redo')) {
+              e.preventDefault();
+              this.editor.redo();
+            }
+          } else {
+            // Ctrl+Z = Undo
+            if (!disabled.includes('undo')) {
+              e.preventDefault();
+              this.editor.undo();
+            }
+          }
+          return;
+        case 's':
+          // Ctrl+S = Export
+          if (!disabled.includes('export')) {
+            e.preventDefault();
+            this.exportImage();
+          }
+          return;
+        case 'y':
+          // Ctrl+Y = Redo (alternative)
+          if (!disabled.includes('redo')) {
+            e.preventDefault();
+            this.editor.redo();
+          }
+          return;
+      }
+      return;
+    }
+    
+    // Shift shortcuts
+    if (shift) {
+      switch (key) {
+        case 'h':
+          // Shift+H = Flip horizontal
+          if (!disabled.includes('flipH')) {
+            e.preventDefault();
+            this.editor.flipHorizontal();
+          }
+          return;
+        case 'v':
+          // Shift+V = Flip vertical
+          if (!disabled.includes('flipV')) {
+            e.preventDefault();
+            this.editor.flipVertical();
+          }
+          return;
+        case 'arrowleft':
+          // Shift+Left = Rotate left
+          if (!disabled.includes('rotateLeft')) {
+            e.preventDefault();
+            this.editor.rotateLeft();
+          }
+          return;
+        case 'arrowright':
+          // Shift+Right = Rotate right
+          if (!disabled.includes('rotateRight')) {
+            e.preventDefault();
+            this.editor.rotateRight();
+          }
+          return;
+      }
+      return;
+    }
+    
+    // Single key shortcuts (tool switching)
+    switch (key) {
+      // Zoom controls
+      case '=':
+      case '+':
+        if (!disabled.includes('zoomIn')) {
+          e.preventDefault();
+          this.zoomIn();
+        }
+        break;
+      case '-':
+        if (!disabled.includes('zoomOut')) {
+          e.preventDefault();
+          this.zoomOut();
+        }
+        break;
+      case '0':
+        if (!disabled.includes('reset')) {
+          e.preventDefault();
+          this.resetImage();
+        }
+        break;
+        
+      // Tool selection
+      case 'v':
+        if (!disabled.includes('move')) {
+          e.preventDefault();
+          this.selectTool(null); // Move tool
+        }
+        break;
+      case 'p':
+        if (!disabled.includes('pen')) {
+          e.preventDefault();
+          this.selectTool('pen');
+        }
+        break;
+      case 'r':
+        if (!disabled.includes('rect')) {
+          e.preventDefault();
+          this.selectTool('rect');
+        }
+        break;
+      case 'o':
+        if (!disabled.includes('circle')) {
+          e.preventDefault();
+          this.selectTool('circle');
+        }
+        break;
+      case 'a':
+        if (!disabled.includes('arrow')) {
+          e.preventDefault();
+          this.selectTool('arrow');
+        }
+        break;
+      case 'l':
+        if (!disabled.includes('line')) {
+          e.preventDefault();
+          this.selectTool('line');
+        }
+        break;
+      case 'g':
+        if (!disabled.includes('triangle')) {
+          e.preventDefault();
+          this.selectTool('triangle');
+        }
+        break;
+      case 't':
+        if (!disabled.includes('text')) {
+          e.preventDefault();
+          this.selectTool('text');
+        }
+        break;
+      case 'm':
+        if (!disabled.includes('mosaic')) {
+          e.preventDefault();
+          this.selectTool('mosaic');
+        }
+        break;
+      case 'x':
+        if (!disabled.includes('eraser')) {
+          e.preventDefault();
+          this.selectTool('eraser');
+        }
+        break;
+      case 'c':
+        if (!disabled.includes('crop')) {
+          e.preventDefault();
+          this.toggleCropTool();
+        }
+        break;
+      case 'i':
+        if (!disabled.includes('filter')) {
+          e.preventDefault();
+          this.toggleFilterPanel();
+        }
+        break;
+        
+        
+      // Bracket keys for brush size adjustment
+      case '[':
+        if (this.isDrawingTool(this.currentTool)) {
+          e.preventDefault();
+          if (this.currentTool === 'eraser') {
+            this.eraserSize = Math.max(5, this.eraserSize - 5);
+            this.updateEraserPanelUI();
+          } else {
+            this.strokeWidth = Math.max(1, this.strokeWidth - 1);
+            this.updateDrawPanelUI();
+            this.updateMosaicPanelUI();
+          }
+        }
+        break;
+      case ']':
+        if (this.isDrawingTool(this.currentTool)) {
+          e.preventDefault();
+          if (this.currentTool === 'eraser') {
+            this.eraserSize = Math.min(100, this.eraserSize + 5);
+            this.updateEraserPanelUI();
+          } else {
+            this.strokeWidth = Math.min(20, this.strokeWidth + 1);
+            this.updateDrawPanelUI();
+            this.updateMosaicPanelUI();
+          }
+        }
+        break;
+    }
+  }
+
   destroy(): void {
+    // Remove keyboard event listener
+    document.removeEventListener('keydown', this.handleKeyDown);
+    
     this.wrapper.remove();
     this.panels.clear();
     this.buttons.clear();

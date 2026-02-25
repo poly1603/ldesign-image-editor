@@ -35,6 +35,7 @@ export class Editor implements EditorInterface {
   private _container: HTMLElement;
   /** Built-in toolbar instance */
   private _toolbar: Toolbar | null = null;
+  private _offCanvasResize: (() => void) | null = null;
   /** Whether the editor is destroyed */
   private _destroyed: boolean = false;
   /** Whether the editor is ready */
@@ -74,6 +75,18 @@ export class Editor implements EditorInterface {
     // Initialize canvas
     this._canvas = new Canvas(this._container, config);
 
+    this._offCanvasResize = this._canvas.onResize((data) => {
+      if (this._destroyed) return;
+      if (this._toolbar) {
+        this._toolbar.handleCanvasResize();
+      }
+      this._eventManager.emit('transform', {
+        type: 'resize',
+        width: data.width,
+        height: data.height,
+      });
+    });
+
     // Initialize plugin manager
     this._pluginManager = new PluginManager();
     this._pluginManager.setContext(this.createPluginContext());
@@ -111,6 +124,7 @@ export class Editor implements EditorInterface {
         autoHide: toolbarConfig.autoHide !== false,
         placeholderText: toolbarConfig.placeholderText,
         placeholderSubText: toolbarConfig.placeholderSubText,
+        layout: toolbarConfig.layout,
       });
     }
 
@@ -224,16 +238,21 @@ export class Editor implements EditorInterface {
       // Save initial state
       this.saveState('init', 'Initial state');
 
-      // Mark as ready
-      this._ready = true;
+      // Only emit events and mark ready for user images
+      // Placeholder loading should not trigger ready event to avoid infinite loops
+      if (isUserImage) {
+        // Mark as ready
+        this._ready = true;
 
-      // Emit events
-      this._eventManager.emit('image-loaded', { width, height });
-      this._eventManager.emit('ready', { width, height });
-      
-      // Notify toolbar if this is a user image
-      if (isUserImage && this._toolbar) {
-        this._toolbar.onImageLoaded();
+        // Notify toolbar FIRST so hasRealImage is set before events are emitted
+        // This prevents event handlers from seeing stale state
+        if (this._toolbar) {
+          this._toolbar.onImageLoaded();
+        }
+
+        // Emit events after toolbar is notified
+        this._eventManager.emit('image-loaded', { width, height });
+        this._eventManager.emit('ready', { width, height });
       }
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
@@ -740,7 +759,7 @@ export class Editor implements EditorInterface {
     
     // Notify toolbar to update
     if (this._toolbar) {
-      this._toolbar.saveOriginalImage();
+      this._toolbar.syncImageData();
     }
   }
   
@@ -758,7 +777,7 @@ export class Editor implements EditorInterface {
     
     // Notify toolbar to update
     if (this._toolbar) {
-      this._toolbar.saveOriginalImage();
+      this._toolbar.syncImageData();
     }
   }
   
@@ -869,6 +888,11 @@ export class Editor implements EditorInterface {
 
     // Emit destroy event before cleanup
     this._eventManager.emit('destroy', undefined as unknown as void);
+
+    if (this._offCanvasResize) {
+      this._offCanvasResize();
+      this._offCanvasResize = null;
+    }
 
     // Destroy toolbar first
     if (this._toolbar) {

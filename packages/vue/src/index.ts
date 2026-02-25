@@ -73,6 +73,7 @@ export type {
   UseImageEditorReturn,
   // Toolbar types
   ToolbarOptions,
+  ToolbarLayout,
   // Slot props types
   DefaultSlotProps,
   LoadingSlotProps,

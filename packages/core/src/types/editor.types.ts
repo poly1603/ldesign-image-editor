@@ -36,6 +36,8 @@ export interface ToolbarConfig {
   placeholderSubText?: string;
   /** Default tool to select when image is loaded */
   defaultTool?: ToolName;
+  /** Toolbar layout mode: 'expanded' (all tools visible) or 'compact' (grouped in dropdowns) */
+  layout?: 'expanded' | 'compact';
 }
 
 /**
